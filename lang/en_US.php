@@ -3,6 +3,7 @@
 $lang['add_mobile'] = 'Add Mobile';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
 $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
+$lang['account'] = 'Account';
 
 #B
 
@@ -10,6 +11,8 @@ $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone 
 #C
 $lang['cancel'] = 'Cancel';
 $lang['custom'] = 'Custom';
+$lang['clickatell_description'] = 'TODO';
+$lang['clickatell_title'] = 'Clickatell SMS Gateway';
 
 #D
 $lang['default_templates'] = 'Default Templates';
@@ -64,12 +67,14 @@ $lang['help'] = <<<EOT
 <li>5. When sending a pre-defined message the text of the message is stored in the database and the visitor is given a unique key to the text of the message, preventing alteration of the text itself.</li>
 </ul>
 <h3>SMS Gateways</h3>
-<p>This module depends on selecting a supported SMS gateway and filling in the required authentication information.   You will need to sign up to at least one of the supported gateways.  This may involve paying money to a thhird party.</p>
+<p>This module depends on selecting a supported SMS gateway and filling in the required authentication information. You will need to sign up to at least one of the supported gateways.  This may involve paying money to a third party.</p>
 <p>Different SMS Gateways will have different requirements and limitations on the amount, size, source, and destination messages that can be sent... it is your responsibility to understand these limitations.</p>
 <p>Currently, these gateways are Implemented:</p>
 <ul>
-  <li><a href="http://interlinked.mobi"><strong>Interlinked.mobi</strong></a> - A UK based SMS marketing provider.</li>
-<li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - An experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
+<li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - .</li>
+<li><a href="http://interlinked.mobi"><strong>Interlinked.mobi</strong></a> - a UK-based SMS marketing provider.</li>
+<li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - an experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
+<li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - a global SMS gateway, low cost, well regarded.</li>
 </ul>
 <h3>How do I use it</h3>
 <p>The first thing you should do is to go into the modules admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
@@ -109,7 +114,7 @@ module homepage at <a href="http://calguy1000.com">calguy1000.com</a>.</li>
 <li>Lastly, you may have some success emailing the author directly.</li>  
 </ul>
 <h3>Copyright and License</h3>
-<p>Copyright &copy; 20010, Robert Campbell <a href="mailto:calguy1000@cmsmadesimple.org">&lt;calguy1000@cmsmadesimple.org&gt;</a>. All Rights Are Reserved.</p>
+<p>Copyright &copy; 2010-2015, Robert Campbell <a href="mailto:calguy1000@cmsmadesimple.org">&lt;calguy1000@cmsmadesimple.org&gt;</a>. All Rights Are Reserved.</p>
 <p>This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -201,11 +206,15 @@ $lang['submit'] = 'Submit';
 $lang['test'] = 'Test';
 $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
+$lang['token'] = 'Token';
+$lang['twilio_description'] = 'Low cost, global SMS gateway, well regarded';
+$lang['twilio_title'] = 'Twilio SMS Gateway';
 
 #U
 $lang['username'] = 'Username';
 
 #V
+
 
 
 #W
