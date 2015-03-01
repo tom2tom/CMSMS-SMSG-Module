@@ -242,7 +242,7 @@ class CGSMS extends CGExtensions
 
     $this->CreateParameter('action','enternumber',$this->Lang('help_action'));
 
-    $this->CreateParameter('smstext','',$this->Lang('help_text'));
+    $this->CreateParameter('smstext','',$this->Lang('help_smstext'));
     $this->SetParameterType('smstext',CLEAN_STRING);
 
     $this->CreateParameter('linktext',$this->Lang('send_to_mobile'),$this->Lang('help_linktext'));
