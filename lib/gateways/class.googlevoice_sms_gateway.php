@@ -84,7 +84,7 @@ class googlevoice_sms_gateway extends cgsms_sender_base
     return 'good';
   }
 
-  protected function _command()
+  protected function _command($cmd)
   {
     try {
       $mod = $this->get_module();
