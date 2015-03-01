@@ -4,6 +4,7 @@ $lang['add_mobile'] = 'Add Mobile';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
 $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
 $lang['account'] = 'Account';
+$lang['apiid'] = 'API ID';
 
 #B
 
@@ -13,6 +14,9 @@ $lang['cancel'] = 'Cancel';
 $lang['custom'] = 'Custom';
 $lang['clickatell_description'] = 'TODO';
 $lang['clickatell_title'] = 'Clickatell SMS Gateway';
+$lang['clickatell_auth'] = 'Authentication failure: %s';
+$lang['clickatell_fail'] = 'Send message to %s failed';
+$lang['clickatell_success'] = 'Sent message ID: %s to %s';
 
 #D
 $lang['default_templates'] = 'Default Templates';
