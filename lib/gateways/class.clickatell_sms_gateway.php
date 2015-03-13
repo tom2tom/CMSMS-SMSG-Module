@@ -201,7 +201,7 @@ queue 1,2,3 1=highest priority, 3=default
 				parent::set_status(parent::STAT_ERROR_INVALID_DATA);
 				break;
 			 case 121:
-				parent::set_status(parent::STAT_ERROR_INVALID_BLOCKED);
+				parent::set_status(parent::STAT_ERROR_BLOCKED);
 				break;
 			 case 130:
 				parent::set_status(parent::STAT_ERROR_LIMIT);
