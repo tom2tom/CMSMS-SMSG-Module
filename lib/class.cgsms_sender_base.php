@@ -173,19 +173,17 @@ abstract class cgsms_sender_base
 
     // send it.
     $res = $this->_command($cmd);
-    if( $res )
-      {
+
+	// interpret result.
 	$this->parse_result($res);
 	$this->_statusmsg = cgsms_utils::get_msg($this,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
-	if( $this->_status == self::STAT_OK )
+	$success = ($this->_status == self::STAT_OK);
+	if( $success )
 	  {
 	    cgsms_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
+		audit('',$this->get_module()->GetName(),$this->_statusmsg);
 	  }
-	audit('',$this->get_module()->GetName(),$this->_statusmsg);
-	return TRUE;
-      }
-
-    return FALSE;
+	return $success;
   }
 
 
