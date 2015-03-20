@@ -103,7 +103,7 @@ class googlevoice_sms_gateway extends cgsms_sender_base
   {
     try {
       $mod = $this->get_module();
-      include_once(dirname(__FILE__).'/googlevoice/class.googlevoice2.php');
+      require_once(dirname(__FILE__).'/googlevoice/class.googlevoice2.php');
       $gv = new GoogleVoice($mod->GetPreference('googlevoice_email'),
 			    $mod->GetPreference('googlevoice_password'));
       
