@@ -53,6 +53,7 @@ abstract class cgsms_sender_base
 
   private $_msg;
   private $_num;
+  private $_fromnum;
   private $_module;
   private $_statusmsg;
   protected $_use_curl;
@@ -96,6 +97,12 @@ abstract class cgsms_sender_base
   }
 
 
+  protected function get_msg()
+  {
+    return $this->_msg;
+  }
+
+
   public function set_num($num)
   {
     $this->_num = $num;
@@ -107,12 +114,18 @@ abstract class cgsms_sender_base
     return $this->_num;
   }
 
-
-  protected function get_msg()
+  public function set_from($from)
   {
-    return $this->_msg;
+    if($from)
+      $this->_fromnum = $from;
+    else
+      $this->_fromnum = FALSE;
   }
 
+  protected function get_from()
+  {
+    return $this->_fromnum;
+  }
 
   protected function set_status($stat)
   {
@@ -255,8 +268,14 @@ abstract class cgsms_sender_base
   }
 
   abstract public function get_name();
-  
+
   abstract public function get_description();
+
+  abstract public function support_custom_sender();
+
+  abstract public function require_country_prefix();
+
+  abstract public function require_plus_prefix();
 
   abstract protected function setup();
 
