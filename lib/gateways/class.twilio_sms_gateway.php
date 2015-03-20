@@ -50,12 +50,12 @@ class twilio_sms_gateway extends cgsms_sender_base
 
 	public function support_custom_sender()
 	{
-		return FALSE; //TODO
+		return FALSE; //only account-specific from-numbers are allowed
 	}
 
 	public function require_country_prefix()
 	{
-		return TRUE; //TODO
+		return TRUE;
 	}
 
 	public function require_plus_prefix()
@@ -108,12 +108,12 @@ class twilio_sms_gateway extends cgsms_sender_base
 
 	protected function prep_command()
 	{
-		return ' ';
+		return 'good'; //anything which passes upstream test
 	}
 
-	public function send()
+	//returns object: Services_Twilio_Rest_Message or Services_Twilio_RestException, or FALSE
+	protected function _command($dummy)
 	{
-		$this->_smsid = '';
 		$to = parent::get_num();
 		$msg = parent::get_msg();
 		if(!$to || !$msg)
@@ -125,11 +125,6 @@ class twilio_sms_gateway extends cgsms_sender_base
 		if($body == '')
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
-			return FALSE;
-		}
-		if(!cgsms_utils::ip_can_send(getenv('REMOTE_ADDR')))
-		{
-			$this->_status = parent::STAT_ERROR_LIMIT;
 			return FALSE;
 		}
 		$mod = $this->get_module();
@@ -151,126 +146,85 @@ class twilio_sms_gateway extends cgsms_sender_base
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
-/*
-curl may need -k (insecure) option too
-curl -X POST https://api.twilio.com/2010-04-01/Accounts/AC7ca93c7b41de5d688a2bbf45bca2550e/SMS/Messages.json \
- -u AC7ca93c7b41de5d688a2bbf45bca2550e:8cfe44235eaea3edc6d2ac5746ed33d4 \
- --data-urlencode "From=+19204826333" \
- --data-urlencode "To=+61417394479" \
- --data-urlencode 'Body=Another message sent via gateway'
-*/
-		//NB these keys must be capitalised!
-		$parms = array(
-		 'To' => $to,
-		 'From' => $from,
-		 'Body' => $body
-		);
-
 		require_once cms_join_path(dirname(__FILE__),'twilio','Twilio.php');
 		$ob = new Services_Twilio($account,$token);
 		try
 		{
-			//send it
-			$res = $ob->account->messages->create($parms);
-
-			$this->parse_result($res);
-			$this->_statusmsg = cgsms_utils::get_msg(
-				$this,
-				$to,
-				$this->_status,
-				$msg,
-				$this->_rawstatus
-			);
-			if($this->_status == parent::STAT_OK)
-			{
-				cgsms_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
-			}
-//		audit('',$this->get_module()->GetName(),$this->_statusmsg);
-			echo ($this->_statusmsg);
-			return TRUE;
+			//send it NOTE these array keys must be capitalised
+			return $ob->account->messages->create(array(
+			 'From' => $from,'To' => $to,'Body' => $body));
 		}
 		catch (Services_Twilio_RestException $e)
 		{
-			$this->_rawstatus = $e->getMessage();
-			return FALSE;
+			return $e;
 		}
 	}
 
-	//$ob = Services_Twilio_Rest_Message object
+	//$ob = object Services_Twilio_Rest_Message object or Services_Twilio_RestException, or FALSE
 	protected function parse_result($ob)
 	{
-		$this->_rawstatus = ''; //TODO
-/*	$this->_rawstatus = $ob->
-			date_created => string 'Sun, 01 Mar 2015 05:25:42 +0000'
-			date_sent => null
-			to => string '+61417394479'
-			body => string 'This is a new message via the gateway'
-			status => string 'queued'
-			error_code => null
-			error_message => null
-*/
-/*
-returned json
-{
-	"sid": "SM75c9b26ec7fb4b2aaf303d8b3540a694",
-	"date_created": "Sun, 01 Mar 2015 02:19:06 +0000",
-	"date_updated": "Sun, 01 Mar 2015 02:19:06 +0000",
-	"date_sent": null,
-	"account_sid": "AC7ca93c7b41de5d688a2bbf45bca2550e",
-	"to": "+61417394479",
-	"from": "+19204826333",
-	"body": "Another message sent via gateway",
-	"status": "queued",
-	"direction": "outbound-api",
-	"api_version": "2010-04-01",
-	"price": null,
-	"price_unit": "USD",
-	"uri": "/2010-04-01/Accounts/AC7ca93c7b41de5d688a2bbf45bca2550e/SMS/Messages/SM75c9b26ec7fb4b2aaf303d8b3540a694.json",
-	"num_segments": "1"
-}
-
-ERROR EXAMPLE RETURNS
-
-'HTTP/1.1 400 BAD REQUEST
-Content-Type: application/json; charset=utf-8
-Date: Sun, 01 Mar 2015 04:22:31 GMT
-X-Powered-By: AT-5000
-X-Shenanigans: none
-Content-Length: 136
-Connection: keep-alive
-
-{"code": 21603,
- "message": "A 'From' phone number is required.",
- "more_info": "https://www.twilio.com/docs/errors/21603",
- "status": 400}
-
-$status = int 400
-
-SUCCESS EXAMPLE RETURNS
-
-HTTP/1.1 201 CREATED
-Content-Type: application/json; charset=utf-8
-Date: Sun, 01 Mar 2015 04:29:47 GMT
-X-Powered-By: AT-5000
-X-Shenanigans: none
-Content-Length: 777
-Connection: keep-alive
-
-{
-"sid": "SMf6dd10d695034992a5bc3577241e9697",
-"date_created": "Sun, 01 Mar 2015 04:29:47 +0000",
-"date_updated": "Sun, 01 Mar 2015 04:29:47 +0000",
-"date_sent": null,
-"account_sid": "AC7ca93c7b41de5d688a2bbf45bca2550e",
-"to": "+61417394479",
-"from": "+19204826333",
-"body": "This is another test message via the gat'... (length=974)
- ETC see above
-}
-
-$status = int 201
-*/
-		$this->_status == parent::STAT_OK; //TODO
+		if (!$ob)
+		{
+			$this->_rawstatus = '';
+			//$this->_status set in self::_command()
+			return;
+		}
+		elseif(get_class($ob) == 'Services_Twilio_Rest_Message')
+		{
+			if($ob->error_code)
+			{
+				$this->_rawstatus = $ob->error_message;
+				$code = (int)$ob->error_code;
+			}
+			else
+			{
+				$this->_rawstatus = '';
+				$code = 0;
+			}
+		}
+		else //Services_Twilio_RestException
+		{
+			$this->_rawstatus = $ob->getMessage();
+			$code = $ob->getCode();
+		}
+		//see https://www.twilio.com/docs/errors/reference
+		switch ($code)
+		{
+		 case 0:
+			$this->_status = parent::STAT_OK;
+			break;
+		 case 20003:
+		 case 20403:
+			$this->_status = parent::STAT_ERROR_AUTH;
+			break;
+		 case 11100:
+		 case 14101:
+		 case 14102:
+		 case 14103:
+		 case 21601:
+		 case 21602:
+		 case 21603:
+		 case 21604:
+		 case 21605:
+		 case 21606:
+		 case 21607:
+			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+			break;
+		 case 21612:
+		 case 22001:
+			$this->_status = parent::STAT_NOTSENT;
+			break;
+		 case 14107:
+			$this->_status = parent::STAT_ERROR_LIMIT;
+			break;
+		 case 21610:
+		 case 30004:
+			$this->_status = parent::STAT_ERROR_BLOCKED;
+			break;
+		 default:
+			$this->_status = parent::STAT_ERROR_OTHER;
+			break;
+		}
 	}
 
 	public function _process_delivery_report()
