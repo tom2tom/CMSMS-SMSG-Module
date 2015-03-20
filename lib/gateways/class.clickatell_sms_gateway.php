@@ -49,6 +49,21 @@ class clickatell_sms_gateway extends cgsms_sender_base
 		return $this->get_module()->Lang('clickatell_description');
 	}
 
+	public function support_custom_sender()
+	{
+		return FALSE; //TODO
+	}
+
+	public function require_country_prefix()
+	{
+		return TRUE; //TODO
+	}
+
+	public function require_plus_prefix()
+	{
+		return FALSE;
+	}
+
 	public function get_setup_form()
 	{
 		$smarty = cmsms()->GetSmarty();
