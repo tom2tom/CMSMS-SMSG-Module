@@ -90,7 +90,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function GetVersion()
   {
-    return '1.0';
+    return '1.1';
   }
 
 
@@ -294,3 +294,4 @@ EOT;
 # EOF
 #
 ?>
+
