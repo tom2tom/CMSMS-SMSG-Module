@@ -12,7 +12,7 @@ $lang['apiid'] = 'API ID';
 #C
 $lang['cancel'] = 'Cancel';
 $lang['custom'] = 'Custom';
-$lang['clickatell_description'] = 'TODO';
+$lang['clickatell_description'] = 'Relatively-easy, wide-coverage gateway, mixed reviews';
 $lang['clickatell_title'] = 'Clickatell SMS Gateway';
 $lang['clickatell_auth'] = 'Authentication failure: %s';
 $lang['clickatell_fail'] = 'Send message to %s failed';
@@ -63,17 +63,17 @@ $lang['help'] = <<<EOT
 <p>This module allows website visitors to either send a pre-determined (and encrypted) text message to any text capable phone, or to allow sending a user specified text message to a pre-determined (and hidden) mobile phone number.  It is useful for such things as sending addresses from a directory to a persons mobile phone number... or for messaging a website administrator with urgent information.</p>
 <h3>Security</h3>
 <p>Attempts have been made to ensure a reasonable level of security at all times.  This is accomplished in a variety of ways:</p>
-<ul>
-<li>1, All text messages are checked for length limits, and valid characters before sending.</li>
-<li>2. All text messages are recorded in the database, including the IP address of the sender.</li>
-<li>3. Before any text message is sent, a check is made to ensure that the user has not exceeded the maximum amount of messages sent for that IP address.</li>
-<li>4. When sending to a pre-defined mobile phone the SMS number is hidden from the website visitor at all times to prevent spamming.</li>
-<li>5. When sending a pre-defined message the text of the message is stored in the database and the visitor is given a unique key to the text of the message, preventing alteration of the text itself.</li>
-</ul>
+<ol>
+<li>All text messages are checked for length limits, and valid characters before sending.</li>
+<li>All text messages are recorded in the database, including the IP address of the sender.</li>
+<li>Before any text message is sent, a check is made to ensure that the user has not exceeded the maximum amount of messages sent for that IP address.</li>
+<li>When sending to a pre-defined mobile phone the SMS number is hidden from the website visitor at all times to prevent spamming.</li>
+<li>When sending a pre-defined message the text of the message is stored in the database and the visitor is given a unique key to the text of the message, preventing alteration of the text itself.</li>
+</ol>
 <h3>SMS Gateways</h3>
 <p>This module depends on selecting a supported SMS gateway and filling in the required authentication information. You will need to sign up to at least one of the supported gateways.  This may involve paying money to a third party.</p>
 <p>Different SMS Gateways will have different requirements and limitations on the amount, size, source, and destination messages that can be sent... it is your responsibility to understand these limitations.</p>
-<p>Currently, these gateways are Implemented:</p>
+<p>Currently, these gateways are implemented:</p>
 <ul>
 <li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - .</li>
 <li><a href="http://interlinked.mobi"><strong>Interlinked.mobi</strong></a> - a UK-based SMS marketing provider.</li>
@@ -81,17 +81,17 @@ $lang['help'] = <<<EOT
 <li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - a global SMS gateway, low cost, well regarded.</li>
 </ul>
 <h3>How do I use it</h3>
-<p>The first thing you should do is to go into the modules admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
+<p>The first thing you should do is to go into the module's admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
 <p>Secondly you should perform at least one SMS Test (there is a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
-<p>Thirdly you need to place at least one tag into a page, or page tempalte in the CMSMS Admin console.  There are two primary ways in which to use this module:</p>
-<ul>
-   <li>1. Send predefined text to a user defined mobile number <code>{CGSMS action='enternumber' text='the quick brown fox'}</code>
-    <p>This will generate a link that when clicked will display a form to the user to allow them to enter a mobile phone number.</p>
-  </li>
-  <li>2. Send user defined text to a predefined mobile number <code>{CGSMS action='entertext' smsnum=5}</code>
+<p>Thirdly you need to place at least one tag into a page, or page template in the CMSMS Admin console.  There are two primary ways in which to use this module:</p>
+<ol>
+ <li>Send predefined text to a user defined mobile number <code>{CGSMS action='enternumber' text='the quick brown fox'}</code>
+  <p>This will generate a link that when clicked will display a form to the user to allow them to enter a mobile phone number.</p>
+ </li>
+ <li>Send user defined text to a predefined mobile number <code>{CGSMS action='entertext' smsnum=5}</code>
   <p>This will generate a link that when clicked will display a form to allow the user to enter a 160 character SMS Message that is then sent to a predetermined mobile number witht he id=5.</p>
-  </li>
-</ul>
+ </li>
+</ol>
 <h3>API</h3>
 <p>This module contains a complete API to allow sending messages from other modules or from UDTs. A brief example of how to do this is below... for a complete illustration of the API look at the lib/class.cgsms_sender_base.php file.</p>
 <pre style="margin-left: 5em;"><code>
@@ -106,37 +106,32 @@ $lang['help'] = <<<EOT
 <li>CMS Made Simple 1.6.6 or greater</li>
 <li>PHP Version 5.2+ (5.2.11 or better is recommended)</li>
 <li>A subscription or access to at least one suported gateway.</li>
-<li>Your host must allow outgoing HTTP connections</li>
+<li>Your website host must allow outgoing HTTP connections</li>
 </ul>
 <h3>Support</h3>
 <p>This module does not include commercial support. However, there are a number of resources available to help you with it:</p>
 <ul>
-<li>For the latest version of this module, FAQs, or to file a Bug Report or buy commercial support, please visit calguy\'s
+<li>For the latest version of this module, FAQs, or to report a bug or buy commercial support, please visit calguy's
 module homepage at <a href="http://calguy1000.com">calguy1000.com</a>.</li>
 <li>Additional discussion of this module may also be found in the <a href="http://forum.cmsmadesimple.org">CMS Made Simple Forums</a>.</li>
 <li>The author, calguy1000, can often be found in the <a href="irc://irc.freenode.net/#cms">CMS IRC Channel</a>.</li>
 <li>Lastly, you may have some success emailing the author directly.</li>  
 </ul>
 <h3>Copyright and License</h3>
-<p>Copyright &copy; 2010-2015, Robert Campbell <a href="mailto:calguy1000@cmsmadesimple.org">&lt;calguy1000@cmsmadesimple.org&gt;</a>. All Rights Are Reserved.</p>
+<p>Copyright &copy; 2010-2015, Robert Campbell <a href="mailto:calguy1000@cmsmadesimple.org">&lt;calguy1000@cmsmadesimple.org&gt;</a>. All rights reserved.</p>
 <p>This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.</p>
-<p>However, as a special exception to the GPL, this software is distributed
-as an addon module to CMS Made Simple.  You may not use this software
-in any Non GPL version of CMS Made simple, or in any version of CMS
-Made simple that does not indicate clearly and obviously in its admin 
-section that the site was built with CMS Made simple.</p>
-<p>This program is distributed in the hope that it will be useful,
+<p>This software is distributed as an addon module for <a href="http://www.cmsmadesimple.org">CMS Made Simple</a>.
+As a special addition to the AGPL, this software may not be used in
+any non-GPL version of CMS Made Simple, or in any version of CMS Made
+Simple that does not indicate clearly and obviously in its admin section
+that the site was built with CMS Made Simple.</p>
+<p>This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-Or read it <a href="http://www.gnu.org/licenses/licenses.html#GPL">online</a></p>
-TODO
+<a href="http://www.gnu.org/licenses/licenses.html#AGPL">GNU Affero General Public License</a> for more details.</p>
 EOT;
 
 #I
@@ -211,7 +206,7 @@ $lang['test'] = 'Test';
 $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
 $lang['token'] = 'Token';
-$lang['twilio_description'] = 'Low cost, global SMS gateway, well regarded';
+$lang['twilio_description'] = 'Low cost, global gateway, well regarded';
 $lang['twilio_title'] = 'Twilio SMS Gateway';
 
 #U
