@@ -75,10 +75,11 @@ $lang['help'] = <<<EOT
 <p>Different SMS Gateways will have different requirements and limitations on the amount, size, source, and destination messages that can be sent... it is your responsibility to understand these limitations.</p>
 <p>Currently, these gateways are implemented:</p>
 <ul>
-<li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - .</li>
+<li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - wide-coverage gateway, mixed reviews.</li>
 <li><a href="http://interlinked.mobi"><strong>Interlinked.mobi</strong></a> - a UK-based SMS marketing provider.</li>
 <li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - an experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
 <li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - a global SMS gateway, low cost, well regarded.</li>
+<li><a href=""><strong>Smsbroadcast</strong></a> - Australia-only coverage, well regarded.</li>
 </ul>
 <h3>How do I use it</h3>
 <p>The first thing you should do is to go into the module's admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
@@ -199,6 +200,8 @@ $lang['sms_error_blocked'] = 'Attempt to send SMS Message "%s" to %s from IP:%s'
 $lang['sms_error_invalid_data'] = 'Data Error attempting to send SMS Message "%s" to %s from IP:%s';
 $lang['sms_error_limit'] = 'Limit Error attempting to send SMS Message "%s" to %s from IP:%s';
 $lang['sms_error_other'] = 'Unknown Error (%s) attempting to send SMS Message "%s" to %s from IP:%s';
+$lang['smsbroadcast_sms_gateway'] = 'Smsbroadcast SMS Gateway';
+$lang['smsbroadcast_description'] = 'Simple, Australia-only coverage gateway, highly-rated';
 $lang['submit'] = 'Submit';
 
 #T
