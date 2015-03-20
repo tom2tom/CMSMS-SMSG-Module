@@ -188,7 +188,9 @@ class cgsms_utils
   {
     if( $text == '' ) return FALSE;
     if( strlen($text) > 160 ) return FALSE;
-    if( preg_match('/[^\w\s!\@\#\$\%\^\&\*\(\)_\+\-\=\`\{\}\[\]\|\e\"\:\;\?\/\<\>\.\,\/]/',$text) ) return FALSE;
+    if( preg_match(
+		  '~[^\w\s@£$¥èéùìòÇ\fØø\nÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./\:;<=>\?¡ÄÖÑÜ§¿äöñüà\^\{\}\[\]\~\|€]~',
+		  $text) ) return FALSE;
     return TRUE;
   }
 } // end of class
