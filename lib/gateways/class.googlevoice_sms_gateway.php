@@ -111,14 +111,13 @@ class googlevoice_sms_gateway extends cgsms_sender_base
       $num = preg_replace('/[^\d]/','',$num);
 
       $msg = substr(strip_tags($this->get_msg()),0,160);
-      $gv->sms($num,$msg);
-      
+      $gv->sms($num,$msg); //result ignored
+
       // need to return a status;
       return 'good';
     }
     catch(Exception $e)
       {
-	die('got exception '.$e->getMessage());
 	return $e->getMessage();
       }
   }
