@@ -45,15 +45,20 @@ class clickatell_sms_gateway extends cgsms_sender_base
 
 	public function support_custom_sender()
 	{
-		return FALSE; //TODO
+		return TRUE; //only registered/approved/purchased numbers
 	}
 
 	public function require_country_prefix()
 	{
-		return TRUE; //TODO
+		return TRUE;
 	}
 
 	public function require_plus_prefix()
+	{
+		return FALSE;
+	}
+
+	public function multi_number_separator()
 	{
 		return FALSE;
 	}

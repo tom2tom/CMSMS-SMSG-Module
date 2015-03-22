@@ -56,6 +56,11 @@ class googlevoice_sms_gateway extends cgsms_sender_base
     return FALSE; //TODO
   }
 
+  public function multi_number_separator()
+  {
+    return FALSE; //TODO
+  }
+
   public function get_setup_form()
   {
     global $gCms;

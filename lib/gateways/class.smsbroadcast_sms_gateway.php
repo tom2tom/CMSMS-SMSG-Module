@@ -56,6 +56,11 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 		return FALSE;
 	}
 
+	public function multi_number_separator()
+	{
+		return ',';
+	}
+
 	public function get_setup_form()
 	{
 		$smarty = cmsms()->GetSmarty();

@@ -266,6 +266,8 @@ abstract class cgsms_sender_base
   abstract public function require_country_prefix();
 
   abstract public function require_plus_prefix();
+  
+  abstract public function multi_number_separator();
 
   abstract protected function setup();
 

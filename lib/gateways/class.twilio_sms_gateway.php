@@ -56,6 +56,11 @@ class twilio_sms_gateway extends cgsms_sender_base
 		return TRUE;
 	}
 
+	public function multi_number_separator()
+	{
+		return FALSE;
+	}
+
 	public function get_setup_form()
 	{
 		$smarty = cmsms()->GetSmarty();
