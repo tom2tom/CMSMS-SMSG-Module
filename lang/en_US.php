@@ -76,7 +76,6 @@ $lang['help'] = <<<EOT
 <p>Currently, these gateways are implemented:</p>
 <ul>
 <li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - wide-coverage gateway, mixed reviews.</li>
-<li><a href="http://interlinked.mobi"><strong>Interlinked.mobi</strong></a> - a UK-based SMS marketing provider.</li>
 <li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - an experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
 <li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - a global SMS gateway, low cost, well regarded.</li>
 <li><a href=""><strong>Smsbroadcast</strong></a> - Australia-only coverage, well regarded.</li>
@@ -142,7 +141,6 @@ $lang['info_entertext_templates'] = 'This form allows you to define and edit a t
 $lang['info_smstest'] = 'This function will send a hardcoded message to the specified mobile phone number for testing purposes.  This functionality can be used to ensure that your settings for your selected SMS gateway are correct.  Please be aware that depending upon the gateway, it may take several minutes before your phone receives the message.';
 $lang['info_sysdflt_enternumber_template'] = 'This template will be used when you create a new enternumber template.  Altering this template will have no immediate effect on any display items on your website';
 $lang['info_sysdflt_entertext_template'] = 'This template will be used when you create a new entertext template.  Altering this template will have no immediate effect on any display items on your website';
-$lang['interlinked_sms_gateway'] = 'Interlinked SMS Gateway';
 
 #J
 
