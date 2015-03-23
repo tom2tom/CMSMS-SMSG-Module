@@ -63,10 +63,10 @@ class googlevoice_sms_gateway extends cgsms_sender_base
 
   public function get_setup_form()
   {
-    global $gCms;
-    $smarty = $gCms->GetSmarty();
+    $smarty = cmsms()->GetSmarty();
     $mod = $this->get_module();
 
+	$smarty->assign('gatename',self::get_name());
     $smarty->assign('googlevoice_email',$mod->GetPreference('googlevoice_email'));
     $smarty->assign('googlevoice_password',$mod->GetPreference('googlevoice_password'));
 

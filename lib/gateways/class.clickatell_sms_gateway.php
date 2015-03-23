@@ -40,7 +40,7 @@ class clickatell_sms_gateway extends cgsms_sender_base
 
 	public function get_description()
 	{
-		return $this->get_module()->Lang('clickatell_description');
+		return $this->get_module()->Lang('description_clickatell');
 	}
 
 	public function support_custom_sender()
@@ -68,6 +68,7 @@ class clickatell_sms_gateway extends cgsms_sender_base
 		$smarty = cmsms()->GetSmarty();
 		$mod = $this->get_module();
 
+		$smarty->assign('gatename',self::get_name());
 		$smarty->assign('ctell_username', $mod->GetPreference('ctell_username'));
 		$smarty->assign('ctell_apiid', $mod->GetPreference('ctell_apiid'));
 		$tmp = $mod->GetPreference('ctell_password');

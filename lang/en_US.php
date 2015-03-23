@@ -12,8 +12,6 @@ $lang['apiid'] = 'API ID';
 #C
 $lang['cancel'] = 'Cancel';
 $lang['custom'] = 'Custom';
-$lang['clickatell_description'] = 'Relatively-easy, wide-coverage gateway, mixed reviews';
-$lang['clickatell_title'] = 'Clickatell SMS Gateway';
 $lang['clickatell_auth'] = 'Authentication failure: %s';
 $lang['clickatell_fail'] = 'Send message to %s failed';
 $lang['clickatell_success'] = 'Sent message ID: %s to %s';
@@ -22,6 +20,10 @@ $lang['clickatell_success'] = 'Sent message ID: %s to %s';
 $lang['default_templates'] = 'Default Templates';
 $lang['dflt_enternumber_template'] = 'System Default &quot;Enter Your Number&quot; Template';
 $lang['dflt_entertext_template'] = 'System Default &quot;Enter Your Message Text&quot; Template';
+$lang['description_clickatell'] = 'Relatively-easy, wide-coverage gateway, mixed reviews';
+$lang['description_googlevoice'] = 'TODO';
+$lang['description_smsbroadcast'] = 'Simple, Australia-only coverage gateway, highly-rated';
+$lang['description_twilio'] = 'Low cost, global gateway, well regarded';
 
 #E
 $lang['enter_mobile_number'] = 'Enter Mobile Phone Number';
@@ -36,11 +38,11 @@ $lang['error_nogatewaysfound'] = 'Could not find any SMS gateways';
 $lang['error_notfound'] = 'The requested item could not be found';
 
 #F
+$lang['frame_title'] = '%s SMS Gateway';
 $lang['friendlyname'] = 'Calguys SMS Utility';
 $lang['from'] = 'From';
 
 #G
-$lang['googlevoice_sms_gateway'] = 'Google Voice SMS Gateway';
 
 #H
 $lang['help_action'] = <<<EOT
@@ -76,9 +78,9 @@ $lang['help'] = <<<EOT
 <p>Currently, these gateways are implemented:</p>
 <ul>
 <li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - wide-coverage gateway, mixed reviews.</li>
-<li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - an experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
-<li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - a global SMS gateway, low cost, well regarded.</li>
-<li><a href=""><strong>Smsbroadcast</strong></a> - Australia-only coverage, well regarded.</li>
+<li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
+<li><a href="https://www.smsbroadcast.com.au/"><strong>Smsbroadcast</strong></a> - Australia-only coverage, well regarded.</li>
+<li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - global SMS gateway, low cost, well regarded.</li>
 </ul>
 <h3>How do I use it</h3>
 <p>The first thing you should do is to go into the module's admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
@@ -198,8 +200,6 @@ $lang['sms_error_blocked'] = 'Attempt to send SMS Message "%s" to %s from IP:%s'
 $lang['sms_error_invalid_data'] = 'Data Error attempting to send SMS Message "%s" to %s from IP:%s';
 $lang['sms_error_limit'] = 'Limit Error attempting to send SMS Message "%s" to %s from IP:%s';
 $lang['sms_error_other'] = 'Unknown Error (%s) attempting to send SMS Message "%s" to %s from IP:%s';
-$lang['smsbroadcast_sms_gateway'] = 'Smsbroadcast SMS Gateway';
-$lang['smsbroadcast_description'] = 'Simple, Australia-only coverage gateway, highly-rated';
 $lang['submit'] = 'Submit';
 
 #T
@@ -207,8 +207,6 @@ $lang['test'] = 'Test';
 $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
 $lang['token'] = 'Token';
-$lang['twilio_description'] = 'Low cost, global gateway, well regarded';
-$lang['twilio_title'] = 'Twilio SMS Gateway';
 
 #U
 $lang['username'] = 'Username';

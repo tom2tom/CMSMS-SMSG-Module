@@ -38,7 +38,7 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 
 	public function get_description()
 	{
-		return $this->get_module()->Lang('smsbroadcast_description');
+		return $this->get_module()->Lang('description_smsbroadcast');
 	}
 
 	public function support_custom_sender()
@@ -65,6 +65,8 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 	{
 		$smarty = cmsms()->GetSmarty();
 		$mod = $this->get_module();
+
+		$smarty->assign('gatename',self::get_name());
 		$smarty->assign('smsbroadcast_username', $mod->GetPreference('smsbroadcast_username'));
 		$tmp = $mod->GetPreference('smsbroadcast_password');
 		if($tmp)

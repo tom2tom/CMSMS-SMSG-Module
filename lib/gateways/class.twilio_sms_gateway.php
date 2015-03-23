@@ -38,7 +38,7 @@ class twilio_sms_gateway extends cgsms_sender_base
 
 	public function get_description()
 	{
-		return $this->get_module()->Lang('twilio_description');
+		return $this->get_module()->Lang('description_twilio');
 	}
 
 	public function support_custom_sender()
@@ -65,6 +65,8 @@ class twilio_sms_gateway extends cgsms_sender_base
 	{
 		$smarty = cmsms()->GetSmarty();
 		$mod = $this->get_module();
+
+		$smarty->assign('gatename',self::get_name());
 		$smarty->assign('twilio_username', $mod->GetPreference('twilio_username'));
 		$tmp = $mod->GetPreference('twilio_password');
 		if($tmp)
