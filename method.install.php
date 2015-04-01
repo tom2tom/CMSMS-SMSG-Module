@@ -27,31 +27,55 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
-$db =& $this->GetDb();
-$taboptarray = array('mysql' => 'TYPE=MyISAM');
-
+$db = $this->GetDb();
 $dict = NewDataDictionary($db);
+$pref = cms_db_prefix();
+$taboptarray = array('mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci',
+ 'mysqli' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci');
+
 $flds = "
-         id I KEY AUTO,
-         mobile C(25),
-         name   C(25) KEY
-        ";
-$sqlarray = $dict->CreateTableSQL(cms_db_prefix()."module_cgsms", 
-		$flds, $taboptarray);
+id I KEY AUTO,
+mobile C(25),
+name C(25) KEY
+";
+$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-$flds = "mobile C(25),
-         ip     C(25),
-         msg    C(160),
-         sdate  ".CMS_ADODB_DT;
-$sqlarray = $dict->CreateTableSQL(cms_db_prefix().'module_cgsms_sent',$flds,$taboptarray);
+$flds = "
+mobile C(25),
+ip C(25),
+msg C(160),
+sdate ".CMS_ADODB_DT;
+$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_sent',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-# enter number templates
-$fn = dirname(__FILE__).'/templates/orig_enternumber_template.tpl';
-if( file_exists($fn) )
+$flds = "
+gate_id	I KEY,
+alias C(48),
+title C(128),
+description C(255),
+active I(1) DEFAULT 1
+";
+$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_gates',$flds,$taboptarray);
+$dict->ExecuteSQLArray($sqlarray);
+
+$db->CreateSequence($pref.'module_cgsms_gates_seq');
+ 
+$flds = "
+gate_id	I,
+title C(128),
+value C(255),
+apiname C(64),
+apiconvert I(1) DEFAULT 0,
+apiorder I(1) DEFAULT -1,
+active I(1) DEFAULT 1
+";
+$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_props',$flds,$taboptarray);
+$dict->ExecuteSQLArray($sqlarray);
+
+//enter-number templates
+$fn = cms_join_path(dirname(__FILE__),'templates','orig_enternumber_template.tpl');
+if(is_file($fn))
   {
     $template = file_get_contents($fn);
     $this->SetPreference(CGSMS::PREF_NEWENTERNUMBER_TPL,$template);
@@ -59,15 +83,25 @@ if( file_exists($fn) )
     $this->SetPreference(CGSMS::PREF_DFLTENTERNUMBER_TPL,'Sample');
   }
 
-# enter text templates
-$fn = dirname(__FILE__).'/templates/orig_entertext_template.tpl';
-if( file_exists($fn) )
+//enter-text templates
+$fn = cms_join_path(dirname(__FILE__),'templates','orig_entertext_template.tpl');
+if(is_file($fn))
   {
     $template = file_get_contents($fn);
     $this->SetPreference(CGSMS::PREF_NEWENTERTEXT_TPL,$template);
     $this->SetTemplate('entertext_Sample',$template);
     $this->SetPreference(CGSMS::PREF_DFLTENTERTEXT_TPL,'Sample');
   }
+
+$this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modgates'));
+$this->CreatePermission('ModifySMSGatewayTemplates',$this->Lang('perm_modgatetemplates'));
+
+//$this->CreateEvent('X');
+//$this->CreateEvent('Y');
+//$this->AddEventHandler('CGSMS','?');
+//$this->AddEventHandler('Core','?');
+
+$this->Audit(0, $this->Lang('friendlyname'), $this->Lang('installed',$this->GetVersion()));
 #
 # EOF
 #

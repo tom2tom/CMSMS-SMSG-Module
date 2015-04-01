@@ -27,20 +27,31 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
+$db = $this->GetDb();
+$dict = NewDataDictionary($db);
+$pref = cms_db_prefix();
+
+$sqlarray = $dict->DropTableSQL($pref.'module_cgsms');
+$dict->ExecuteSQLArray($sqlarray);
+$sqlarray = $dict->DropTableSQL($pref.'module_cgsms_gates');
+$dict->ExecuteSQLArray($sqlarray);
+$sqlarray = $dict->DropTableSQL($pref.'module_cgsms_props');
+$dict->ExecuteSQLArray($sqlarray);
+$sqlarray = $dict->DropTableSQL($pref.'module_cgsms_sent');
+$dict->ExecuteSQLArray($sqlarray);
+
+$db->DropSequence($pref.'module_cgsms_gates_seq');
 
 $this->DeleteTemplate();
 $this->RemovePreference();
 
-$db =& $this->GetDb();
-$dict = NewDataDictionary( $db );
+$this->RemovePermission('ModifySMSGateways');
+$this->RemovePermission('ModifySMSGatewayTemplates');
 
-$sqlarray = $dict->DropTableSQL( cms_db_prefix()."module_cgsms" );
-$dict->ExecuteSQLArray($sqlarray);
-$sqlarray = $dict->DropTableSQL( cms_db_prefix()."module_cgsms_sent" );
-$dict->ExecuteSQLArray($sqlarray);
+//$this->RemoveEvent('X');
+//$this->RemoveEvent('Y');
 
-
+$this->Audit(0, $this->Lang('friendlyname'), $this->Lang('uninstalled'));
 #
 # EOF
 #
