@@ -164,8 +164,8 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function VisibleToAdminUser()
   {
-    return $this->CheckPermission('Modify Site Preferences') ||
-      $this->CheckPermission('Modify Templates');
+    return $this->CheckPermission('ModifySMSGateways') ||
+      $this->CheckPermission('ModifySMSGatewayTemplates');
   }
 
 

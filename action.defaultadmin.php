@@ -44,14 +44,14 @@ foreach( $objs as $key => $rec )
   }
 
 echo $this->StartTabHeaders();
-if( $this->CheckPermission('Modify Site Preferences') )
+if($this->CheckPermission('ModifySMSGateways'))
   {
     echo $this->SetTabHeader('mobiles',$this->Lang('mobile_numbers'));
     echo $this->SetTabHeader('settings',$this->Lang('settings'));
     echo $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
     echo $this->SetTabHeader('test',$this->Lang('test'));
   }
-if( $this->CheckPermission('Modify Templates') )
+if($this->CheckPermission('ModifySMSGatewayTemplates'))
   {
     echo $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates'));
     echo $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
@@ -65,7 +65,7 @@ echo $this->EndTabHeaders();
 
 echo $this->StartTabContent();
 
-if( $this->CheckPermission('Modify Site Preferences') )
+if($this->CheckPermission('ModifySMSGateways'))
   {
     echo $this->StartTab('mobiles',$params);
     include(cms_join_path(dirname(__FILE__),'function.admin_mobiles_tab.php'));
@@ -91,7 +91,7 @@ if( $this->CheckPermission('Modify Site Preferences') )
     echo $this->ProcessTemplate('admin_testtab.tpl');
     echo $this->EndTab();
   }
-if( $this->CheckPermission('Modify Templates') )
+if($this->CheckPermission('ModifySMSGatewayTemplates'))
   {
     echo $this->StartTab('enternumber',$params);
     include(cms_join_path(dirname(__FILE__),'function.enternumber_templates_tab.php'));

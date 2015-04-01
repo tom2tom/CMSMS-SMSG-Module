@@ -27,12 +27,10 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-if( !$this->CheckPermission('Modify Site Preferences') ) return;
+if( !$this->CheckPermission('ModifySMSGateways') ) return;
 
 // Get the list of mobiles.
-$query = 'SELECT * FROM  '.cms_db_prefix().'module_cgsms 
-           ORDER BY id ASC';
+$query = 'SELECT * FROM  '.cms_db_prefix().'module_cgsms ORDER BY id';
 $tmp = $db->GetArray($query);
 if( is_array($tmp) && count($tmp) > 0 )
   {
