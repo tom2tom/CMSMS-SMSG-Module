@@ -27,33 +27,27 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !$this->CheckPermission('ModifySMSGateways') ) return;
+if(!$this->CheckPermission('ModifySMSGateways')) return;
 
-// Get the list of mobiles.
+// Get list of mobiles
 $query = 'SELECT * FROM  '.cms_db_prefix().'module_cgsms ORDER BY id';
 $tmp = $db->GetArray($query);
-if( is_array($tmp) && count($tmp) > 0 )
+if( $tmp )
   {
-    for( $i = 0; $i < count($tmp); $i++ )
+    foreach( $tmp as &$rec )
       {
-	$rec =& $tmp[$i];
-	$rec['edit_link'] = $this->CreateImageLink($id,'admin_edit_mobile',$returnid,'',
-						  'icons/system/edit.gif',
-						  array('mid'=>$rec['id']));
-	$rec['del_link'] = $this->CreateImageLink($id,'admin_del_mobile',$returnid,'',
-						  'icons/system/delete.gif',
-						  array('mid'=>$rec['id']), '',
-						  $this->Lang('ask_delete_mobile'));
+    $rec['edit_link'] = $this->CreateImageLink(
+       $id,'admin_edit_mobile',$returnid,'','icons/system/edit.gif',array('mid'=>$rec['id']));
+    $rec['del_link'] = $this->CreateImageLink(
+       $id,'admin_del_mobile',$returnid,'','icons/system/delete.gif',array('mid'=>$rec['id']),'delitmlink',$this->Lang('ask_delete_mobile'));
       }
+    unset( $rec );
 
     $smarty->assign('mobiles',$tmp);
   }
 
-$smarty->assign('add_link',
-		$this->CreateImageLink($id,'admin_edit_mobile',$returnid,
-				       $this->Lang('add_mobile'),
-				       'icons/system/newobject.gif',
-				       array(),'','',false));
+$smarty->assign('add_link',$this->CreateImageLink(
+   $id,'admin_edit_mobile',$returnid,$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',false));
 
 echo $this->ProcessTemplate('admin_mobiles_tab.tpl');
 #
