@@ -31,7 +31,8 @@ class cgsms_utils
 {
   public static function get_gateways_full()
   {
-    $dir = dirname(__FILE__).'/gateways/';
+	//TODO deprecated Use gateways-table data
+    $dir = cms_join_path(dirname(__FILE__),'gateways','');
     $files = glob($dir.'class.*sms_gateway.php');
     if( count($files) == 0 )
       {
@@ -41,12 +42,9 @@ class cgsms_utils
     $objs = array();
     for( $i = 0; $i < count($files); $i++ )
       {
-	$classname = str_replace($dir,'',$files[$i]);
-	$classname = str_replace('class.','',$classname);
-	$classname = str_replace('.php','',$classname);
-
 	include_once($files[$i]);
 
+	$classname = str_replace(array($dir,'class.','.php'),array('','',''),$files[$i);
 	$obj = new $classname(cge_utils::get_module('CGSMS'));
 	$objs[$classname] = array();
 	$objs[$classname]['obj'] = $obj;
@@ -65,7 +63,7 @@ class cgsms_utils
     $classname = $module->GetPreference('sms_gateway');
     if( $classname == '' || $classname == '-1' ) return FALSE;
 
-    $fn = dirname(__FILE__).'/gateways/class.'.$classname.'.php';
+    $fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
     include_once($fn);
 
     $obj = new $classname($module);

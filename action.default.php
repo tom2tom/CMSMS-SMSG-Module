@@ -27,9 +27,7 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
-include_once(dirname(__FILE__).'/action.enternumber.php');
+include_once(cms_join_path(dirname(__FILE__),'action.enternumber.php'));
 #
 # EOF
 #

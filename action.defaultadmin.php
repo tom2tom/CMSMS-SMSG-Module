@@ -68,7 +68,7 @@ echo $this->StartTabContent();
 if( $this->CheckPermission('Modify Site Preferences') )
   {
     echo $this->StartTab('mobiles',$params);
-    include(dirname(__FILE__).'/function.admin_mobiles_tab.php');
+    include(cms_join_path(dirname(__FILE__),'function.admin_mobiles_tab.php'));
     echo $this->EndTab();
     
     echo $this->StartTab('settings',$params);
@@ -82,7 +82,7 @@ if( $this->CheckPermission('Modify Site Preferences') )
     echo $this->EndTab();
 
     echo $this->StartTab('security',$params);
-    include(dirname(__FILE__).'/function.security_tab.php');
+    include(cms_join_path(dirname(__FILE__),'function.security_tab.php'));
     echo $this->EndTab();
 
     echo $this->StartTab('test',$params);
@@ -94,15 +94,15 @@ if( $this->CheckPermission('Modify Site Preferences') )
 if( $this->CheckPermission('Modify Templates') )
   {
     echo $this->StartTab('enternumber',$params);
-    include(dirname(__FILE__).'/function.enternumber_templates_tab.php');
+    include(cms_join_path(dirname(__FILE__),'function.enternumber_templates_tab.php'));
     echo $this->EndTab();
 
     echo $this->StartTab('entertext',$params);
-    include(dirname(__FILE__).'/function.entertext_templates_tab.php');
+    include(cms_join_path(dirname(__FILE__),'function.entertext_templates_tab.php'));
     echo $this->EndTab();
 
     echo $this->StartTab('dflt_templates',$params);
-    include(dirname(__FILE__).'/function.dflt_templates_tab.php');
+    include(cms_join_path(dirname(__FILE__),'function.dflt_templates_tab.php'));
     echo $this->EndTab();
   }
 

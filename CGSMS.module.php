@@ -119,7 +119,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function GetChangeLog()
   {
-    $txt = @file_get_contents(dirname(__FILE__).'/changelog.inc');
+    $txt = @file_get_contents(cms_join_path(dirname(__FILE__),'changelog.inc'));
     return $txt;
   }
   
