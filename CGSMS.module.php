@@ -83,7 +83,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function GetVersion()
   {
-    return '1.1';
+    return '1.2';
   }
 
 
@@ -128,7 +128,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function IsPluginModule()
   {
-    return true;
+    return TRUE;
   }
 
 
@@ -137,7 +137,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function HasAdmin()
   {
-    return true;
+    return TRUE;
   }
 
 
@@ -192,7 +192,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function MinimumCMSVersion()
   {
-    return "1.6.5";
+    return '1.6.5';
   }
 
 
@@ -269,15 +269,15 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   function GetHeaderHTML()
   {
-    $obj =& $this->GetModuleInstance('JQueryTools');
-    if( is_object($obj) )
+    $obj = $this->GetModuleInstance('JQueryTools');
+    if( $obj )
       {
 $tmpl = <<<EOT
 {JQueryTools action='incjs' exclude='form'}
 {JQueryTools action='ready'}
 EOT;
         $txt = $this->ProcessTemplateFromData($tmpl);
-	return $txt;
+        return $txt;
       }
   }	
 
