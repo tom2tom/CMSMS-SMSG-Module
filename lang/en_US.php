@@ -105,16 +105,16 @@ The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php.
 <li>get_smsid()</li>
 <li>get_status()</li>
 <li>get_statusmsg()</li>
-<li>handle_setup_form($params)</li>
+<li>handle_setup_form(\$params)</li>
 <li>multi_number_separator()</li>
 <li>process_delivery_report()</li>
 <li>require_country_prefix()</li>
 <li>require_plus_prefix()</li>
 <li>reset()</li>
 <li>send()</li>
-<li>set_from($from)</li>
-<li>set_msg($msg)</li>
-<li>set_num($num)</li>
+<li>set_from(\$from)</li>
+<li>set_msg(\$msg)</li>
+<li>set_num(\$num)</li>
 <li>support_custom_sender()</li>
 </ul>
 <p>A brief example of how to use it is:</p>
