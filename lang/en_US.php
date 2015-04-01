@@ -95,7 +95,29 @@ $lang['help'] = <<<EOT
  </li>
 </ol>
 <h3>API</h3>
-<p>This module contains a complete API to allow sending messages from other modules or from UDTs. A brief example of how to do this is below... for a complete illustration of the API look at the lib/class.cgsms_sender_base.php file.</p>
+<p>This module contains a rich API for sending SMS messages from other modules or from UDTs.
+The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php. It comprises</p>
+<ul>
+<li>get_description()</li>
+<li>get_name()</li>
+<li>get_raw_status()</li>
+<li>get_setup_form()</li>
+<li>get_smsid()</li>
+<li>get_status()</li>
+<li>get_statusmsg()</li>
+<li>handle_setup_form($params)</li>
+<li>multi_number_separator()</li>
+<li>process_delivery_report()</li>
+<li>require_country_prefix()</li>
+<li>require_plus_prefix()</li>
+<li>reset()</li>
+<li>send()</li>
+<li>set_from($from)</li>
+<li>set_msg($msg)</li>
+<li>set_num($num)</li>
+<li>support_custom_sender()</li>
+</ul>
+<p>A brief example of how to use it is:</p>
 <pre style="margin-left: 5em;"><code>
 \$gateway = cgsms_utils::get_gateway();
 \$gateway->set_msg('hello world');
@@ -132,7 +154,7 @@ Simple that does not indicate clearly and obviously in its admin section
 that the site was built with CMS Made Simple.</p>
 <p>This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 <a href="http://www.gnu.org/licenses/licenses.html#AGPL">GNU Affero General Public License</a> for more details.</p>
 EOT;
 
