@@ -59,10 +59,6 @@ if($this->CheckPermission('ModifySMSGatewayTemplates'))
   }
 echo $this->EndTabHeaders();
 
-
-
-
-
 echo $this->StartTabContent();
 
 if($this->CheckPermission('ModifySMSGateways'))
