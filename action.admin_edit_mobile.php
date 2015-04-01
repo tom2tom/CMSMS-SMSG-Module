@@ -35,6 +35,7 @@ if( !isset($gCms) ) exit;
 $mid = '';
 $name = '';
 $mobile = '';
+$pref = cms_db_prefix();
 $this->SetCurrentTab('mobiles');
 
 //
@@ -50,8 +51,7 @@ if( isset($params['mid']) )
 //
 if( $mid != '' )
   {
-    $query = 'SELECT * FROM '.cms_db_prefix().'module_cgsms
-               WHERE id = ?';
+    $query = 'SELECT * FROM '.$pref.'module_cgsms WHERE id=?';
     $tmp = $db->GetRow($query,array($mid));
     if( !$tmp )
       {
@@ -84,8 +84,7 @@ else if( isset($params['submit']) )
     if( empty($error) )
       {
 	// check for duplicate name
-	$query = 'SELECT id FROM  '.cms_db_prefix().'module_cgsms 
-                   WHERE name = ?';
+	$query = 'SELECT id FROM '.$pref.'module_cgsms WHERE name=?';
 	$parms = array();
 	if( $mid != '' )
 	  {
@@ -106,16 +105,13 @@ else if( isset($params['submit']) )
 	if( $mid == '' )
 	  {
 	    // insert
-	    $query = 'INSERT INTO '.cms_db_prefix().'module_cgsms
-                        (name,mobile) VALUES(?,?)';
+	    $query = 'INSERT INTO '.$pref.'module_cgsms (name,mobile) VALUES(?,?)';
 	    $dbr = $db->Execute($query,array($name,$mobile));
 	  }
 	else
 	  {
 	    // update
-	    $query = 'UPDATE '.cms_db_prefix().'module_cgsms
-                         SET name = ?, mobile = ? 
-                       WHERE id = ?';
+	    $query = 'UPDATE '.$pref.'module_cgsms SET name=?, mobile=? WHERE id=?';
 	    $dbr = $db->Execute($query,array($name,$mobile,$mid));
 	  }
 	
@@ -135,8 +131,7 @@ else if( isset($params['submit']) )
 //
 // build the form
 //
-$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_edit_mobile',$returnid,
-						     $params));
+$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_edit_mobile',$returnid,$params));
 $smarty->assign('formend',$this->CreateFormEnd());
 $smarty->assign('name',$name);
 $smarty->assign('mobile',$mobile);
