@@ -44,7 +44,7 @@ class cgsms_utils
       {
 	include_once($files[$i]);
 
-	$classname = str_replace(array($dir,'class.','.php'),array('','',''),$files[$i);
+	$classname = str_replace(array($dir,'class.','.php'),array('','',''),$files[$i]);
 	$obj = new $classname(cge_utils::get_module('CGSMS'));
 	$objs[$classname] = array();
 	$objs[$classname]['obj'] = $obj;
