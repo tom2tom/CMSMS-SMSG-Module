@@ -36,6 +36,10 @@ if( !is_array($objs) || count($objs) == 0 )
     return;
   }
 
+$padm = $this->CheckPermission('AdministerSMSGateways');
+$pmod = $padm || $this->CheckPermission('ModifySMSGateways');
+$ptpl = $padm || $this->CheckPermission('ModifySMSGatewayTemplates');
+
 $listname = array();
 $listnames[-1] = $this->Lang('none');
 foreach( $objs as $key => $rec )
@@ -44,14 +48,15 @@ foreach( $objs as $key => $rec )
   }
 
 echo $this->StartTabHeaders();
-if($this->CheckPermission('ModifySMSGateways'))
+
+if( $pmod )
   {
     echo $this->SetTabHeader('mobiles',$this->Lang('mobile_numbers'));
     echo $this->SetTabHeader('settings',$this->Lang('settings'));
     echo $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
     echo $this->SetTabHeader('test',$this->Lang('test'));
   }
-if($this->CheckPermission('ModifySMSGatewayTemplates'))
+if( $ptpl )
   {
     echo $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates'));
     echo $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
@@ -61,7 +66,7 @@ echo $this->EndTabHeaders();
 
 echo $this->StartTabContent();
 
-if($this->CheckPermission('ModifySMSGateways'))
+if( $pmod )
   {
     echo $this->StartTab('mobiles',$params);
     include(cms_join_path(dirname(__FILE__),'function.admin_mobiles_tab.php'));
@@ -87,7 +92,7 @@ if($this->CheckPermission('ModifySMSGateways'))
     echo $this->ProcessTemplate('admin_testtab.tpl');
     echo $this->EndTab();
   }
-if($this->CheckPermission('ModifySMSGatewayTemplates'))
+if( $ptpl )
   {
     echo $this->StartTab('enternumber',$params);
     include(cms_join_path(dirname(__FILE__),'function.enternumber_templates_tab.php'));
@@ -104,6 +109,25 @@ if($this->CheckPermission('ModifySMSGatewayTemplates'))
 
 echo $this->EndTabContent();
 
+//js to show only the frameset for selected gateway
+echo <<<EOS
+
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  $('.sms_gateway_panel').hide();
+  var val = $('#sms_gateway').val();
+  $('#'+val).show();
+  $('#sms_gateway').change(function(){
+    $('.sms_gateway_panel').hide();
+    var val = $('#sms_gateway').val();
+    $('#'+val).show();
+  });
+});
+//]]>
+</script>
+
+EOS;
 #
 # EOF
 #
