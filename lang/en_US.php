@@ -46,7 +46,7 @@ $lang['from'] = 'From';
 
 #H
 $lang['help_action'] = <<<EOT
-This parameter is used to decide the behavour of the module.  Valid values for this parameter are:
+This parameter is used to decide the behavour of the module. Valid values for this parameter are:
 <ul>
 <li>enternumber <em>(default)</em> - Display a link to a form allowing the user to send pre-defined text to a user-defined mobile phone number.</li>
 <li>entertext - Display a link to a form allowing the user to send user-defined text to a pre-defined mobile phone number.</li>
@@ -101,11 +101,8 @@ The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php.
 <li>get_description()</li>
 <li>get_name()</li>
 <li>get_raw_status()</li>
-<li>get_setup_form()</li>
-<li>get_smsid()</li>
 <li>get_status()</li>
 <li>get_statusmsg()</li>
-<li>handle_setup_form(\$params)</li>
 <li>multi_number_separator()</li>
 <li>process_delivery_report()</li>
 <li>require_country_prefix()</li>
@@ -116,6 +113,7 @@ The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php.
 <li>set_msg(\$msg)</li>
 <li>set_num(\$num)</li>
 <li>support_custom_sender()</li>
+<li>support_mms()</li>
 </ul>
 <p>A brief example of how to use it is:</p>
 <pre style="margin-left: 5em;"><code>
@@ -257,4 +255,3 @@ $lang['username'] = 'Username';
 
 
 ?>
-
