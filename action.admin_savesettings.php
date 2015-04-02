@@ -27,13 +27,11 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 if( !isset($params['submit']) ) return;
 $this->SetCurrentTab('settings');
 
 $objs = cgsms_utils::get_gateways_full();
-if( !is_array($objs) || count($objs) == 0 )
+if( !$objs )
   {
     $this->RedirectToTab($id);
   }
