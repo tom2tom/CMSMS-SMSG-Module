@@ -27,7 +27,7 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if(!$this->CheckPermission('ModifySMSGateways')) return;
+if(!($this->CheckPermission('AdministerSMSGateways') || $this->CheckPermission('ModifySMSGateways'))) return;
 
 // Get list of mobiles
 $query = 'SELECT * FROM  '.cms_db_prefix().'module_cgsms ORDER BY id';
