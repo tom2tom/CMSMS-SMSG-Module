@@ -80,15 +80,15 @@ class cgsms_utils
     $txt = '';
     if( $stat == cgsms_sender_base::STAT_OK )
       {
-	$txt = $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid());
+        $txt = $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //BUGGY
       }
     else if( $stat == cgsms_sender_base::STAT_ERROR_OTHER )
       {
-	$txt = $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid());
+        $txt = $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //BUGGY
       }
     else if( $stat != cgsms_sender_base::STAT_NOTSENT )
       {
-	$txt = $module->Lang($stat,$msg,$num,$ip);
+        $txt = $module->Lang($stat,$msg,$num,$ip); //BUGGY
       }
     return $txt;
   }
