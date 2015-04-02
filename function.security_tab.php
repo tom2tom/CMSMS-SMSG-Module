@@ -27,10 +27,10 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 $smarty->assign('hourlylimit',$this->GetPreference('sms_hourlylimit',5));
 $smarty->assign('dailylimit',$this->GetPreference('sms_dailylimit',20));
+if( $this->CheckPermission('AdministerSMSGateways') )
+  $smarty->assign('masterpass',$this->GetPreference('masterpass'));
 $smarty->assign('formstart',$this->CreateFormStart($id,'admin_savesecurity'));
 $smarty->assign('formend',$this->CreateFormEnd());
 echo $this->ProcessTemplate('security_tab.tpl');
