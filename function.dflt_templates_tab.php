@@ -34,7 +34,7 @@ echo $this->GetDefaultTemplateForm($this,$id,$returnid,
 				   $this->Lang('dflt_enternumber_template'),
 				   'orig_enternumber_template.tpl',
 				   $this->Lang('info_sysdflt_enternumber_template'));
-echo '<br/><hr/>';
+echo '<br /><hr />';
 
 echo $this->GetDefaultTemplateForm($this,$id,$returnid,
 				   CGSMS::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
