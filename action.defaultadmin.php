@@ -27,10 +27,9 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
+cgsms_utils::refresh_gateways();
 $objs = cgsms_utils::get_gateways_full();
-if( !is_array($objs) || count($objs) == 0 )
+if( !$objs )
   {
     echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
     return;
@@ -38,7 +37,7 @@ if( !is_array($objs) || count($objs) == 0 )
 
 $padm = $this->CheckPermission('AdministerSMSGateways');
 $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
-$ptpl = $padm || $this->CheckPermission('ModifySMSGatewayTemplates');
+$ptpl = $padm || $this->CheckPermission('ModifySMSGateTemplates');
 
 $listname = array();
 $listnames[-1] = $this->Lang('none');
