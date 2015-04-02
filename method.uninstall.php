@@ -45,6 +45,7 @@ $db->DropSequence($pref.'module_cgsms_gates_seq');
 $this->DeleteTemplate();
 $this->RemovePreference();
 
+$this->RemovePermission('AdministerSMSGateways');
 $this->RemovePermission('ModifySMSGateways');
 $this->RemovePermission('ModifySMSGatewayTemplates');
 
