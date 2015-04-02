@@ -27,11 +27,46 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 $this->SetCurrentTab('security');
 $this->SetPreference('sms_hourlylimit',(int)$params['hourlylimit']);
 $this->SetPreference('sms_dailylimit',(int)$params['dailylimit']);
+if( isset($params['masterpw']) )
+  {
+    $oldpw = $this->GetPreference('masterpass');
+	$newpw = trim($params['masterpw']);
+	if( $oldpw != $newpw )
+      {
+    //update current passwords
+	$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,10000);
+	$pref = cms_db_prefix();
+    $sql = 'SELECT gate_id,title,value FROM '.$pref.'module_cgsms_props WHERE apiconvert>=80';
+	$rows = $db->Execute($sql);
+    if( $rows )
+      {
+    $sql = 'UPDATE '.$pref.'module_cgsms_props SET value=? WHERE gate_id=? AND title=?';
+    foreach( $rows as &$onerow )
+      {
+        if( $oldpw )
+          $raw = ($onerow['value']) ? $e->decrypt($onerow['value'],$oldpw) : '';
+        else
+          $raw = $onerow['value'];
+        if( $raw )
+          {
+            if( $newpw )
+              $revised = $e->encrypt($raw,$newpw);
+            else
+              $revised = $raw;
+          }
+        else
+          $revised = NULL;
+    	$db->Execute($sql,array($revised,$onerow['gate_id'],$onerow['title']))
+      }
+    unset( $onerow );
+      }
+	$this->SetPreference('masterpass',$newpw);
+      }
+  }
+
 $this->RedirectToTab($id);
 #
 # EOF
