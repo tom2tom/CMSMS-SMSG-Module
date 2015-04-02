@@ -13,9 +13,8 @@
     <input type="text" name="{$actionid}mobile" value="{$mobile}" size="25" maxlength="25"/>
   </p>
 </div>
-
+<br/>
 <div class="pageoverflow">
-  <p class="pagetext"></p> 
   <p class="pageinput">
     <input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}"/>
     <input type="submit" name="{$actionid}cancel" value="{$mod->Lang('cancel')}"/>
