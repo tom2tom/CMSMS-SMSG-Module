@@ -27,8 +27,6 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 // receive delivery reports.
 // have to parse $_REQUEST directly.
 debug_to_log('got to devreport');

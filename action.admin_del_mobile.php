@@ -27,8 +27,6 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 $this->SetCurrentTab('mobiles');
 if( isset($params['mid']) )
   {

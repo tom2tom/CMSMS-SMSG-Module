@@ -27,20 +27,19 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 echo $this->GetDefaultTemplateForm($this,$id,$returnid,
-				   CGSMS::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
-				   $this->Lang('dflt_enternumber_template'),
-				   'orig_enternumber_template.tpl',
-				   $this->Lang('info_sysdflt_enternumber_template'));
+   CGSMS::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
+   $this->Lang('dflt_enternumber_template'),
+   'orig_enternumber_template.tpl',
+   $this->Lang('info_sysdflt_enternumber_template'));
+
 echo '<br /><hr />';
 
 echo $this->GetDefaultTemplateForm($this,$id,$returnid,
-				   CGSMS::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
-				   $this->Lang('dflt_entertext_template'),
-				   'orig_entertext_template.tpl',
-				   $this->Lang('info_sysdflt_entertext_template'));
+   CGSMS::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
+   $this->Lang('dflt_entertext_template'),
+   'orig_entertext_template.tpl',
+   $this->Lang('info_sysdflt_entertext_template'));
 
 #
 # EOF

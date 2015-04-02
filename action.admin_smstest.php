@@ -27,8 +27,6 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 $this->SetCurrentTab('test');
 
 if( isset($params['submit']) )

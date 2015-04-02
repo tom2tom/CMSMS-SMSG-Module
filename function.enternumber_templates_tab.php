@@ -27,14 +27,12 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 echo $this->ShowTemplateList($id,$returnid,'enternumber_',
-			     CGSMS::PREF_NEWENTERNUMBER_TPL,'enternumber',
-			     CGSMS::PREF_DFLTENTERNUMBER_TPL,
-			     $this->Lang('title_enternumber_templates'),
-			     $this->Lang('info_enternumber_templates'));
-			     
+     CGSMS::PREF_NEWENTERNUMBER_TPL,'enternumber',
+     CGSMS::PREF_DFLTENTERNUMBER_TPL,
+     $this->Lang('title_enternumber_templates'),
+     $this->Lang('info_enternumber_templates'));
+
 #
 # EOF
 #

@@ -27,7 +27,6 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
 if( !isset($params['smsnum']) ) return;  // no number id.
 
 //

@@ -27,7 +27,6 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
 if( !isset($params['smskey']) ) return;  // no key.
 
 //
