@@ -22,8 +22,8 @@ function cgsms_entertext_onchange()
 
 {$formstart}
 <textarea name="{$actionid}cgsms_smstext" id="cgsms_entertext_smstext" rows="4" cols="40" onkeypress="cgsms_entertext_onchange();">{$smstext}</textarea>
-<br/>
-<input type="submit" id="cgsms_entertext_submit" name="{$actionid}cgsms_submit" value="{$mod->Lang('submit')}"/>
+<br />
+<input type="submit" id="cgsms_entertext_submit" name="{$actionid}cgsms_submit" value="{$mod->Lang('submit')}" />
 <span id="cgsms_entertext_charsleft">{$maxsmschars}</span>
 {$formend}
 </div>
