@@ -52,9 +52,11 @@ $dict->ExecuteSQLArray($sqlarray);
 $flds = "
 gate_id	I KEY,
 alias C(48),
-title C(128),
+title C(128) NOTNULL,
 description C(255),
-active I(1) DEFAULT 1
+apiconvert I(1) NOTNULL DEFAULT 0,
+enabled I(1) NOTNULL DEFAULT 1,
+active I(1) NOTNULL DEFAULT 0
 ";
 $sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_gates',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
@@ -62,7 +64,7 @@ $dict->ExecuteSQLArray($sqlarray);
 $db->CreateSequence($pref.'module_cgsms_gates_seq');
  
 $flds = "
-gate_id	I,
+gate_id	I NOTNULL,
 title C(128),
 value C(255),
 apiname C(64),
@@ -93,6 +95,7 @@ if(is_file($fn))
     $this->SetPreference(CGSMS::PREF_DFLTENTERTEXT_TPL,'Sample');
   }
 
+$this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admingates'));
 $this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modgates'));
 $this->CreatePermission('ModifySMSGatewayTemplates',$this->Lang('perm_modgatetemplates'));
 
