@@ -34,6 +34,7 @@ $lang['error_invalid_info'] = 'One or more values specified are invalid';
 $lang['error_invalid_number'] = 'The mobile phone number you entered is invalid';
 $lang['error_invalid_text'] = 'The text you entered contains invalid characters';
 $lang['error_name_exists'] = 'An item by that name already exists';
+$lang['error_nodatafound'] = 'No data are available';
 $lang['error_nogatewaysfound'] = 'Could not find any SMS gateways';
 $lang['error_notfound'] = 'The requested item could not be found';
 
