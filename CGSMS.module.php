@@ -27,15 +27,13 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($gCms) ) exit;
-
 ///////////////////////////////////////////////////////////////////////////
 // This module is derived from CGExtensions 
-$cgextensions = cms_join_path($gCms->config['root_path'],'modules',
-			      'CGExtensions','CGExtensions.module.php');
+$cgextensions = cms_join_path($config['root_path'],'modules','CGExtensions',
+  'CGExtensions.module.php');
 if( !is_readable( $cgextensions ) )
 {
-  echo '<h1><font color="red">ERROR: The CGExtensions module could not be found.</font></h1>';
+  echo '<h1 style="color:red;">ERROR: The CGExtensions module could not be found.</h1>';
   return;
 }
 require_once($cgextensions);
@@ -49,7 +47,11 @@ class CGSMS extends CGExtensions
   const PREF_DFLTENTERNUMBER_TPL = 'enternumber_dflttpl';
   const PREF_NEWENTERTEXT_TPL = 'entertext_newtpl';
   const PREF_DFLTENTERTEXT_TPL = 'entertext_dflttpl';
-  
+  const DATA_ASIS = 0;
+  //flags for data-conversion
+  const DATA_RAWURL = 1; //rawurlencode
+  const DATA_URL = 2; //urlencode
+  const DATA_PW = 80; //password
 
   /*---------------------------------------------------------
    Constructor()
@@ -164,8 +166,10 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   public function VisibleToAdminUser()
   {
-    return $this->CheckPermission('ModifySMSGateways') ||
-      $this->CheckPermission('ModifySMSGatewayTemplates');
+    return
+	 $this->CheckPermission('AdministerSMSGateways') ||
+	 $this->CheckPermission('ModifySMSGateways') ||
+     $this->CheckPermission('ModifySMSGateTemplates');
   }
 
 
@@ -269,16 +273,7 @@ class CGSMS extends CGExtensions
    ---------------------------------------------------------*/
   function GetHeaderHTML()
   {
-    $obj = $this->GetModuleInstance('JQueryTools');
-    if( $obj )
-      {
-$tmpl = <<<EOT
-{JQueryTools action='incjs' exclude='form'}
-{JQueryTools action='ready'}
-EOT;
-        $txt = $this->ProcessTemplateFromData($tmpl);
-        return $txt;
-      }
+    return '';
   }	
 
 } // end of class
