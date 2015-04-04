@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,17 +27,16 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-// receive delivery reports.
-// have to parse $_REQUEST directly.
+// receive delivery reports
+// must parse $_REQUEST directly
 debug_to_log('got to devreport');
 
-$gateway = cgsms_utils::get_gateway();
+$gateway = smsg_utils::get_gateway();
 $msg = $gateway->process_delivery_report();
 if( $msg != '' )
   {
-    audit('',$this->GetName(),$msg);
+	audit('',$this->GetName(),$msg);
   }
-
 #
 # EOF
 #
