@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -30,23 +30,26 @@
 if( !isset($params['submit']) ) return;
 $this->SetCurrentTab('settings');
 
-$objs = cgsms_utils::get_gateways_full();
+$objs = smsg_utils::get_gateways_full();
 if( !$objs )
   {
-    $this->RedirectToTab($id);
+	$this->RedirectToTab($id);
   }
 
-$gateway = '';
-if( isset($params['sms_gateway']) )
+$pref = cms_db_prefix();
+$sql = 'UPDATE '.$pref.'module_smsg_gates SET active=0 WHERE active=1';
+$db->Execute($sql);
+$gateway = $params['sms_gateway']; //e.g. 'smsbroadcast' or -1
+if( $gateway != '-1' )
   {
-    $gateway = trim($params['sms_gateway']);
-    $this->SetPreference('sms_gateway',$gateway);
+	$sql = 'UPDATE '.$pref.'module_smsg_gates SET enabled=1,active=1 WHERE alias=?';
+	$db->Execute($sql,array($gateway));
   }
 
 foreach( $objs as $classname => $rec )
-{
-  $rec['obj']->handle_setup_form($params);
-}
+  {
+	$rec['obj']->handle_setup_form($params);
+  }
 
 $this->RedirectToTab($id);
 #
