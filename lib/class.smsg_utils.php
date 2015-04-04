@@ -51,8 +51,7 @@ class smsg_utils
 	return $objs;
   }
 
-
-  public static function &get_gateway()
+  public static function get_gateway()
   {
 	$module = cge_utils::get_module(self::MODNAME);
 	$db = $module->GetDb();
@@ -98,7 +97,7 @@ class smsg_utils
 	if( !$gid )
 	 {
 	  $gid = $db->GenID($pref.'module_smsg_gates_seq');
-	  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description,apiconvert) VALUES (?,?,?,?)';
+	  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description,apiconvert) VALUES (?,?,?,?,?)';
 	  $db->Execute($sql,array($gid,$alias,$title,$desc,$conversion));
 	 }
 	else
@@ -121,8 +120,8 @@ class smsg_utils
 	 'module_smsg_props SET title=?,value=?,apiconvert=?,apiorder=? WHERE gate_id=? AND apiname=?';
 	$sql2 = 'INSERT INTO '.$pref.
 	 'module_smsg_props (gate_id,title,value,apiname,apiconvert,apiorder)
-SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
-(SELECT 1 FROM '.$pref.'module_smsg_props AS T1 WHERE T1.gate_id=? AND T1.apiname=?)';
+SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
+(SELECT 1 FROM '.$pref.'module_smsg_props T1 WHERE T1.gate_id=? AND T1.apiname=?)';
 	$o = 1;
 	foreach($props as &$data)
 	  {
@@ -131,6 +130,52 @@ SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
 		$o++;
 	  }
 	unset($data);
+  }
+
+  public static function encrypt_value($value,$passwd = FALSE)
+  {
+	if( $value )
+	  {
+		$module = cge_utils::get_module(self::MODNAME);
+		if( !$passwd )
+		  {
+			$passwd = $module->GetPreference('masterpass');
+			if( $passwd )
+			  {
+				$s = base64_decode(substr($passwd,5));
+				$passwd = substr($s,5);
+			  }
+		  }
+		if( $passwd && $module->havemcrypt )
+		  {
+			$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
+			$value = $e->encrypt($value,$passwd);
+		  }
+	  }
+	return $value;
+  }
+
+  public static function decrypt_value($value,$passwd = FALSE)
+  {
+	if( $value )
+	  {
+		$module = cge_utils::get_module(self::MODNAME);
+		if( !$passwd )
+		  {
+			$passwd = $module->GetPreference('masterpass');
+			if( $passwd )
+			  {
+				$s = base64_decode(substr($passwd,5));
+				$passwd = substr($s,5);
+			  }
+		  }
+		if( $passwd && $module->havemcrypt )
+		  {
+			$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
+			$value = $e->decrypt($value,$passwd);
+		  }
+	  }
+	return $value;
   }
 
   public static function refresh_gateways()
@@ -172,30 +217,25 @@ SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
 	$txt = '';
 	if( $stat == smsg_sender_base::STAT_OK )
 	  {
-		$txt = $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
+		$txt .= $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
 	  }
 	else if( $stat == smsg_sender_base::STAT_ERROR_OTHER )
 	  {
-		$txt = $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
+		$txt .= $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
 	  }
 	else if( $stat != smsg_sender_base::STAT_NOTSENT )
 	  {
-		$txt = $module->Lang($stat,$msg,$num,$ip); //CHECKME
+		$txt .= $module->Lang($stat,$msg,$num,$ip); //CHECKME
 	  }
 	return $txt;
   }
 
-
-  public static function get_delivery_msg($gateway,$del_status,$smsid,$smsto)
+  public static function get_delivery_msg(&$gateway,$stat,$smsid,$smsto)
   {
 	$module = cge_utils::get_module(self::MODNAME);
 	$ip = getenv('REMOTE_ADDR');
-	$txt = '';
-
-	$txt = $module->Lang($del_status,$smsid,$smsto,$ip);
-	return $txt;
+	return ''.$module->Lang($stat,$smsid,$smsto,$ip); //CHECKME
   }
-
 
   public static function get_reporting_url()
   {
@@ -208,7 +248,6 @@ SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
 	$url = $module->CreateURL('cntnt01','devreport',$returnid,array(),false,$prettyurl);
 	return $url;
   }
-
 
   public static function is_valid_phone($number)
   {
@@ -230,7 +269,6 @@ SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
 	if( in_array($str,$formats) ) return TRUE;
 	return FALSE;
   }
-
 
   public static function log_send($ip_address,$mobile,$msg,$statusmsg = '')
   {
@@ -264,7 +302,7 @@ SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
 	return TRUE;
   }
 
-  public static function text_is_valid($text,$len=160)
+  public static function text_is_valid($text,$len = 160)
   {
 	if( $text == '' ) return FALSE;
 	if( $len && strlen($text) > $len ) return FALSE;
@@ -273,6 +311,7 @@ SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
 	  $text) ) return FALSE;
 	return TRUE;
   }
+
 } // end of class
 #
 # EOF
