@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -49,15 +49,15 @@ if( isset($params['mid']) )
 //
 if( $mid != '' )
   {
-    $query = 'SELECT * FROM '.$pref.'module_cgsms WHERE id=?';
-    $tmp = $db->GetRow($query,array($mid));
-    if( !$tmp )
-      {
-	$this->SetError($this->Lang('error_notfound'));
-	$this->RedirectToTab($id);
-      }
-    $name = $tmp['name'];
-    $mobile = $tmp['mobile'];
+	$query = 'SELECT * FROM '.$pref.'module_smsg WHERE id=?';
+	$tmp = $db->GetRow($query,array($mid));
+	if( !$tmp )
+	  {
+		$this->SetError($this->Lang('error_notfound'));
+		$this->RedirectToTab($id);
+	  }
+	$name = $tmp['name'];
+	$mobile = $tmp['mobile'];
   }
 
 //
@@ -65,65 +65,65 @@ if( $mid != '' )
 //
 if( isset($params['cancel']) )
   {
-    $this->RedirectToTab($id);
+	$this->RedirectToTab($id);
   }
 else if( isset($params['submit']) )
   {
-    $name = trim($params['name']);
-    $mobile = trim($params['mobile']);
-    $error = '';
+	$name = trim($params['name']);
+	$mobile = trim($params['mobile']);
+	$error = '';
 
-    // do basic data checks
-    if( $name == '' || !is_numeric($mobile) )
-      {
-        $error = $this->Lang('error_invalid_info');
-      }
-
-    if( empty($error) )
-      {
-	// check for duplicate name
-	$query = 'SELECT id FROM '.$pref.'module_cgsms WHERE name=?';
-	$parms = array();
-	if( $mid != '' )
+	// do basic data checks
+	if( $name == '' || !is_numeric($mobile) )
 	  {
-	    $query .= ' AND id != ?';
-	    $parms[] = $mid;
+		$error = $this->Lang('error_invalid_info');
 	  }
-	$tmp = $db->GetOne($query,$parms);
-	if( $tmp )
-	  {
-	    $error = $this->Lang('error_name_exists');
-	  }
-      }
 
-    if( empty($error) )
-      {
+	if( empty($error) )
+	  {
+		// check for duplicate name
+		$query = 'SELECT id FROM '.$pref.'module_smsg WHERE name=?';
+		$parms = array();
+		if( $mid != '' )
+		  {
+			$query .= ' AND id != ?';
+			$parms[] = $mid;
+		  }
+		$tmp = $db->GetOne($query,$parms);
+		if( $tmp )
+		  {
+			$error = $this->Lang('error_name_exists');
+		  }
+	  }
+
+	if( empty($error) )
+	{
 	// good to go... do add or insert
 	$dbr = '';
 	if( $mid == '' )
 	  {
-	    // insert
-	    $query = 'INSERT INTO '.$pref.'module_cgsms (name,mobile) VALUES(?,?)';
-	    $dbr = $db->Execute($query,array($name,$mobile));
+		// insert
+		$query = 'INSERT INTO '.$pref.'module_smsg (name,mobile) VALUES(?,?)';
+		$dbr = $db->Execute($query,array($name,$mobile));
 	  }
 	else
 	  {
-	    // update
-	    $query = 'UPDATE '.$pref.'module_cgsms SET name=?, mobile=? WHERE id=?';
-	    $dbr = $db->Execute($query,array($name,$mobile,$mid));
+		// update
+		$query = 'UPDATE '.$pref.'module_smsg SET name=?, mobile=? WHERE id=?';
+		$dbr = $db->Execute($query,array($name,$mobile,$mid));
 	  }
-	
+
 	if( !$dbr )
 	  {
-	    $error = $this->Lang('error_db_op_failed');
+		$error = $this->Lang('error_db_op_failed');
 	  }
-      }
+	}
 
-    if( !empty($error) )
-      {
-	$this->SetError($error);
-      }
-    $this->RedirectToTab($id);
+	if( !empty($error) )
+	  {
+		$this->SetError($error);
+	  }
+	$this->RedirectToTab($id);
   }
 
 //

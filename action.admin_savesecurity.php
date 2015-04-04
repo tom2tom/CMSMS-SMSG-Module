@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -32,39 +32,40 @@ $this->SetPreference('sms_hourlylimit',(int)$params['hourlylimit']);
 $this->SetPreference('sms_dailylimit',(int)$params['dailylimit']);
 if( isset($params['masterpw']) )
   {
-    $oldpw = $this->GetPreference('masterpass');
+	$oldpw = $this->GetPreference('masterpass');
 	$newpw = trim($params['masterpw']);
 	if( $oldpw != $newpw )
-      {
-    //update current passwords
-	$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,10000);
-	$pref = cms_db_prefix();
-    $sql = 'SELECT gate_id,title,value FROM '.$pref.'module_cgsms_props WHERE apiconvert>=80';
-	$rows = $db->Execute($sql);
-    if( $rows )
-      {
-    $sql = 'UPDATE '.$pref.'module_cgsms_props SET value=? WHERE gate_id=? AND title=?';
-    foreach( $rows as &$onerow )
-      {
-        if( $oldpw )
-          $raw = ($onerow['value']) ? $e->decrypt($onerow['value'],$oldpw) : '';
-        else
-          $raw = $onerow['value'];
-        if( $raw )
-          {
-            if( $newpw )
-              $revised = $e->encrypt($raw,$newpw);
-            else
-              $revised = $raw;
-          }
-        else
-          $revised = NULL;
-    	$db->Execute($sql,array($revised,$onerow['gate_id'],$onerow['title']))
-      }
-    unset( $onerow );
-      }
-	$this->SetPreference('masterpass',$newpw);
-      }
+	  {
+		//update current passwords
+		$e = ( $this->havemcrypt ) ?
+		 new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS) : FALSE;
+		$pref = cms_db_prefix();
+		$sql = 'SELECT gate_id,title,value FROM '.$pref.'module_smsg_props WHERE apiconvert>='.SMSG::DATA_PW;
+		$rows = $db->GetAll($sql);
+		if( $rows )
+		  {
+			$sql = 'UPDATE '.$pref.'module_smsg_props SET value=? WHERE gate_id=? AND title=?';
+			foreach( $rows as &$onerow )
+			  {
+				if( $oldpw )
+					$raw = ($e && $onerow['value']) ? $e->decrypt($onerow['value'],$oldpw) : $onerow['value'];
+				else
+					$raw = $onerow['value'];
+				if( $raw )
+				  {
+					if( $newpw )
+						$revised = ($e) ? $e->encrypt($raw,$newpw) : $raw;
+					else
+						$revised = $raw;
+				  }
+				else
+					$revised = NULL;
+				$db->Execute($sql,array($revised,$onerow['gate_id'],$onerow['title']))
+			  }
+			unset( $onerow );
+		  }
+		$this->SetPreference('masterpass',$newpw);
+	  }
   }
 
 $this->RedirectToTab($id);
