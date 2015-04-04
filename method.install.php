@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -38,7 +38,7 @@ id I KEY AUTO,
 mobile C(25),
 name C(25) KEY
 ";
-$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms',$flds,$taboptarray);
+$sqlarray = $dict->CreateTableSQL($pref.'module_smsg',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
 $flds = "
@@ -46,9 +46,18 @@ mobile C(25),
 ip C(25),
 msg C(160),
 sdate ".CMS_ADODB_DT;
-$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_sent',$flds,$taboptarray);
+$sqlarray = $dict->CreateTableSQL($pref.'module_smsg_sent',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
+/**
+@apiconvert: enum for data conversion prior to transmission
+as-is = SMSG::DATA_ASIS
+rawurlencode = SMSG::DATA_RAWURL
+urlencode = SMSG::DATA_URL
+htmlentities = 4
+htmlspecialchars = 8
+for password parameter, +SMSG::DATA_PW
+*/
 $flds = "
 gate_id	I KEY,
 alias C(48),
@@ -58,13 +67,22 @@ apiconvert I(1) NOTNULL DEFAULT 0,
 enabled I(1) NOTNULL DEFAULT 1,
 active I(1) NOTNULL DEFAULT 0
 ";
-$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_gates',$flds,$taboptarray);
+$sqlarray = $dict->CreateTableSQL($pref.'module_smsg_gates',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-$db->CreateSequence($pref.'module_cgsms_gates_seq');
- 
+$db->CreateSequence($pref.'module_smsg_gates_seq');
+/**
+@apiconvert: enum for data conversion prior to transmission, OR'd with
+ corresponding field from gates table
+as-is = SMSG::DATA_ASIS
+rawurlencode = SMSG::DATA_RAWURL
+urlencode = SMSG::DATA_URL
+htmlentities = 4
+htmlspecialchars = 8
+for password parameter, +SMSG::DATA_PW
+*/
 $flds = "
-gate_id	I NOTNULL,
+gate_id I NOTNULL,
 title C(128),
 value C(255),
 apiname C(64),
@@ -72,7 +90,7 @@ apiconvert I(1) DEFAULT 0,
 apiorder I(1) DEFAULT -1,
 active I(1) DEFAULT 1
 ";
-$sqlarray = $dict->CreateTableSQL($pref.'module_cgsms_props',$flds,$taboptarray);
+$sqlarray = $dict->CreateTableSQL($pref.'module_smsg_props',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
 //enter-number templates
@@ -80,9 +98,9 @@ $fn = cms_join_path(dirname(__FILE__),'templates','orig_enternumber_template.tpl
 if(is_file($fn))
   {
     $template = file_get_contents($fn);
-    $this->SetPreference(CGSMS::PREF_NEWENTERNUMBER_TPL,$template);
+    $this->SetPreference(SMSG::PREF_NEWENTERNUMBER_TPL,$template);
     $this->SetTemplate('enternumber_Sample',$template);
-    $this->SetPreference(CGSMS::PREF_DFLTENTERNUMBER_TPL,'Sample');
+    $this->SetPreference(SMSG::PREF_DFLTENTERNUMBER_TPL,'Sample');
   }
 
 //enter-text templates
@@ -90,18 +108,18 @@ $fn = cms_join_path(dirname(__FILE__),'templates','orig_entertext_template.tpl')
 if(is_file($fn))
   {
     $template = file_get_contents($fn);
-    $this->SetPreference(CGSMS::PREF_NEWENTERTEXT_TPL,$template);
+    $this->SetPreference(SMSG::PREF_NEWENTERTEXT_TPL,$template);
     $this->SetTemplate('entertext_Sample',$template);
-    $this->SetPreference(CGSMS::PREF_DFLTENTERTEXT_TPL,'Sample');
+    $this->SetPreference(SMSG::PREF_DFLTENTERTEXT_TPL,'Sample');
   }
 
-$this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admingates'));
-$this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modgates'));
-$this->CreatePermission('ModifySMSGatewayTemplates',$this->Lang('perm_modgatetemplates'));
+$this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));
+$this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modify'));
+$this->CreatePermission('ModifySMSGateTemplates',$this->Lang('perm_templates'));
 
 //$this->CreateEvent('X');
 //$this->CreateEvent('Y');
-//$this->AddEventHandler('CGSMS','?');
+//$this->AddEventHandler('SMSG','?');
 //$this->AddEventHandler('Core','?');
 
 $this->Audit(0, $this->Lang('friendlyname'), $this->Lang('installed',$this->GetVersion()));
