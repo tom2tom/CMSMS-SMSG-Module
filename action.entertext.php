@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -41,41 +41,41 @@ $inline = 0;
 //
 if( isset($params['smsnum']) )
   {
-    $smsnum = (int)$params['smsnum'];
+	$smsnum = (int)$params['smsnum'];
   }
 if( isset($params['urlonly']) )
   {
-    $urlonly = (int)$params['urlonly'];
-    unset($params['urlonly']);
+	$urlonly = (int)$params['urlonly'];
+	unset($params['urlonly']);
   }
 if( isset($params['inline']) )
   {
-    $inline = (int)$params['inline'];
+	$inline = (int)$params['inline'];
   }
 if( isset($params['destpage']) )
   {
-    $page = $this->resolve_alias_or_id($params['destpage']);
-    if( $page )
-      {
-	$inline = 0;
-	$returnid = $page;
-      }
-    unset($params['destpage']);
+	$page = $this->resolve_alias_or_id($params['destpage']);
+	if( $page )
+	  {
+		$inline = 0;
+		$returnid = $page;
+	  }
+	unset($params['destpage']);
   }
 if( isset($params['linktext']) )
   {
-    $linktext = trim($params['linktext']);
-    unset($params['linktext']);
+	$linktext = trim($params['linktext']);
+	unset($params['linktext']);
   }
 if( $smsnum == '' )
   {
-    // don't know who to send to.
-    return;
+	// don't know who to send to
+	return;
   }
 
-// Now Create a Link
+// create a Link
 $txt = $this->CreateLink($id,'do_entertext',$returnid,$linktext,
-			 $params,'',$urlonly,$inline);
+	$params,'',$urlonly,$inline);
 echo $txt;
 #
 # EOF

@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -41,37 +41,37 @@ $inline = 0;
 //
 if( isset($params['smstext']) )
   {
-    $smstext = trim($params['smstext']);
-    unset($params['smstext']);
+	$smstext = trim($params['smstext']);
+	unset($params['smstext']);
   }
 if( isset($params['linktext']) )
   {
-    $linktext = trim($params['linktext']);
-    unset($params['linktext']);
+	$linktext = trim($params['linktext']);
+	unset($params['linktext']);
   }
 if( isset($params['urlonly']) )
   {
-    $urlonly = (int)$params['urlonly'];
-    unset($params['urlonly']);
+	$urlonly = (int)$params['urlonly'];
+	unset($params['urlonly']);
   }
 if( isset($params['inline']) )
   {
-    $inline = (int)$params['inline'];
+	$inline = (int)$params['inline'];
   }
 if( isset($params['destpage']) )
   {
-    $page = $this->resolve_alias_or_id($params['destpage']);
-    if( $page )
-      {
-	$returnid = $page;
-	$inline = 0;
-      }
-    unset($params['destpage']);
+	$page = $this->resolve_alias_or_id($params['destpage']);
+	if( $page )
+	  {
+		$returnid = $page;
+		$inline = 0;
+	  }
+	unset($params['destpage']);
   }
 if( $smstext == '' )
   {
-    // could not find text.
-    return;
+	// could not find text
+	return;
   }
 
 // given the text... get a key
@@ -86,8 +86,8 @@ $datastore->store($smstext,$this->GetName(),$key);
 
 // Now create a link.
 $params['smskey'] = $key;
-$txt = $this->CreateLink($id,'do_enternumber',$returnid,$linktext,
-			 $params,'',$urlonly,$inline);
+$txt = $this->CreateLink($id,'do_enternumber',$returnid,$linktext,$params,
+	'',$urlonly,$inline);
 echo $txt;
 #
 # EOF
