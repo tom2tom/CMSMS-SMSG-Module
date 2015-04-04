@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,89 +27,86 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($params['smsnum']) ) return;  // no number id.
+if( !isset($params['smsnum']) ) return;  // no number id
 
 //
 // initialize
 //
 $smsnum = (int)$params['smsnum'];
 $inline = 0;
-$thetemplate = $this->GetPreference(CGSMS::PREF_DFLTENTERTEXT_TPL);
+$thetemplate = $this->GetPreference(SMSG::PREF_DFLTENTERTEXT_TPL);
 $error = '';
 $message = '';
 
 if( isset($params['enternumbertemplate']) )
   {
-    $thetemplate = trim($params['enternumbertemplate']);
+	$thetemplate = trim($params['enternumbertemplate']);
   }
 
 //
 // verify that the SMS ID entered is valid
 //
-$query = 'SELECT mobile FROM '.cms_db_prefix().'module_cgsms
-           WHERE id = ?';
+$query = 'SELECT mobile FROM '.cms_db_prefix().'module_smsg WHERE id=?';
 $mobile = $db->GetOne($query,array($smsnum));
 
-if( isset($params['cgsms_submit']) )
+if( isset($params['smsg_submit']) )
   {
-    $smstext = '';
-    if( isset($params['cgsms_smstext']) )
-      {
-	$smstext = trim($params['cgsms_smstext']);
-      }
-
-    if( !cgsms_utils::text_is_valid($smstext))
-      {
-	$error = $this->Lang('error_invalid_text');
-      }
-
-    if( !$error )
-      {
-	// now we're ready to send.
-	$gateway = cgsms_utils::get_gateway();
-	if( !$gateway )
+	$smstext = '';
+	if( isset($params['smsg_smstext']) )
 	  {
-	    $this->Audit(0,$this->Lang('error_nogatewayfound'),'enternumber');
-	    $error = $this->Lang('error_nogatewayfound');
+		$smstext = trim($params['smsg_smstext']);
 	  }
-	else
-	  {
-	    $gateway->set_msg($smstext);
-	    $gateway->set_num($mobile);
-	    $gateway->send();
 
-	    $stat = $gateway->get_status();
-	    $msg = $gateway->get_statusmsg();
-	    if( $stat != cgsms_sender_base::STAT_OK )
-	      {
-		$error = $msg;
-	      }
-	    else
-	      {
-		$message = $this->Lang('sms_message_sent',$mobile);
-	      }
+	if( !smsg_utils::text_is_valid($smstext))
+	  {
+		$error = $this->Lang('error_invalid_text');
 	  }
-      }
+
+	if( !$error )
+	  {
+		// now we're ready to send
+		$gateway = smsg_utils::get_gateway();
+		if( !$gateway )
+		  {
+			$this->Audit(0,$this->Lang('error_nogatewayfound'),'enternumber');
+			$error = $this->Lang('error_nogatewayfound');
+		  }
+		else
+		  {
+			$gateway->set_msg($smstext);
+			$gateway->set_num($mobile);
+			$gateway->send();
+
+			$stat = $gateway->get_status();
+			$msg = $gateway->get_statusmsg();
+			if( $stat == smsg_sender_base::STAT_OK )
+			  {
+				$message = $this->Lang('sms_message_sent',$mobile);
+			  }
+			else
+			  {
+				$error = $msg;
+			  }
+		  }
+	  }
   }
 
 // now display the form.
 if( $error != '' )
   {
-    $smarty->assign('error',$error);
+	$smarty->assign('error',$error);
   }
 if( $message != '' )
   {
-    $smarty->assign('message',$message);
+	$smarty->assign('message',$message);
   }
 $smarty->assign('maxsmschars',160);
 $smarty->assign('smstext',$smstext);
 $smarty->assign('formstart',$this->CGCreateFormStart($id,'do_entertext',
-						     $returnid,
-						     $params));
+	$returnid,$params));
 $smarty->assign('formend',$this->CreateFormEnd());
 
 echo $this->ProcessTemplateFromDatabase('entertext_'.$thetemplate);
-
 #
 # EOF
 #
