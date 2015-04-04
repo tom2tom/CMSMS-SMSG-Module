@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,13 +27,19 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-class smsbroadcast_sms_gateway extends cgsms_sender_base
+class smsbroadcast_sms_gateway extends smsg_sender_base
 {
+	const SMSBC_API_URL = 'https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf';
 	private $_rawstatus;
 
 	public function get_name()
 	{
 		return 'Smsbroadcast';
+	}
+
+	public function get_alias()
+	{
+		return 'smsbroadcast';
 	}
 
 	public function get_description()
@@ -44,6 +50,11 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 	public function support_custom_sender()
 	{
 		return TRUE;
+	}
+
+	public function support_mms()
+	{
+		return FALSE; //TODO
 	}
 
 	public function require_country_prefix()
@@ -61,45 +72,42 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 		return ',';
 	}
 
-	public function get_setup_form()
+	public function upsert_tables()
 	{
-		$smarty = cmsms()->GetSmarty();
-		$mod = $this->get_module();
-
-		$smarty->assign('gatename',self::get_name());
-		$smarty->assign('smsbroadcast_username', $mod->GetPreference('smsbroadcast_username'));
-		$tmp = $mod->GetPreference('smsbroadcast_password');
-		if($tmp)
-		{
-			$s = base64_decode(substr($tmp,5));
-			$tmp = substr($s,5);
-		}
-		$smarty->assign('smsbroadcast_password', $tmp);
-		$smarty->assign('smsbroadcast_from', $mod->GetPreference('smsbroadcast_from'));
-		return $mod->ProcessTemplate('smsbroadcast_setup.tpl');
+		$module = parent::get_module();
+		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_RAWURL);
+	    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		if($gid) smsg_utils::setprops($module,$gid,array(
+			array($module->Lang('username'),'username',NULL,SMSG::DATA_RAWURL),
+			array($module->Lang('password'),'password',NULL,SMSG::DATA_PW + SMSG::DATA_RAWURL),
+			array($module->Lang('from'),'from',NULL,SMSG::DATA_RAWURL),
+			array($module->Lang('reference'),'ref',NULL,SMSG::DATA_RAWURL)
+			));
+		return $gid;
 	}
 
-	public function handle_setup_form($params)
+	public function custom_setup(&$smarty,$padm)
 	{
-		$mod = $this->get_module();
-		if(!empty($params['smsbroadcast_username']))
-			$tmp = trim($params['smsbroadcast_username']);
-		else
-			$tmp = '';
-		$mod->SetPreference('smsbroadcast_username',$tmp);
-		if(!empty($params['smsbroadcast_password']))
+		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
-			$s = substr(base64_encode(md5(microtime())),0,5); //obfuscate a bit
-			$tmp = $s.base64_encode($s.trim($params['smsbroadcast_password']));
+			if(!empty($ob->pass))
+			{
+				$ob->size = 20;
+				break;
+			}
 		}
-		else
-			$tmp = '';
-		$mod->SetPreference('smsbroadcast_password',$tmp);
-		if(!empty($params['smsbroadcast_from']))
-			$tmp = trim($params['smsbroadcast_from']);
-		else
-			$tmp = '';
-		$mod->SetPreference('smsbroadcast_from',$tmp);
+		unset($ob);
+		if($padm)
+		{
+			$mod = parent::get_module();
+			$help = $smarty->tpl_vars['help']->value.'<br />'.
+			 $mod->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
+			$smarty->assign('help',$help);
+		}
+	}
+
+	public function custom_save(&$params)
+	{
 	}
 
 	protected function setup()
@@ -113,7 +121,7 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 
 	protected function _command($dummy)
 	{
- 		$mod = $this->get_module();
+ 		$mod = parent::get_module();
 
 		$user = $mod->GetPreference('smsbroadcast_username');
 		$pass = $mod->GetPreference('smsbroadcast_password');
@@ -193,8 +201,9 @@ class smsbroadcast_sms_gateway extends cgsms_sender_base
 		}
 	}
 
-	public function _process_delivery_report()
+	public function process_delivery_report()
 	{
+		return ''; //TODO
 	}
 
 	public function get_raw_status()

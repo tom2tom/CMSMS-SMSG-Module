@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,13 +27,19 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-class googlevoice_sms_gateway extends cgsms_sender_base
+class googlevoice_sms_gateway extends smsg_sender_base
 {
+  const GOOGLEVOICE_API_URL = ''; 
   private $_rawstatus;
 
   public function get_name()
   {
     return 'Google Voice';
+  }
+
+  public function get_alias()
+  {
+    return 'googlevoice';
   }
 
   public function get_description()
@@ -42,6 +48,11 @@ class googlevoice_sms_gateway extends cgsms_sender_base
   }
 
   public function support_custom_sender()
+  {
+    return FALSE; //TODO
+  }
+
+  public function support_mms()
   {
     return FALSE; //TODO
   }
@@ -61,34 +72,44 @@ class googlevoice_sms_gateway extends cgsms_sender_base
     return FALSE; //TODO
   }
 
-  public function get_setup_form()
+  public function upsert_tables()
   {
-    $smarty = cmsms()->GetSmarty();
-    $mod = $this->get_module();
-
-	$smarty->assign('gatename',self::get_name());
-    $smarty->assign('googlevoice_email',$mod->GetPreference('googlevoice_email'));
-    $smarty->assign('googlevoice_password',$mod->GetPreference('googlevoice_password'));
-
-    return $mod->ProcessTemplate('googlevoice_setup.tpl');
+		$module = parent::get_module();
+		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_ASIS);
+	    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		//none of the apiname's is actually used (indicated by '_' prefix)
+		if($gid) smsg_utils::setprops($module,$gid,array(
+			array($module->Lang('email'),'_email',NULL,SMSG::DATA_ASIS),
+			array($module->Lang('password'),'_password',NULL,SMSG::DATA_PW)
+			));
+		return $gid;
   }
 
-  public function handle_setup_form($params)
+  public function custom_setup(&$smarty,$padm)
   {
-    $mod = $this->get_module();
-    if( isset($params['googlevoice_email']) )
+    foreach($smarty->tpl_vars['data']->value as &$ob)
       {
-	$mod->SetPreference('googlevoice_email',trim($params['googlevoice_email']));
+        if($ob->apiname == '_email')
+          $ob->size = 24;
+        elseif(!empty($ob->pass))
+          $ob->size = 20;
       }
-    if( isset($params['googlevoice_password']) )
+    unset($ob);
+    if($padm)
       {
-	$mod->SetPreference('googlevoice_password',trim($params['googlevoice_password']));
+        $mod = parent::get_module();
+        $help = $smarty->tpl_vars['help']->value.'<br />'.
+         $mod->Lang('help_urlcheck',self::GOOGLEVOICE_API_URL,self::get_name().' API');
+        $smarty->assign('help',$help);
       }
+  }
+
+  public function custom_save(&$params)
+  {
   }
 
   protected function setup()
   {
-    // nothing to do here.
   }
 
   protected function prep_command()
@@ -100,11 +121,11 @@ class googlevoice_sms_gateway extends cgsms_sender_base
   protected function _command($cmd)
   {
     try {
-      $mod = $this->get_module();
+      $mod = parent::get_module();
       require_once(cms_join_path(dirname(__FILE__),'googlevoice','class.googlevoice2.php'));
       $gv = new GoogleVoice($mod->GetPreference('googlevoice_email'),
-			    $mod->GetPreference('googlevoice_password'));
-      
+             $mod->GetPreference('googlevoice_password'));
+
       $num = $this->get_num();
       $num = preg_replace('/[^\d]/','',$num);
 
@@ -116,7 +137,7 @@ class googlevoice_sms_gateway extends cgsms_sender_base
     }
     catch(Exception $e)
       {
-	return $e->getMessage();
+        return $e->getMessage();
       }
   }
 
@@ -126,14 +147,14 @@ class googlevoice_sms_gateway extends cgsms_sender_base
     $this->_rawstatus = $str;
     if( $str != 'good' )
       {
-	$this->set_status(self::STAT_ERROR_OTHER);
+        $this->set_status(self::STAT_ERROR_OTHER);
       }
     $this->set_status(self::STAT_OK);
   }
 
-  public function _process_delivery_report()
+  public function process_delivery_report()
   {
-    // nothing to do here.
+    return ''; //nothing to do here
   }
 
   public function get_raw_status()

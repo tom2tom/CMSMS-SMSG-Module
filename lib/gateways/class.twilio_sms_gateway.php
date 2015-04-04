@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,13 +27,19 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-class twilio_sms_gateway extends cgsms_sender_base
+class twilio_sms_gateway extends smsg_sender_base
 {
+	const TWILIO_API_URL = 'https://www.twilio.com/docs/api';
 	private $_rawstatus;
 
 	public function get_name()
 	{
 		return 'Twilio';
+	}
+
+	public function get_alias()
+	{
+		return 'twilio';
 	}
 
 	public function get_description()
@@ -44,6 +50,11 @@ class twilio_sms_gateway extends cgsms_sender_base
 	public function support_custom_sender()
 	{
 		return FALSE; //only account-specific from-numbers are allowed
+	}
+	
+	public function support_mms()
+	{
+		return FALSE; //TODO
 	}
 
 	public function require_country_prefix()
@@ -61,45 +72,39 @@ class twilio_sms_gateway extends cgsms_sender_base
 		return FALSE;
 	}
 
-	public function get_setup_form()
+	public function upsert_tables()
 	{
-		$smarty = cmsms()->GetSmarty();
-		$mod = $this->get_module();
-
-		$smarty->assign('gatename',self::get_name());
-		$smarty->assign('twilio_username', $mod->GetPreference('twilio_username'));
-		$tmp = $mod->GetPreference('twilio_password');
-		if($tmp)
-		{
-			$s = base64_decode(substr($tmp,5));
-			$tmp = substr($s,5);
-		}
-		$smarty->assign('twilio_password', $tmp);
-		$smarty->assign('twilio_from', $mod->GetPreference('twilio_from'));
-		return $mod->ProcessTemplate('twilio_setup.tpl');
+		$module = parent::get_module();
+		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_ASIS);
+		//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		//none of the apiname's is actually used (indicated by '_' prefix)
+		if($gid) smsg_utils::setprops($module,$gid,array(
+			array($module->Lang('account'),'_account',NULL,SMSG::DATA_ASIS),
+			array($module->Lang('token'),'_token',NULL,SMSG::DATA_PW),
+			array($module->Lang('from'),'_from',NULL,SMSG::DATA_ASIS)
+			));
+		return $gid;
 	}
 
-	public function handle_setup_form($params)
+	public function custom_setup(&$smarty,$padm)
 	{
-		$mod = $this->get_module();
-		if(!empty($params['twilio_username']))
-			$tmp = trim($params['twilio_username']);
-		else
-			$tmp = '';
-		$mod->SetPreference('twilio_username',$tmp);
-		if(!empty($params['twilio_password']))
+		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
-			$s = substr(base64_encode(md5(microtime())),0,5); //obfuscate a bit
-			$tmp = $s.base64_encode($s.trim($params['twilio_password']));
+			if(!empty($ob->pass) || $ob->apiname == '_account')
+				$ob->size = 32;
 		}
-		else
-			$tmp = '';
-		$mod->SetPreference('twilio_password',$tmp);
-		if(!empty($params['twilio_from']))
-			$tmp = trim($params['twilio_from']);
-		else
-			$tmp = '';
-		$mod->SetPreference('twilio_from',$tmp);
+		unset($ob);
+		if($padm)
+		{
+			$mod = parent::get_module();
+			$help = $smarty->tpl_vars['help']->value.'<br />'.
+			 $mod->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
+			$smarty->assign('help',$help);
+		}
+	}
+
+	public function custom_save(&$params)
+	{
 	}
 
 	protected function setup()
@@ -127,7 +132,7 @@ class twilio_sms_gateway extends cgsms_sender_base
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
-		$mod = $this->get_module();
+		$mod = parent::get_module();
 		$account = $mod->GetPreference('twilio_username');
 		$token = $mod->GetPreference('twilio_password');
 		if($token)
@@ -227,8 +232,9 @@ class twilio_sms_gateway extends cgsms_sender_base
 		}
 	}
 
-	public function _process_delivery_report()
+	public function process_delivery_report()
 	{
+		return ''; //TODO
 	}
 
 	public function get_raw_status()

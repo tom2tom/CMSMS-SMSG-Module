@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,14 +27,59 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-class skeleton_sms_gateway extends cgsms_sender_base
+//class name must be like 'somename_sms_gateway'
+class skeleton_sms_gateway extends smsg_sender_base
 {
+	//TODO specific name and real URL for API reference
+	const SKEL_API_URL = 'https://somewhere.com/...';
 	private $_rawstatus;
+
+	public function upsert_tables()
+	{
+		$module = parent::get_module();
+		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_ASIS);
+	    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		//by convention, apiname's which are not actually used are indicated by a '_' prefix
+		//TODO
+		if($gid) smsg_utils::setprops($module,$gid,array(
+			array($module->Lang('username'),'user',NULL,SMSG::DATA_ASIS),
+			array($module->Lang('password'),'password',NULL,SMSG::DATA_PW)
+			));
+		return $gid;
+	}
+
+	public function custom_setup(&$smarty,$padm)
+	{
+		//TODO e.g.
+		foreach($smarty->tpl_vars['data']->value as &$ob)
+		{
+		}
+		unset($ob)
+		if($padm)
+		{
+			$mod = parent::get_module();
+			$help = $smarty->tpl_vars['help']->value.'<br />'.
+			 $mod->Lang('help_urlcheck',self::SKEL_API_URL,self::get_name().' API');
+			$smarty->assign('help',$help);
+		}
+	}
+
+	public function custom_save(&$params)
+	{
+		//TODO
+	}
 
 	public function get_name()
 	{
-		//DEPRECATED see database table
-		return '';
+		//TODO
+		return 'My Name';
+	}
+
+	public function get_alias()
+	{
+		//must be this class' name less the trailing '_sms_gateway'
+		//TODO
+		return 'skeleton';
 	}
 
 	public function get_description()
@@ -44,6 +89,12 @@ class skeleton_sms_gateway extends cgsms_sender_base
 	}
 
 	public function support_custom_sender()
+	{
+		//TODO
+		return FALSE;
+	}
+
+	public function support_mms()
 	{
 		//TODO
 		return FALSE;
@@ -66,20 +117,6 @@ class skeleton_sms_gateway extends cgsms_sender_base
 		return FALSE;
 	}
 
-	public function get_setup_form()
-	{
-		$smarty = cmsms()->GetSmarty();
-		$mod = $this->get_module();
-		//TODO setup smarty vars for this gateway's template
-		return $mod->ProcessTemplate('TODO_setup.tpl');
-	}
-
-	public function handle_setup_form($params)
-	{
-		$mod = $this->get_module();
-		//TODO store data from $params from gateway's template
-	}
-
 	protected function setup()
 	{
 		//TODO
@@ -97,7 +134,7 @@ class skeleton_sms_gateway extends cgsms_sender_base
 		//TODO
 	}
 
-	public function _process_delivery_report()
+	public function process_delivery_report()
 	{
 		//TODO
 		return '';
