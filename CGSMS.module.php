@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -28,256 +28,212 @@
 #END_LICENSE
 
 ///////////////////////////////////////////////////////////////////////////
-// This module is derived from CGExtensions 
+// This module is derived from CGExtensions
+$config = cmsms()->GetConfig();
 $cgextensions = cms_join_path($config['root_path'],'modules','CGExtensions',
-  'CGExtensions.module.php');
-if( !is_readable( $cgextensions ) )
-{
-  echo '<h1 style="color:red;">ERROR: The CGExtensions module could not be found.</h1>';
-  return;
-}
+	'CGExtensions.module.php');
+if( !is_readable($cgextensions) )
+  {
+	echo '<h1 style="color:red;">ERROR: '.$this->Lang('error_noparentclass').'</h1>';
+	return;
+  }
 require_once($cgextensions);
 ///////////////////////////////////////////////////////////////////////////
 
-class CGSMS extends CGExtensions
+class SMSG extends CGExtensions
 {
+	const TEST_MESSAGE = 'Test Message from SMSG';
+	const PREF_NEWENTERNUMBER_TPL = 'enternumber_newtpl';
+	const PREF_DFLTENTERNUMBER_TPL = 'enternumber_dflttpl';
+	const PREF_NEWENTERTEXT_TPL = 'entertext_newtpl';
+	const PREF_DFLTENTERTEXT_TPL = 'entertext_dflttpl';
+	//flags for data-conversion
+	const DATA_ASIS = 0;
+	const DATA_RAWURL = 1; //rawurlencode
+	const DATA_URL = 2; //urlencode
+	const DATA_PW = 80; //password
 
-  const TEST_MESSAGE = 'Test Message from CGSMS';
-  const PREF_NEWENTERNUMBER_TPL = 'enternumber_newtpl';
-  const PREF_DFLTENTERNUMBER_TPL = 'enternumber_dflttpl';
-  const PREF_NEWENTERTEXT_TPL = 'entertext_newtpl';
-  const PREF_DFLTENTERTEXT_TPL = 'entertext_dflttpl';
-  const DATA_ASIS = 0;
-  //flags for data-conversion
-  const DATA_RAWURL = 1; //rawurlencode
-  const DATA_URL = 2; //urlencode
-  const DATA_PW = 80; //password
+	const ENC_ROUNDS = 10000;
+	//whether password encryption is supported
+	protected $havemcrypt;
 
-  /*---------------------------------------------------------
-   Constructor()
-   ---------------------------------------------------------*/
-  public function __construct()
-  {
-    parent::__construct();
-  }
+	public function __construct()
+	{
+		parent::__construct();
+		$this->havemcrypt = (function_exists('mcrypt_encrypt'));
+		$this->RegisterModulePlugin();
+	}
 
+	public function GetName()
+	{
+		return 'SMSG';
+	}
 
-  /*---------------------------------------------------------
-   GetName()
-   ---------------------------------------------------------*/
-  public function GetName()
-  {
-    return 'CGSMS';
-  }
+	public function GetFriendlyName()
+	{
+		return $this->Lang('friendlyname');
+	}
 
+	public function GetVersion()
+	{
+		return '1.2';
+	}
 
-  /*---------------------------------------------------------
-   GetFriendlyName()
-   ---------------------------------------------------------*/
-  public function GetFriendlyName()
-  {
-    return $this->Lang('friendlyname');
-  }
-
-
-  /*---------------------------------------------------------
-   GetVersion()
-   ---------------------------------------------------------*/
-  public function GetVersion()
-  {
-    return '1.2';
-  }
+	public function GetHelp()
+	{
+		return $this->Lang('help');
+	}
 
 
-  /*---------------------------------------------------------
-   GetHelp()
-   ---------------------------------------------------------*/
-  public function GetHelp()
-  {
-    return $this->Lang('help');
-  }
+	public function GetAuthor()
+	{
+		return 'calguy1000';
+	}
 
+	public function GetAuthorEmail()
+	{
+		return 'calguy1000@cmsmadesimple.org';
+	}
 
-  /*---------------------------------------------------------
-   GetAuthor()
-   ---------------------------------------------------------*/
-  public function GetAuthor()
-  {
-    return 'calguy1000';
-  }
+	public function GetChangeLog()
+	{
+		$txt = @file_get_contents(cms_join_path(dirname(__FILE__),'changelog.inc'));
+		return $txt;
+	}
 
+	public function IsPluginModule()
+	{
+		return TRUE;
+	}
 
-  /*---------------------------------------------------------
-   GetAuthorEmail()
-   ---------------------------------------------------------*/
-  public function GetAuthorEmail()
-  {
-    return 'calguy1000@cmsmadesimple.org';
-  }
+	public function HasAdmin()
+	{
+		return TRUE;
+	}
 
+	function LazyLoadAdmin()
+	{
+		return FALSE;
+	}
 
-  /*---------------------------------------------------------
-   GetChangeLog()
-   ---------------------------------------------------------*/
-  public function GetChangeLog()
-  {
-    $txt = @file_get_contents(cms_join_path(dirname(__FILE__),'changelog.inc'));
-    return $txt;
-  }
-  
-  /*---------------------------------------------------------
-   IsPluginModule()
-   ---------------------------------------------------------*/
-  public function IsPluginModule()
-  {
-    return TRUE;
-  }
+	public function GetAdminSection()
+	{
+		return 'extensions';
+	}
 
+	public function GetAdminDescription()
+	{
+		return $this->Lang('module_description');
+	}
 
-  /*---------------------------------------------------------
-   HasAdmin()
-   ---------------------------------------------------------*/
-  public function HasAdmin()
-  {
-    return TRUE;
-  }
+	public function VisibleToAdminUser()
+	{
+		return
+		 $this->CheckPermission('AdministerSMSGateways') ||
+		 $this->CheckPermission('ModifySMSGateways') ||
+		 $this->CheckPermission('ModifySMSGateTemplates');
+	}
 
+	function AdminStyle()
+	{
+	}
 
-  /*---------------------------------------------------------
-   GetAdminSection()
-   ---------------------------------------------------------*/
-  public function GetAdminSection()
-  {
-    return 'extensions';
-  }
+	function GetHeaderHTML()
+	{
+		$fp = cms_join_path(dirname(__FILE__),'lib','module.js');
+		$js = ''.@file_get_contents($fp);
+		if( $js )
+		  {
+			$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
+			$jsr = str_replace(array('|PADM|','|MAXSMSCHARS|'),array($p,160),$js);
+			return
+			 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
+			 '/lib/jquery.tablednd.min.js"></script>'."\n".$jsr;
+		  }
+		return '';
+	}	
 
+	public function GetDependencies()
+	{
+		return array('CGExtensions'=>'1.17.7');
+	}
 
-  /*---------------------------------------------------------
-   GetAdminDescription()
-   ---------------------------------------------------------*/
-  public function GetAdminDescription()
-  {
-    return $this->Lang('module_description');
-  }
+	function AllowSmartyCaching()
+	{
+		return TRUE;
+	}
 
+	function LazyLoadFrontend()
+	{
+		return TRUE;
+	}
 
-  /*---------------------------------------------------------
-   VisibleToAdminUser()
-   ---------------------------------------------------------*/
-  public function VisibleToAdminUser()
-  {
-    return
-	 $this->CheckPermission('AdministerSMSGateways') ||
-	 $this->CheckPermission('ModifySMSGateways') ||
-     $this->CheckPermission('ModifySMSGateTemplates');
-  }
+	public function InstallPostMessage()
+	{
+		return $this->Lang('postinstall');
+	}
 
+	public function MinimumCMSVersion()
+	{
+		return '1.6.5';
+	}
 
-  /*---------------------------------------------------------
-   GetDependencies()
-   ---------------------------------------------------------*/
-  public function GetDependencies()
-  {
-    return array('CGExtensions'=>'1.17.7');
-  }
+	public function UninstallPostMessage()
+	{
+		return $this->Lang('postuninstall');
+	}
 
+	public function AllowAutoInstall() 
+	{
+		return FALSE;
+	}
 
-  /*---------------------------------------------------------
-   InstallPostMessage()
-   ---------------------------------------------------------*/
-  public function InstallPostMessage()
-  {
-    return $this->Lang('postinstall');
-  }
+	public function AllowAutoUpgrade() 
+	{
+		return FALSE;
+	}
 
+	//setup for pre-1.10
+	function SetParameters()
+	{
+		$this->InitializeAdmin();
+		$this->InitializeFrontend();
+	}
 
-  /*---------------------------------------------------------
-   MinimumCMSVersion()
-   ---------------------------------------------------------*/
-  public function MinimumCMSVersion()
-  {
-    return '1.6.5';
-  }
+	//partial setup for pre-1.10, backend setup for 1.10+
+	function InitializeFrontend()
+	{
+		$this->RestrictUnknownParams();
+		$this->SetParameterType('action',CLEAN_STRING);
+		$this->SetParameterType('destpage',CLEAN_STRING);
+		$this->SetParameterType('enternumbertemplate',CLEAN_STRING);
+		$this->SetParameterType('entertexttemplate',CLEAN_STRING);
+		$this->SetParameterType('inline',CLEAN_INT);
+		$this->SetParameterType('linktext',CLEAN_STRING);
+		$this->SetParameterType('smskey',CLEAN_STRING); //hash of cached data, for internal use only
+		$this->SetParameterType('smsnum',CLEAN_INT);
+		$this->SetParameterType('smstext',CLEAN_STRING);
+		$this->SetParameterType('urlonly',CLEAN_INT);
+		$this->SetParameterType(CLEAN_REGEXP.'/smsg_.*/',CLEAN_NONE);
 
+		$this->RegisterRoute('/SMSG\/devreport$/',array('action'=>'devreport'));
+	}
 
-  /*---------------------------------------------------------
-   UninstallPostMessage()
-   ---------------------------------------------------------*/
-  public function UninstallPostMessage()
-  {
-    return $this->Lang('postuninstall');
-  }
-
-
-  /*---------------------------------------------------------
-   AllowAutoInstall()
-   ---------------------------------------------------------*/
-  public function AllowAutoInstall() 
-  {
-    return FALSE;
-  }
-
-
-  /*---------------------------------------------------------
-   AllowAutoUpgrade()
-   ---------------------------------------------------------*/
-  public function AllowAutoUpgrade() 
-  {
-    return FALSE;
-  }
-
-
-  /*---------------------------------------------------------
-   SetParameters()
-   ---------------------------------------------------------*/
-  public function SetParameters()
-  {
-    $this->RegisterModulePlugin();
-    $this->RestrictUnknownParams();
-
-    $this->RegisterRoute('/CGSMS\/devreport$/',array('action'=>'devreport'));
-
-    $this->CreateParameter('action','enternumber',$this->Lang('help_action'));
-
-    $this->CreateParameter('smstext','',$this->Lang('help_smstext'));
-    $this->SetParameterType('smstext',CLEAN_STRING);
-
-    $this->CreateParameter('linktext',$this->Lang('send_to_mobile'),$this->Lang('help_linktext'));
-    $this->SetParameterType('linktext',CLEAN_STRING);
-
-    $this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
-    $this->SetParameterType('urlonly',CLEAN_INT);
-
-    $this->CreateParameter('inline',0,$this->Lang('help_inline'));
-    $this->SetParameterType('inline',CLEAN_INT);
-
-    $this->CreateParameter('enternumbertemplate','',$this->Lang('help_enternumbertemplate'));
-    $this->SetParameterType('enternumbertemplate',CLEAN_STRING);
-
-    $this->CreateParameter('entertexttemplate','',$this->Lang('help_enternumbertemplate'));
-    $this->SetParameterType('entertexttemplate',CLEAN_STRING);
-
-    $this->CreateParameter('destpage',0,$this->Lang('help_destpage'));
-    $this->SetParameterType('destpage',CLEAN_STRING);
-
-    $this->SetParameterType('smskey',CLEAN_STRING);
-    $this->SetParameterType(CLEAN_REGEXP.'/cgsms_.*/',CLEAN_NONE);
-
-    $this->CreateParameter('smsnum','',$this->Lang('help_smsnum'));
-    $this->SetParameterType('smsnum',CLEAN_INT);
-  }
-
-
-  /*---------------------------------------------------------
-   GetHeaderHTML()
-   ---------------------------------------------------------*/
-  function GetHeaderHTML()
-  {
-    return '';
-  }	
+	//partial setup for pre-1.10, backend setup for 1.10+
+	function InitializeAdmin()
+	{
+		$this->CreateParameter('action','enternumber',$this->Lang('help_action'));
+		$this->CreateParameter('destpage','0',$this->Lang('help_destpage'));
+		$this->CreateParameter('enternumbertemplate','',$this->Lang('help_enternumbertemplate'));
+		$this->CreateParameter('entertexttemplate','',$this->Lang('help_enternumbertemplate'));
+		$this->CreateParameter('inline',0,$this->Lang('help_inline'));
+		$this->CreateParameter('linktext',$this->Lang('send_to_mobile'),$this->Lang('help_linktext'));
+		$this->CreateParameter('smsnum',0,$this->Lang('help_smsnum'));
+		$this->CreateParameter('smstext','',$this->Lang('help_smstext'));
+		$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
+	}
 
 } // end of class
-
 #
 # EOF
 #
