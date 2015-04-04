@@ -58,8 +58,7 @@ class GoogleVoice
 		$this->_login = $login;
 		$this->_pass = $pass;
 
-		global $gCms;
-		$config = $gCms->getConfig();
+		$config = cmsms()->getConfig();
 		$this->_cookieFile = $config['root_url'].'/tmp/cache/gvCookies.txt';
 
 		$this->_ch = curl_init();
@@ -88,7 +87,7 @@ class GoogleVoice
 			      'Email' => $this->_login,
 			      'Passwd' => $this->_pass,
 			      'service' => 'grandcentral',
-			      'source' => 'CGSMS'
+			      'source' => 'SMSG'
 			);
 		debug_display($data);
 		curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $data );	
