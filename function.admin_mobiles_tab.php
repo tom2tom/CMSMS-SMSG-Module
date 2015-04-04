@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -30,24 +30,21 @@
 if(!($this->CheckPermission('AdministerSMSGateways') || $this->CheckPermission('ModifySMSGateways'))) return;
 
 // Get list of mobiles
-$query = 'SELECT * FROM  '.cms_db_prefix().'module_cgsms ORDER BY id';
-$tmp = $db->GetArray($query);
+$query = 'SELECT * FROM  '.cms_db_prefix().'module_smsg ORDER BY id';
+$tmp = $db->GetAll($query);
 if( $tmp )
   {
-    foreach( $tmp as &$rec )
-      {
-    $rec['edit_link'] = $this->CreateImageLink(
-       $id,'admin_edit_mobile',$returnid,'','icons/system/edit.gif',array('mid'=>$rec['id']));
-    $rec['del_link'] = $this->CreateImageLink(
-       $id,'admin_del_mobile',$returnid,'','icons/system/delete.gif',array('mid'=>$rec['id']),'delitmlink',$this->Lang('ask_delete_mobile'));
-      }
-    unset( $rec );
+	foreach( $tmp as &$rec )
+	  {
+		$rec['edit_link'] = $this->CreateImageLink($id,'admin_edit_mobile','','','icons/system/edit.gif',array('mid'=>$rec['id']));
+		$rec['del_link'] = $this->CreateImageLink($id,'admin_del_mobile','','','icons/system/delete.gif',array('mid'=>$rec['id']),'delitmlink',$this->Lang('ask_delete_mobile'));
+	  }
+	unset( $rec );
 
-    $smarty->assign('mobiles',$tmp);
+	$smarty->assign('mobiles',$tmp);
   }
 
-$smarty->assign('add_link',$this->CreateImageLink(
-   $id,'admin_edit_mobile',$returnid,$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',false));
+$smarty->assign('add_link',$this->CreateImageLink($id,'admin_edit_mobile','',$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',false));
 
 echo $this->ProcessTemplate('admin_mobiles_tab.tpl');
 #
