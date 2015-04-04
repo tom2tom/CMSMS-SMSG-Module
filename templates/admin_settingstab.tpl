@@ -13,8 +13,8 @@
   </p>
 </div>
 
-{foreach from=$objects key=classname item=one}
-<div id="{$classname}" class="sms_gateway_panel" style="margin-top:0.5em;margin-bottom:0.5em;">
+{foreach from=$objects key=alias item=one}
+<div id="{$alias}" class="sms_gateway_panel" style="margin-top:0.5em;margin-bottom:0.5em;">
 {$one.form}
 </div>
 {/foreach}
