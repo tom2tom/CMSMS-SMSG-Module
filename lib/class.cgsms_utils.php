@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,165 +27,253 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-class cgsms_utils
+class smsg_utils
 {
+  const MODNAME = 'SMSG';
+
   public static function get_gateways_full()
   {
-	//TODO deprecated Use gateways-table data
-    $dir = cms_join_path(dirname(__FILE__),'gateways','');
-    $files = glob($dir.'class.*sms_gateway.php');
-    if( count($files) == 0 )
-      {
-	return FALSE;
-      }
-    
-    $objs = array();
-    for( $i = 0; $i < count($files); $i++ )
-      {
-	include_once($files[$i]);
+	$module = cge_utils::get_module(self::MODNAME);
+	$db = $module->GetDb();
+	$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled<>0');
+	if( !$aliases )
+		return FALSE;
+	$dir = cms_join_path(dirname(__FILE__),'gateways','');
+	$objs = array();
+	foreach( $aliases as $thisone )
+	  {
+		$classname = $thisone.'_sms_gateway';
+		include_once($dir.'class.'.$classname.'.php');
+		$obj = new $classname($module);
+		$objs[$thisone] = array('obj' => $obj);
+	  }
 
-	$classname = str_replace(array($dir,'class.','.php'),array('','',''),$files[$i]);
-	$obj = new $classname(cge_utils::get_module('CGSMS'));
-	$objs[$classname] = array();
-	$objs[$classname]['obj'] = $obj;
-	$objs[$classname]['name'] = $obj->get_name();
-	$objs[$classname]['desc'] = $obj->get_description();
-	$objs[$classname]['form'] = $obj->get_setup_form();
-      }
-
-    return $objs;
+	return $objs;
   }
 
 
   public static function &get_gateway()
   {
-    $module = cge_utils::get_module('CGSMS');
-    $classname = $module->GetPreference('sms_gateway');
-    if( $classname == '' || $classname == '-1' ) return FALSE;
+	$module = cge_utils::get_module(self::MODNAME);
+	$db = $module->GetDb();
+	$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active<>0 AND enabled<>0');
+	if( !$alias ) return FALSE;
 
-    $fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
-    include_once($fn);
+	$classname = $alias.'_sms_gateway';
+	$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
+	require_once($fn);
+	$obj = new $classname($module);
 
-    $obj = new $classname($module);
-    if( !$obj ) return FALSE;
-      
-    return $obj;
+	if( !$obj ) return FALSE;
+	return $obj;
   }
 
+  public static function setgate_full(&$module,$classname,$conversion)
+  {
+	$fn = cms_join_path($module->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
+	if(is_file($fn))
+	  {
+		include($fn);
+		$obj = new $classname($module);
+		if( $obj )
+		  return self::setgate($module,$obj,$conversion);
+	  }
+	return FALSE;
+  }
+
+  public static function setgate(&$module,&$obj,$conversion)
+  {
+	$alias = $obj->get_alias();
+	if( !$alias ) return FALSE;
+	$title = $obj->get_name();
+	if( !$title ) return FALSE;
+	$desc = $obj->get_description();
+	if( !$desc ) $desc = NULL;
+
+	$db = $module->GetDb();
+	$pref = cms_db_prefix();
+	//upsert, sort-of
+	$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
+	$gid = $db->GetOne($sql,array($alias));
+	if( !$gid )
+	 {
+	  $gid = $db->GenID($pref.'module_smsg_gates_seq');
+	  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description,apiconvert) VALUES (?,?,?,?)';
+	  $db->Execute($sql,array($gid,$alias,$title,$desc,$conversion));
+	 }
+	else
+	 {
+	   $gid = (int)$gid;
+	   $sql = 'UPDATE '.$pref.
+		'module_smsg_gates set title=?,description=?,apiconvert=? WHERE gate_id=?';
+	   $db->Execute($sql,array($title,$desc,$conversion,$gid));
+	 }
+	return $gid;
+  }
+
+  //$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+  public static function setprops(&$module,$gid,$props)
+  {
+	$db = $module->GetDb();
+	$pref = cms_db_prefix();
+	//upsert, sort-of
+	$sql1 = 'UPDATE '.$pref.
+	 'module_smsg_props SET title=?,value=?,apiconvert=?,apiorder=? WHERE gate_id=? AND apiname=?';
+	$sql2 = 'INSERT INTO '.$pref.
+	 'module_smsg_props (gate_id,title,value,apiname,apiconvert,apiorder)
+SELECT (?,?,?,?,?,?) FROM (SELECT 1 AS dummy) AS Z WHERE NOT EXISTS
+(SELECT 1 FROM '.$pref.'module_smsg_props AS T1 WHERE T1.gate_id=? AND T1.apiname=?)';
+	$o = 1;
+	foreach($props as &$data)
+	  {
+		$db->Execute($sql1,array($data[0],$data[2],$data[3],$o,$gid,$data[1]));
+		$db->Execute($sql2,array($gid,$data[0],$data[2],$data[1],$data[3],$o,$gid,$data[1]));
+		$o++;
+	  }
+	unset($data);
+  }
+
+  public static function refresh_gateways()
+  {
+	$dir = cms_join_path(dirname(__FILE__),'gateways','');
+	$files = glob($dir.'class.*sms_gateway.php');
+	if( !$files )
+		 return;
+
+	$module = cge_utils::get_module(self::MODNAME);
+	$db = $module->GetDb();
+	$pref = cms_db_prefix();
+	$query = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
+	$found = array();
+	foreach( $files as &$thisfile )
+	  {
+		include($thisfile);
+		$classname = str_replace(array($dir,'class.','.php'),array('','',''),$thisfile);
+		$obj = new $classname($module);
+		$alias = $obj->get_alias();
+		$res = $db->GetOne($query,array($alias));
+		if( !$res )
+			$res = $obj->upsert_tables();
+		$found[] = $res;
+	  }
+	unset($thisfile);
+
+	$fillers = implode(',',$found);
+	$query = 'DELETE FROM '.$pref.'module_smsg_gates WHERE gate_id NOT IN ('.$fillers.')';
+	$db->Execute($query);
+	$query = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id NOT IN ('.$fillers.')';
+	$db->Execute($query);
+  }
 
   public static function get_msg(&$gateway,$num,$stat,$msg,$opt = '')
   {
-    $module = cge_utils::get_module('CGSMS');
-    $ip = getenv('REMOTE_ADDR');
-    $txt = '';
-    if( $stat == cgsms_sender_base::STAT_OK )
-      {
-        $txt = $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //BUGGY
-      }
-    else if( $stat == cgsms_sender_base::STAT_ERROR_OTHER )
-      {
-        $txt = $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //BUGGY
-      }
-    else if( $stat != cgsms_sender_base::STAT_NOTSENT )
-      {
-        $txt = $module->Lang($stat,$msg,$num,$ip); //BUGGY
-      }
-    return $txt;
+	$module = cge_utils::get_module(self::MODNAME);
+	$ip = getenv('REMOTE_ADDR');
+	$txt = '';
+	if( $stat == smsg_sender_base::STAT_OK )
+	  {
+		$txt = $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
+	  }
+	else if( $stat == smsg_sender_base::STAT_ERROR_OTHER )
+	  {
+		$txt = $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
+	  }
+	else if( $stat != smsg_sender_base::STAT_NOTSENT )
+	  {
+		$txt = $module->Lang($stat,$msg,$num,$ip); //CHECKME
+	  }
+	return $txt;
   }
 
 
   public static function get_delivery_msg($gateway,$del_status,$smsid,$smsto)
   {
-    $module = cge_utils::get_module('CGSMS');
-    $ip = getenv('REMOTE_ADDR');
-    $txt = '';
+	$module = cge_utils::get_module(self::MODNAME);
+	$ip = getenv('REMOTE_ADDR');
+	$txt = '';
 
-    $txt = $module->Lang($del_status,$smsid,$smsto,$ip);
-    return $txt;
+	$txt = $module->Lang($del_status,$smsid,$smsto,$ip);
+	return $txt;
   }
 
 
-  static public function get_reporting_url()
+  public static function get_reporting_url()
   {
-    // get the default page id.
-    global $gCms;
-    $contentops = $gCms->GetContentOperations();
-    $returnid = $contentops->GetDefaultContent();
-    $module = cge_utils::get_module('CGSMS');
+	// get the default page id.
+	$contentops = cmsms()->GetContentOperations();
+	$returnid = $contentops->GetDefaultContent();
+	$module = cge_utils::get_module(self::MODNAME);
 
-    $prettyurl = 'CGSMS/devreport';
-    $url = $module->CreateURL('cntnt01','devreport',$returnid,array(),false,$prettyurl);
-    return $url;
+	$prettyurl = 'SMSG/devreport';
+	$url = $module->CreateURL('cntnt01','devreport',$returnid,array(),false,$prettyurl);
+	return $url;
   }
 
-  
-  static public function is_valid_phone($number)
-  {
-    $formats = array('+##########',
-		     '+###########',
-		     '###-###-####', 
-		     '####-###-###',
-		     '(###) ###-###', 
-		     '####-####-####',
-		     '##-###-####-####', 
-		     '####-####', 
-		     '###-###-###',
-		     '#####-###-###', 
-		     '##########',
-		     '###########');
 
-    $str = ereg_replace('[0-9]','#',$number);
-    if( in_array($str,$formats) ) return TRUE;
-    return FALSE;
+  public static function is_valid_phone($number)
+  {
+	$formats = array(
+	 '+##########',
+	 '+###########',
+	 '###-###-####', 
+	 '####-###-###',
+	 '(###) ###-###', 
+	 '####-####-####',
+	 '##-###-####-####', 
+	 '####-####', 
+	 '###-###-###',
+	 '#####-###-###', 
+	 '##########',
+	 '###########');
+
+	$str = ereg_replace('[0-9]','#',$number);
+	if( in_array($str,$formats) ) return TRUE;
+	return FALSE;
   }
 
 
   public static function log_send($ip_address,$mobile,$msg,$statusmsg = '')
   {
-    global $gCms;
-    $db = $gCms->GetDb();
-
-    $query = 'INSERT INTO '.cms_db_prefix().'module_cgsms_sent
-               (mobile,ip,msg,sdate) VALUES (?,?,?,NOW())';
-    $db->Execute($query,array($mobile,$ip_address,$msg));
+	$db = cmsms()->GetDb();
+	$query = 'INSERT INTO '.cms_db_prefix().
+	 'module_smsg_sent (mobile,ip,msg,sdate) VALUES (?,?,?,NOW())';
+	$db->Execute($query,array($mobile,$ip_address,$msg));
   }
 
   public static function ip_can_send($ip_address)
   {
-    global $gCms;
-    $db = $gCms->GetDb();
+	$module = cge_utils::get_module(self::MODNAME);
+	$db = $module->GetDb();
 
-    $now = $db->DbTimeStamp(time());
-    $date1 = $db->DbTimeStamp(time()-3600);
-    $date2 = $db->DbTimeStamp(time()-24*3600);
-    $query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix()."module_cgsms_sent
-               WHERE ip = ? AND (sdate BETWEEN $date1 and $now)";
-    $tmp1 = $db->GetOne($query,array($ip_address));
+	$now = $db->DbTimeStamp(time());
+	$date1 = $db->DbTimeStamp(time()-3600);
+	$date2 = $db->DbTimeStamp(time()-24*3600);
+	$query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix().
+	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date1 and $now)";
+	$tmp1 = $db->GetOne($query,array($ip_address));
 
-    $module = cge_utils::get_module('CGSMS');
-    $hourly = $module->GetPreference('sms_hourlylimit',5);
-    if( $tmp1 > $hourly ) return FALSE;
+	$hourly = $module->GetPreference('sms_hourlylimit',5);
+	if( $tmp1 > $hourly ) return FALSE;
 
-    $query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix()."module_cgsms_sent
-               WHERE ip = ? AND (sdate BETWEEN $date2 and $now)";
-    $daily = $module->GetPreference('sms_dailylimit',20);
-    $tmp2 = $db->GetOne($query,array($ip_address));
-    if( $tmp2 > $daily ) return FALSE;
+	$query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix().
+	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date2 and $now)";
+	$daily = $module->GetPreference('sms_dailylimit',20);
+	$tmp2 = $db->GetOne($query,array($ip_address));
+	if( $tmp2 > $daily ) return FALSE;
 
-    return TRUE;
+	return TRUE;
   }
 
-  public static function text_is_valid($text)
+  public static function text_is_valid($text,$len=160)
   {
-    if( $text == '' ) return FALSE;
-    if( strlen($text) > 160 ) return FALSE;
-    if( preg_match(
-		  '~[^\w\s@£$¥èéùìòÇ\fØø\nÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./\:;<=>\?¡ÄÖÑÜ§¿äöñüà\^\{\}\[\]\~\|€]~',
-		  $text) ) return FALSE;
-    return TRUE;
+	if( $text == '' ) return FALSE;
+	if( $len && strlen($text) > $len ) return FALSE;
+	if( preg_match(
+	  '~[^\w\s@£$¥èéùìòÇ\fØø\nÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./\:;<=>\?¡ÄÖÑÜ§¿äöñüà\^\{\}\[\]\~\|€]~',
+	  $text) ) return FALSE;
+	return TRUE;
   }
 } // end of class
-
 #
 # EOF
 #
