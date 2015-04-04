@@ -132,12 +132,16 @@ class skeleton_sms_gateway extends smsg_sender_base
 	{
 		$this->_rawstatus = $str;
 		//TODO
+		$this->set_status(self::STAT_ERROR_AUTH); //or whatever
 	}
 
 	public function process_delivery_report()
 	{
 		//TODO
-		return '';
+	    $smsto = '';
+		$smsid = '';
+		$status = smsg_sender_base::DELIVERY_UNKNOWN; //or whatever
+		return smsg_utils::get_delivery_msg($this,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()
