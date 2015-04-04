@@ -1,10 +1,32 @@
 <?php
-#A
-$lang['add_mobile'] = 'Add Mobile';
-$lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
-$lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
-$lang['account'] = 'Account';
+# Gateway-specific strings
+
+$lang['advice_clickatell'] = '<a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - wide-coverage gateway, mixed reviews.';
+$lang['description_clickatell'] = 'Relatively-easy, wide-coverage gateway, mixed reviews';
 $lang['apiid'] = 'API ID';
+$lang['clickatell_auth'] = 'Authentication failure: %s';
+$lang['clickatell_fail'] = 'Send message to %s failed';
+$lang['clickatell_success'] = 'Sent message ID: %s to %s';
+
+$lang['advice_googlevoice'] = '<a href="http://voice.google.com"><strong>Google Voice</strong></a> - experimental (but working at this time) utility to allow sending SMS messages through Google Voice.';
+$lang['description_googlevoice'] = 'TODO';
+$lang['email'] = 'Email address';
+
+$lang['advice_smsbroadcast'] = '<a href="https://www.smsbroadcast.com.au/"><strong>Smsbroadcast</strong></a> - Australia-only coverage, highly regarded';
+$lang['description_smsbroadcast'] = 'Simple, Australia-only coverage gateway, highly-rated';
+$lang['reference'] = 'Reference';
+
+$lang['advice_twilio'] = '<a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - global SMS gateway, low cost, well regarded';
+$lang['description_twilio'] = 'Low cost, global gateway, well regarded';
+$lang['token'] = 'Token';
+
+#A
+$lang['account'] = 'Account';
+$lang['add_mobile'] = 'Add Mobile';
+$lang['add_parameter'] = 'Add parameter';
+$lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
+$lang['apiname'] = 'API Name';
+$lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
 
 #B
 
@@ -12,31 +34,27 @@ $lang['apiid'] = 'API ID';
 #C
 $lang['cancel'] = 'Cancel';
 $lang['custom'] = 'Custom';
-$lang['clickatell_auth'] = 'Authentication failure: %s';
-$lang['clickatell_fail'] = 'Send message to %s failed';
-$lang['clickatell_success'] = 'Sent message ID: %s to %s';
 
 #D
 $lang['default_templates'] = 'Default Templates';
+$lang['delete'] = 'Delete';
+$lang['delete_tip'] = 'delete selected parameter(s)';
 $lang['dflt_enternumber_template'] = 'System Default &quot;Enter Your Number&quot; Template';
 $lang['dflt_entertext_template'] = 'System Default &quot;Enter Your Message Text&quot; Template';
-$lang['description_clickatell'] = 'Relatively-easy, wide-coverage gateway, mixed reviews';
-$lang['description_googlevoice'] = 'TODO';
-$lang['description_smsbroadcast'] = 'Simple, Australia-only coverage gateway, highly-rated';
-$lang['description_twilio'] = 'Low cost, global gateway, well regarded';
 
 #E
 $lang['enter_mobile_number'] = 'Enter Mobile Phone Number';
 $lang['enter_number_templates'] = '&quot;Enter Your Number&quot; Templates';
 $lang['enter_text_templates'] = '&quot;Send A Message&quot; Templates';
-$lang['error_db_op_failed'] = 'Database operation failed, please contact system administrator';
-$lang['error_invalid_info'] = 'One or more values specified are invalid';
+$lang['error_db_op_failed'] = 'Database operation failed, please contact the system administrator';
+$lang['error_invalid_info'] = 'One or more specified values are invalid';
 $lang['error_invalid_number'] = 'The mobile phone number you entered is invalid';
 $lang['error_invalid_text'] = 'The text you entered contains invalid characters';
 $lang['error_name_exists'] = 'An item by that name already exists';
 $lang['error_nodatafound'] = 'No data are available';
-$lang['error_nogatewaysfound'] = 'Could not find any SMS gateways';
-$lang['error_notfound'] = 'The requested item could not be found';
+$lang['error_nogatewaysfound'] = 'Could not find any SMS gateway';
+$lang['error_noparentclass'] = 'Could not find the CGExtensions module';
+$lang['error_notfound'] = 'Could not find the requested item';
 
 #F
 $lang['frame_title'] = '%s SMS Gateway';
@@ -53,14 +71,17 @@ This parameter is used to decide the behavour of the module. Valid values for th
 <li>entertext - Display a link to a form allowing the user to send user-defined text to a pre-defined mobile phone number.</li>
 </ul>
 EOT;
-$lang['help_smstext'] = 'Applicable only to the enternumber action, this parameter defines the text that will be sent in the sms message.   The text is never displayed in the HTML output of the page for security reasons.';
-$lang['help_linktext'] = 'This parameter allows overriding the text that is displayed in the link.  This parameter has no effect when the urlonly parameter is used.';
-$lang['help_urlonly'] = 'This parameter indicates that instead of a full link only the URL should be echoed, allowing you to build your own link.';
-$lang['help_inline'] = 'This parameter indicates that the form should replace the link (instead of the default content area of the page).  It is not useful with the destpage parameter';
 $lang['help_destpage'] = 'This parameter indicates that the resulting form should be displayed on a different CMSMS content page (specified by page id or alias)';
-$lang['help_smsnum'] = 'Applicable only to the entertext action, this parameter defines the numeric ID of a pre-defined mobile phone number';
+$lang['help_dnd'] = 'You can change the order by dragging row(s)';
 $lang['help_enternumbertemplate'] = 'Applicable only to the enternumber action, this parameter allows specifying a non default enternumber template to create the form with';
 $lang['help_entertexttemplate'] = 'Applicable only to the entertext action, this parameter allows specifying a non default entertext template to create the form with';
+$lang['help_inline'] = 'This parameter indicates that the form should replace the link (instead of the default content area of the page).  It is not useful with the destpage parameter';
+$lang['help_linktext'] = 'This parameter allows overriding the text that is displayed in the link.  This parameter has no effect when the urlonly parameter is used.';
+$lang['help_smsnum'] = 'Applicable only to the entertext action, this parameter defines the numeric ID of a pre-defined mobile phone number';
+$lang['help_smstext'] = 'Applicable only to the enternumber action, this parameter defines the text that will be sent in the sms message. The text is never displayed in the HTML output of the page for security reasons.';
+$lang['help_sure'] = 'Be <strong>very sure</strong> about what you\'re doing, before modifying anything except title(s) and/or value(s)!';
+$lang['help_urlcheck'] = 'Refer to the <a href="%s">%s</a> for details';
+$lang['help_urlonly'] = 'This parameter indicates that instead of a full link only the URL should be echoed, allowing you to build your own link.';
 $lang['help'] = <<<EOT
 <h3>What Does This Do?</h3>
 <p>This module allows website visitors to either send a pre-determined (and encrypted) text message to any text capable phone, or to allow sending a user specified text message to a pre-determined (and hidden) mobile phone number.  It is useful for such things as sending addresses from a directory to a persons mobile phone number... or for messaging a website administrator with urgent information.</p>
@@ -74,38 +95,37 @@ $lang['help'] = <<<EOT
 <li>When sending a pre-defined message the text of the message is stored in the database and the visitor is given a unique key to the text of the message, preventing alteration of the text itself.</li>
 </ol>
 <h3>SMS Gateways</h3>
-<p>This module depends on selecting a supported SMS gateway and filling in the required authentication information. You will need to sign up to at least one of the supported gateways.  This may involve paying money to a third party.</p>
-<p>Different SMS Gateways will have different requirements and limitations on the amount, size, source, and destination messages that can be sent... it is your responsibility to understand these limitations.</p>
+<p>This module depends on selecting a supported SMS gateway and recording the corresponding authentication and other parameters. You will need to sign up to at least one of the supported gateways.  This will typically involve paying money to the service provider.</p>
+<p>SMS gateways will have their own requirements and limitations on the amount, size, source, and destination messages that can be sent. It is your responsibility to understand these limitations.</p>
 <p>Currently, these gateways are implemented:</p>
 <ul>
-<li><a href="https://www.clickatell.com"><strong>Clickatell</strong></a> - wide-coverage gateway, mixed reviews.</li>
-<li><a href="http://voice.google.com"><strong>Google Voice</strong></a> - experimental (but working at this time) utility to allow sending SMS messages through Google Voice.</li>
-<li><a href="https://www.smsbroadcast.com.au/"><strong>Smsbroadcast</strong></a> - Australia-only coverage, well regarded.</li>
-<li><a href="https://www.twilio.com/sms"><strong>Twilio</strong></a> - global SMS gateway, low cost, well regarded.</li>
+<li>{$lang['advice_clickatell']}</li>
+<li>{$lang['advice_googlevoice']}</li>
+<li>{$lang['advice_smsbroadcast']}</li>
+<li>{$lang['advice_twilio']}</li>
 </ul>
 <h3>How do I use it</h3>
 <p>The first thing you should do is to go into the module's admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
 <p>Secondly you should perform at least one SMS Test (there is a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
 <p>Thirdly you need to place at least one tag into a page, or page template in the CMSMS Admin console.  There are two primary ways in which to use this module:</p>
 <ol>
- <li>Send predefined text to a user defined mobile number <code>{CGSMS action='enternumber' text='the quick brown fox'}</code>
+ <li>Send predefined text to a user defined mobile number <code>{SMSG action='enternumber' text='the quick brown fox'}</code>
   <p>This will generate a link that when clicked will display a form to the user to allow them to enter a mobile phone number.</p>
  </li>
- <li>Send user defined text to a predefined mobile number <code>{CGSMS action='entertext' smsnum=5}</code>
+ <li>Send user defined text to a predefined mobile number <code>{SMSG action='entertext' smsnum=5}</code>
   <p>This will generate a link that when clicked will display a form to allow the user to enter a 160 character SMS Message that is then sent to a predetermined mobile number witht he id=5.</p>
  </li>
 </ol>
 <h3>API</h3>
 <p>This module contains a rich API for sending SMS messages from other modules or from UDTs.
-The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php. It comprises</p>
+The API for each gateway is set out in file .../lib/class.smsg_sender_base.php. It comprises</p>
 <ul>
+<li>get_alias()</li>
 <li>get_description()</li>
 <li>get_name()</li>
-<li>get_raw_status()</li>
 <li>get_status()</li>
 <li>get_statusmsg()</li>
 <li>multi_number_separator()</li>
-<li>process_delivery_report()</li>
 <li>require_country_prefix()</li>
 <li>require_plus_prefix()</li>
 <li>reset()</li>
@@ -118,7 +138,7 @@ The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php.
 </ul>
 <p>A brief example of how to use it is:</p>
 <pre style="margin-left: 5em;"><code>
-\$gateway = cgsms_utils::get_gateway();
+\$gateway = smsg_utils::get_gateway();
 \$gateway->set_msg('hello world');
 \$gateway->set_num('12225551212');
 \$gateway->send();
@@ -129,7 +149,7 @@ The API for each gateway is set out in file .../lib/class.cgsms_sender_base.php.
 <li>CMS Made Simple 1.6.6 or greater</li>
 <li>PHP Version 5.2+ (5.2.11 or better is recommended)</li>
 <li>A subscription or access to at least one suported gateway.</li>
-<li>Your website host must allow outgoing HTTP connections</li>
+<li>The website host must allow outgoing HTTP connections</li>
 </ul>
 <h3>Support</h3>
 <p>This module does not include commercial support. However, there are a number of resources available to help you with it:</p>
@@ -156,6 +176,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 <a href="http://www.gnu.org/licenses/licenses.html#AGPL">GNU Affero General Public License</a> for more details.</p>
 EOT;
+$lang['helptitle'] = 'Help';
 
 #I
 $lang['id'] = 'Id';
@@ -192,26 +213,27 @@ $lang['number'] = 'Number';
 
 #P
 $lang['password'] = 'Password';
-$lang['perm_admingates'] = 'Administer SMS Gateways';
-$lang['perm_modgates'] = 'Modify SMS Gateway Settings';
-$lang['perm_modgatetemplates'] = 'Modify SMS Gateway Templates';
-$lang['postinstall'] = 'Module successfully installed, now please ensure that it is configured properly for use, including related permissions';
+$lang['perm_admin'] = 'Administer SMS Gateways';
+$lang['perm_modify'] = 'Modify SMS Gateway Settings';
+$lang['perm_templates'] = 'Modify SMS Gateway Templates';
+$lang['postinstall'] = 'Module successfully installed, now please ensure that it is configured properly for use, and apply related permissions';
 $lang['postuninstall'] = 'Module successfully removed';
-$lang['prompt_sms_daily_limit'] = 'Number of Messages that can be sent by one IP address per day';
-$lang['prompt_sms_hourly_limit'] = 'Number of Messages that can be sent by one IP address per hour';
+$lang['prompt_sms_daily_limit'] = 'Number of messages that can be sent by one IP address per day';
+$lang['prompt_sms_hourly_limit'] = 'Number of messages that can be sent by one IP address per hour';
 
 #Q
 
 
 #R
-$lang['reporting_url'] = 'URL to which the sms gateway can send delivery reports';
+$lang['reporting_url'] = 'URL to which the SMS gateway can send delivery reports';
 
 #S
 $lang['security_tab_lbl'] = 'Security / Anti-Spam';
+$lang['select'] = 'Select';
 $lang['selected_gateway'] = 'Selected Gateway';
 $lang['send'] = 'Send';
 $lang['send_me_message'] = 'Send me an SMS';
-$lang['send_to_mobile'] = 'Send to Mobile';
+$lang['send_to_mobile'] = 'Send to mobile';
 $lang['settings'] = 'Settings';
 $lang['sms_message_sent'] = 'Your message has been sent... Actual delivery time may vary';
 $lang['sms_sent'] = 'SMS Message "%s" sent to %s from IP:%s SMSID=%s';
@@ -227,12 +249,13 @@ $lang['sms_error_invalid_data'] = 'Data Error attempting to send SMS Message "%s
 $lang['sms_error_limit'] = 'Limit Error attempting to send SMS Message "%s" to %s from IP:%s';
 $lang['sms_error_other'] = 'Unknown Error (%s) attempting to send SMS Message "%s" to %s from IP:%s';
 $lang['submit'] = 'Submit';
+$lang['sure_ask'] = 'Are you sure ?';
 
 #T
 $lang['test'] = 'Test';
+$lang['title'] = 'Title';
 $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
-$lang['token'] = 'Token';
 
 #U
 $lang['uninstalled'] = 'Module uninstalled.';
@@ -240,7 +263,7 @@ $lang['upgraded'] = 'Module upgraded to version %s.';
 $lang['username'] = 'Username';
 
 #V
-
+$lang['value'] = 'Value';
 
 
 #W
