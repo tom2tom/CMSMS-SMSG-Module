@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -28,10 +28,10 @@
 #END_LICENSE
 
 echo $this->ShowTemplateList($id,$returnid,'entertext_',
-     CGSMS::PREF_NEWENTERTEXT_TPL,'entertext',
-     CGSMS::PREF_DFLTENTERTEXT_TPL,
-     $this->Lang('title_entertext_templates'),
-     $this->Lang('info_entertext_templates'));
+	SMSG::PREF_NEWENTERTEXT_TPL,'entertext',
+	SMSG::PREF_DFLTENTERTEXT_TPL,
+	$this->Lang('title_entertext_templates'),
+	$this->Lang('info_entertext_templates'));
 
 #
 # EOF

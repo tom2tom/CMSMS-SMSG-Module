@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -28,18 +28,18 @@
 #END_LICENSE
 
 echo $this->GetDefaultTemplateForm($this,$id,$returnid,
-   CGSMS::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
-   $this->Lang('dflt_enternumber_template'),
-   'orig_enternumber_template.tpl',
-   $this->Lang('info_sysdflt_enternumber_template'));
+	SMSG::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
+	$this->Lang('dflt_enternumber_template'),
+	'orig_enternumber_template.tpl',
+	$this->Lang('info_sysdflt_enternumber_template'));
 
 echo '<br /><hr />';
 
 echo $this->GetDefaultTemplateForm($this,$id,$returnid,
-   CGSMS::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
-   $this->Lang('dflt_entertext_template'),
-   'orig_entertext_template.tpl',
-   $this->Lang('info_sysdflt_entertext_template'));
+	SMSG::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
+	$this->Lang('dflt_entertext_template'),
+	'orig_entertext_template.tpl',
+	$this->Lang('info_sysdflt_entertext_template'));
 
 #
 # EOF
