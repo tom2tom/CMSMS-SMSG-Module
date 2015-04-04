@@ -58,7 +58,7 @@ $lang['error_notfound'] = 'Could not find the requested item';
 
 #F
 $lang['frame_title'] = '%s SMS Gateway';
-$lang['friendlyname'] = 'Calguys SMS Utility';
+$lang['friendlyname'] = 'SMS Utility';
 $lang['from'] = 'From';
 
 #G
