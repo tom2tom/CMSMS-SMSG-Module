@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -27,39 +27,48 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-cgsms_utils::refresh_gateways();
-$objs = cgsms_utils::get_gateways_full();
+smsg_utils::refresh_gateways();
+$objs = smsg_utils::get_gateways_full();
 if( !$objs )
   {
-    echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
-    return;
+	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
+	return;
   }
+
+$listnames = array();
+$listnames[-1] = $this->Lang('none');
+foreach( $objs as $key=>&$rec )
+  {
+	$listnames[$key] = $rec['obj']->get_name();
+	$rec['form'] = $rec['obj']->get_setup_form();
+	unset($rec['obj']);
+  }
+unset($rec);
+
+$current = $db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE enabled=1 AND active=1');
+if( $current != FALSE )
+	$current = (int)$current;
+else
+	$current = -1;
 
 $padm = $this->CheckPermission('AdministerSMSGateways');
 $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
 $ptpl = $padm || $this->CheckPermission('ModifySMSGateTemplates');
 
-$listname = array();
-$listnames[-1] = $this->Lang('none');
-foreach( $objs as $key => $rec )
-  {
-    $listnames[$key] = $rec['name'];
-  }
-
 echo $this->StartTabHeaders();
 
 if( $pmod )
   {
-    echo $this->SetTabHeader('mobiles',$this->Lang('mobile_numbers'));
-    echo $this->SetTabHeader('settings',$this->Lang('settings'));
-    echo $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
-    echo $this->SetTabHeader('test',$this->Lang('test'));
+	echo $this->SetTabHeader('mobiles',$this->Lang('mobile_numbers'));
+	echo $this->SetTabHeader('settings',$this->Lang('settings'));
+	echo $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
+	echo $this->SetTabHeader('test',$this->Lang('test'));
   }
 if( $ptpl )
   {
-    echo $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates'));
-    echo $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
-    echo $this->SetTabHeader('dflt_templates',$this->Lang('default_templates'));
+	echo $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates'));
+	echo $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
+	echo $this->SetTabHeader('dflt_templates',$this->Lang('default_templates'));
   }
 echo $this->EndTabHeaders();
 
@@ -67,66 +76,46 @@ echo $this->StartTabContent();
 
 if( $pmod )
   {
-    echo $this->StartTab('mobiles',$params);
-    include(cms_join_path(dirname(__FILE__),'function.admin_mobiles_tab.php'));
-    echo $this->EndTab();
-    
-    echo $this->StartTab('settings',$params);
-    $smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_savesettings'));
-    $smarty->assign('formend',$this->CreateFormEnd());
-    $smarty->assign('reporturl',cgsms_utils::get_reporting_url());
-    $smarty->assign('gatewaynames',$listnames);
-    $smarty->assign('sms_gateway',$this->GetPreference('sms_gateway','-1'));
-    $smarty->assign('objects',$objs);
-    echo $this->ProcessTemplate('admin_settingstab.tpl');
-    echo $this->EndTab();
+	echo $this->StartTab('mobiles',$params);
+	include(cms_join_path(dirname(__FILE__),'function.admin_mobiles_tab.php'));
+	echo $this->EndTab();
 
-    echo $this->StartTab('security',$params);
-    include(cms_join_path(dirname(__FILE__),'function.security_tab.php'));
-    echo $this->EndTab();
+	echo $this->StartTab('settings',$params);
+	$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_savesettings'));
+	$smarty->assign('formend',$this->CreateFormEnd());
+	$smarty->assign('reporturl',smsg_utils::get_reporting_url());
+	$smarty->assign('gatewaynames',$listnames);
+	$smarty->assign('sms_gateway',$current);
+	$smarty->assign('objects',$objs);
+	echo $this->ProcessTemplate('admin_settingstab.tpl');
+	echo $this->EndTab();
 
-    echo $this->StartTab('test',$params);
-    $smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_smstest'));
-    $smarty->assign('formend',$this->CreateFormEnd());
-    echo $this->ProcessTemplate('admin_testtab.tpl');
-    echo $this->EndTab();
+	echo $this->StartTab('security',$params);
+	include(cms_join_path(dirname(__FILE__),'function.security_tab.php'));
+	echo $this->EndTab();
+
+	echo $this->StartTab('test',$params);
+	$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_smstest'));
+	$smarty->assign('formend',$this->CreateFormEnd());
+	echo $this->ProcessTemplate('admin_testtab.tpl');
+	echo $this->EndTab();
   }
 if( $ptpl )
   {
-    echo $this->StartTab('enternumber',$params);
-    include(cms_join_path(dirname(__FILE__),'function.enternumber_templates_tab.php'));
-    echo $this->EndTab();
+	echo $this->StartTab('enternumber',$params);
+	include(cms_join_path(dirname(__FILE__),'function.enternumber_templates_tab.php'));
+	echo $this->EndTab();
 
-    echo $this->StartTab('entertext',$params);
-    include(cms_join_path(dirname(__FILE__),'function.entertext_templates_tab.php'));
-    echo $this->EndTab();
+	echo $this->StartTab('entertext',$params);
+	include(cms_join_path(dirname(__FILE__),'function.entertext_templates_tab.php'));
+	echo $this->EndTab();
 
-    echo $this->StartTab('dflt_templates',$params);
-    include(cms_join_path(dirname(__FILE__),'function.dflt_templates_tab.php'));
-    echo $this->EndTab();
+	echo $this->StartTab('dflt_templates',$params);
+	include(cms_join_path(dirname(__FILE__),'function.dflt_templates_tab.php'));
+	echo $this->EndTab();
   }
 
 echo $this->EndTabContent();
-
-//js to show only the frameset for selected gateway
-echo <<<EOS
-
-<script type="text/javascript">
-//<![CDATA[
-$(document).ready(function(){
-  $('.sms_gateway_panel').hide();
-  var val = $('#sms_gateway').val();
-  $('#'+val).show();
-  $('#sms_gateway').change(function(){
-    $('.sms_gateway_panel').hide();
-    var val = $('#sms_gateway').val();
-    $('#'+val).show();
-  });
-});
-//]]>
-</script>
-
-EOS;
 #
 # EOF
 #
