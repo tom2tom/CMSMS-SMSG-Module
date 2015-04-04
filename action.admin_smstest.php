@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -31,42 +31,43 @@ $this->SetCurrentTab('test');
 
 if( isset($params['submit']) )
   {
-    $number = '';
-    if( isset($params['mobile']) )
-      {
-	$number = trim($params['mobile']);
-      }
-
-    if( $number == '' || !cgsms_utils::is_valid_phone($number) )
-      {
-	$this->SetError($this->Lang('error_invalidnumber'));
-      }
-    else
-      {
-	// ready to test
-	$sender = cgsms_utils::get_gateway();
-	if( !$sender )
+	$number = '';
+	if( isset($params['mobile']) )
 	  {
-	    $this->SetError($this->Lang('error_nogateway'));
+		$number = trim($params['mobile']);
+	  }
+
+	if( $number == '' || !smsg_utils::is_valid_phone($number) )
+	  {
+		$this->SetError($this->Lang('error_invalidnumber'));
 	  }
 	else
 	  {
-	    $sender->set_num($number);
-	    $sender->set_msg(CGSMS::TEST_MESSAGE.' @'.strftime('%X %Z'));
-	    $sender->send();
-	    $status = $sender->get_status();
-	    $msg = $sender->get_statusmsg();
-	    if( $status != cgsms_sender_base::STAT_OK )
-	      {
-		$this->SetError($msg);
-	      }
-	    else
-	      {
-		$this->SetMessage($msg);
-	      }
+		// ready to test
+		$sender = smsg_utils::get_gateway();
+		if( !$sender )
+		  {
+			$this->SetError($this->Lang('error_nogateway'));
+		  }
+		else
+		  {
+			$sender->set_num($number);
+			$sender->set_msg(SMSG::TEST_MESSAGE.' @'.strftime('%X %Z'));
+			$sender->send();
+			$status = $sender->get_status();
+			$msg = $sender->get_statusmsg();
+			if( $status != smsg_sender_base::STAT_OK )
+			  {
+				$this->SetError($msg);
+			  }
+			else
+			  {
+				$this->SetMessage($msg);
+			  }
+		  }
 	  }
-      }
   }
+
 $this->RedirectToTab($id);
 #
 # EOF
