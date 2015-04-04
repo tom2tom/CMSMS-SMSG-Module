@@ -1,3 +1,4 @@
+<?php
 /**
  * A class to handle secure encryption and decryption of arbitrary data
  *
@@ -167,3 +168,5 @@ class Encryption {
         return substr($data, 0, -1 * $last);
     }
 }
+
+?>
