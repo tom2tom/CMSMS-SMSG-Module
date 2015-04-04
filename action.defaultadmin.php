@@ -45,11 +45,9 @@ foreach( $objs as $key=>&$rec )
   }
 unset($rec);
 
-$current = $db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE enabled=1 AND active=1');
-if( $current != FALSE )
-	$current = (int)$current;
-else
-	$current = -1;
+$current = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled=1 AND active=1');
+if( $current == FALSE )
+	$current = '-1';
 
 $padm = $this->CheckPermission('AdministerSMSGateways');
 $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
