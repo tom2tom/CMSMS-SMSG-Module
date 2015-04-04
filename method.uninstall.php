@@ -1,7 +1,7 @@
 <?php
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: CGSMS (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
+# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
 # An addon module for CMS Made Simple to provide the ability for other
 # modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -31,23 +31,23 @@ $db = $this->GetDb();
 $dict = NewDataDictionary($db);
 $pref = cms_db_prefix();
 
-$sqlarray = $dict->DropTableSQL($pref.'module_cgsms');
+$sqlarray = $dict->DropTableSQL($pref.'module_smsg');
 $dict->ExecuteSQLArray($sqlarray);
-$sqlarray = $dict->DropTableSQL($pref.'module_cgsms_gates');
+$sqlarray = $dict->DropTableSQL($pref.'module_smsg_gates');
 $dict->ExecuteSQLArray($sqlarray);
-$sqlarray = $dict->DropTableSQL($pref.'module_cgsms_props');
+$sqlarray = $dict->DropTableSQL($pref.'module_smsg_props');
 $dict->ExecuteSQLArray($sqlarray);
-$sqlarray = $dict->DropTableSQL($pref.'module_cgsms_sent');
+$sqlarray = $dict->DropTableSQL($pref.'module_smsg_sent');
 $dict->ExecuteSQLArray($sqlarray);
 
-$db->DropSequence($pref.'module_cgsms_gates_seq');
+$db->DropSequence($pref.'module_smsg_gates_seq');
 
 $this->DeleteTemplate();
 $this->RemovePreference();
 
 $this->RemovePermission('AdministerSMSGateways');
 $this->RemovePermission('ModifySMSGateways');
-$this->RemovePermission('ModifySMSGatewayTemplates');
+$this->RemovePermission('ModifySMSGateTemplates');
 
 //$this->RemoveEvent('X');
 //$this->RemoveEvent('Y');
