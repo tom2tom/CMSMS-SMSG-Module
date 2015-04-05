@@ -29,13 +29,13 @@
 
 // receive delivery reports
 // must parse $_REQUEST directly
-debug_to_log('start devreport action');
 
 $gateway = smsg_utils::get_gateway();
 $msg = $gateway->process_delivery_report();
-if( $msg != '' )
+//TODO make this prerential
+if( $msg )
   {
-	audit('',$this->GetName(),$msg);
+	$this->Audit('',$this->GetName(),$msg);
   }
 #
 # EOF

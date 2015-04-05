@@ -78,8 +78,7 @@ if( $smstext == '' )
 $key = md5($text);
 
 // store the data in the temporary data store.
-// just incase this is a realoaded page, make sure we erase
-// the data first.
+// in case this is a realoaded page, make sure we erase the data first
 $datastore = new cge_datastore();
 $datastore->erase($this->GetName(),$key);
 $datastore->store($smstext,$this->GetName(),$key);

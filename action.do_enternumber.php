@@ -44,7 +44,7 @@ $message = '';
 $key = trim($params['smskey']);
 $datastore = new cge_datastore();
 $smstext = $datastore->get($this->GetName(),$key);
-if( !$smstext ) return;  // nothing to do.
+if( !$smstext ) return;  // nothing to do
 $datastore->erase($this->GetName(),$key);
 $datastore->store($smstext,$this->GetName(),$key);
 

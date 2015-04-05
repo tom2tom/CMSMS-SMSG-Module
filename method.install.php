@@ -27,7 +27,7 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-$db = $this->GetDb();
+$db = cmsms()->GetDb();
 $dict = NewDataDictionary($db);
 $pref = cms_db_prefix();
 $taboptarray = array('mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci',

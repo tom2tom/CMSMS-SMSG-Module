@@ -33,18 +33,19 @@ class smsg_utils
 
   public static function get_gateways_full()
   {
-	$module = cge_utils::get_module(self::MODNAME);
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled<>0');
 	if( !$aliases )
 		return FALSE;
 	$dir = cms_join_path(dirname(__FILE__),'gateways','');
+	$module = cge_utils::get_module(self::MODNAME);
 	$objs = array();
 	foreach( $aliases as $thisone )
 	  {
 		$classname = $thisone.'_sms_gateway';
 		include_once($dir.'class.'.$classname.'.php');
 		$obj = new $classname($module);
+		//return array, so other keys may be added, upstream
 		$objs[$thisone] = array('obj' => $obj);
 	  }
 
@@ -53,18 +54,18 @@ class smsg_utils
 
   public static function get_gateway()
   {
-	$module = cge_utils::get_module(self::MODNAME);
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active<>0 AND enabled<>0');
 	if( !$alias ) return FALSE;
 
 	$classname = $alias.'_sms_gateway';
 	$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
 	require_once($fn);
+	$module = cge_utils::get_module(self::MODNAME);
 	$obj = new $classname($module);
 
-	if( !$obj ) return FALSE;
-	return $obj;
+	if( $obj ) return $obj;
+	return FALSE;
   }
 
   public static function setgate_full(&$module,$classname,$conversion)
@@ -89,7 +90,7 @@ class smsg_utils
 	$desc = $obj->get_description();
 	if( !$desc ) $desc = NULL;
 
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
 	//upsert, sort-of
 	$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
@@ -113,7 +114,7 @@ class smsg_utils
   //$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
   public static function setprops(&$module,$gid,$props)
   {
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
 	//upsert, sort-of
 	$sql1 = 'UPDATE '.$pref.
@@ -185,10 +186,10 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	if( !$files )
 		 return;
 
-	$module = cge_utils::get_module(self::MODNAME);
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
 	$query = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
+	$module = cge_utils::get_module(self::MODNAME);
 	$found = array();
 	foreach( $files as &$thisfile )
 	  {
@@ -239,7 +240,7 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
   public static function get_reporting_url()
   {
-	// get the default page id.
+	// get the default page id
 	$contentops = cmsms()->GetContentOperations();
 	$returnid = $contentops->GetDefaultContent();
 	$module = cge_utils::get_module(self::MODNAME);
@@ -280,24 +281,25 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
   public static function ip_can_send($ip_address)
   {
-	$module = cge_utils::get_module(self::MODNAME);
-	$db = $module->GetDb();
-
-	$now = $db->DbTimeStamp(time());
-	$date1 = $db->DbTimeStamp(time()-3600);
-	$date2 = $db->DbTimeStamp(time()-24*3600);
-	$query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix().
+	$db = cmsms()->GetDb();
+	$pref = cms_db_prefix();
+	$t = time();
+	$now = $db->DbTimeStamp($t);
+	$date1 = $db->DbTimeStamp($t-3600);
+	$date2 = $db->DbTimeStamp($t-24*3600);
+	$query = 'SELECT COUNT(mobile) AS num FROM '.$pref.
 	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date1 and $now)";
-	$tmp1 = $db->GetOne($query,array($ip_address));
+	$num = $db->GetOne($query,array($ip_address));
 
+	$module = cge_utils::get_module(self::MODNAME);
 	$hourly = $module->GetPreference('hourlimit');
-	if( $tmp1 > $hourly ) return FALSE;
+	if( $num > $hourly ) return FALSE;
 
-	$query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix().
+	$query = 'SELECT COUNT(mobile) AS num FROM '.$pref.
 	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date2 and $now)";
+	$num = $db->GetOne($query,array($ip_address));
 	$daily = $module->GetPreference('daylimit');
-	$tmp2 = $db->GetOne($query,array($ip_address));
-	if( $tmp2 > $daily ) return FALSE;
+	if( $num > $daily ) return FALSE;
 
 	return TRUE;
   }
