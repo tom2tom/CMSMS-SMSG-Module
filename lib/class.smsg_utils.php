@@ -290,12 +290,12 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date1 and $now)";
 	$tmp1 = $db->GetOne($query,array($ip_address));
 
-	$hourly = $module->GetPreference('sms_hourlylimit',5);
+	$hourly = $module->GetPreference('hourlimit');
 	if( $tmp1 > $hourly ) return FALSE;
 
 	$query = 'SELECT COUNT(mobile) AS count FROM '.cms_db_prefix().
 	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date2 and $now)";
-	$daily = $module->GetPreference('sms_dailylimit',20);
+	$daily = $module->GetPreference('daylimit');
 	$tmp2 = $db->GetOne($query,array($ip_address));
 	if( $tmp2 > $daily ) return FALSE;
 
