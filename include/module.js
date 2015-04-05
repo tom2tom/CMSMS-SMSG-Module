@@ -50,9 +50,21 @@ function smsg_entertext_onchange() {
 }
 
 function row_selected(ev,btn) {
- //TODO count selected checkboxes
- //btn like input#m1_<alias>.delete.cms_submit attribute value = "Delete"
- return true;
+ var nm = btn.name,
+  alias = nm.substr(0,nm.indexOf('~'));
+//find checked boxes named like "m1_<alias>~<field>~sel"
+ var list = document.querySelectorAll('input[name^="'+alias+'"]:checked'),
+  c = list.length;
+ if(c > 0) {
+  var suffix = '~sel',
+   sl = suffix.length;
+  for (var i=0; i<c; i++) {
+   nm = list[i].name;
+   if(nm.indexOf(suffix,nm.length - sl) !== -1)
+    return true;
+  }
+ }
+ return false;
 }
 //]]>
 </script>
