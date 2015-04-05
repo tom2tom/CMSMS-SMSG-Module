@@ -40,15 +40,6 @@ name C(25) KEY
 ";
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
-
-$flds = "
-mobile C(25),
-ip C(25),
-msg C(160),
-sdate ".CMS_ADODB_DT;
-$sqlarray = $dict->CreateTableSQL($pref.'module_smsg_sent',$flds,$taboptarray);
-$dict->ExecuteSQLArray($sqlarray);
-
 /**
 @apiconvert: enum for data conversion prior to transmission
 as-is = SMSG::DATA_ASIS
@@ -92,6 +83,19 @@ active I(1) DEFAULT 1
 ";
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_props',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
+
+$flds = "
+mobile C(25),
+ip C(25),
+msg C(160),
+sdate ".CMS_ADODB_DT;
+$sqlarray = $dict->CreateTableSQL($pref.'module_smsg_sent',$flds,$taboptarray);
+$dict->ExecuteSQLArray($sqlarray);
+
+$this->SetPreference('hourlimit',5);
+$this->SetPreference('daylimit',20);
+$this->SetPreference('logsends',TRUE);
+$this->SetPreference('logdays',7);
 
 //enter-number templates
 $fn = cms_join_path(dirname(__FILE__),'templates','orig_enternumber_template.tpl');
