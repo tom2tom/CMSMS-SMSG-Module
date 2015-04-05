@@ -29,7 +29,7 @@
 
 // receive delivery reports
 // must parse $_REQUEST directly
-debug_to_log('got to devreport');
+debug_to_log('start devreport action');
 
 $gateway = smsg_utils::get_gateway();
 $msg = $gateway->process_delivery_report();
