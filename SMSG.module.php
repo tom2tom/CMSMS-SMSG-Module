@@ -92,11 +92,11 @@ class SMSG extends CGExtensions
   public function GetAuthorEmail()
   {
 	return 'calguy1000@cmsmadesimple.org';
-}
+  }
 
   public function GetChangeLog()
   {
-	$txt = @file_get_contents(cms_join_path(dirname(__FILE__),'changelog.inc'));
+	$txt = ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.inc'));
 	return $txt;
   }
 
@@ -113,7 +113,7 @@ class SMSG extends CGExtensions
   function LazyLoadAdmin()
   {
 	return FALSE;
-}
+  }
 
   public function GetAdminSection()
   {
@@ -139,7 +139,7 @@ class SMSG extends CGExtensions
 
   function GetHeaderHTML()
   {
-	$fp = cms_join_path(dirname(__FILE__),'lib','module.js');
+	$fp = cms_join_path(dirname(__FILE__),'include','module.js');
 	$js = ''.@file_get_contents($fp);
 	if( $js )
 	  {
@@ -147,7 +147,7 @@ class SMSG extends CGExtensions
 		$js = str_replace(array('|PADM|','|MAXSMSCHARS|'),array($p,160),$js);
 		return
 		 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
-		 '/lib/jquery.tablednd.min.js"></script>'."\n".$js;
+		 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
 	  }
 	return '';
   }	
