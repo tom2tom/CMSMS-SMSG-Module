@@ -28,12 +28,19 @@
 #END_LICENSE
 
 $this->SetCurrentTab('security');
-$this->SetPreference('sms_hourlylimit',(int)$params['hourlylimit']);
-$this->SetPreference('sms_dailylimit',(int)$params['dailylimit']);
+$this->SetPreference('hourlimit',(int)$params['hourlimit']);
+$this->SetPreference('daylimit',(int)$params['daylimit']);
+$this->SetPreference('logsends',!empty($params['logsends']));
+$this->SetPreference('logdays',(int)$params['logdays']);
 if( isset($params['masterpw']) )
   {
 	$oldpw = $this->GetPreference('masterpass');
-	$newpw = trim($params['masterpw']);
+	if( $oldpw )
+	  {
+		$s = base64_decode(substr($oldpw,5));
+		$oldpw = substr($s,5);
+	  }
+	$newpw = trim($params['masterpass']);
 	if( $oldpw != $newpw )
 	  {
 		//update current passwords
@@ -63,6 +70,11 @@ if( isset($params['masterpw']) )
 				$db->Execute($sql,array($revised,$onerow['gate_id'],$onerow['title']))
 			  }
 			unset( $onerow );
+		  }
+		if( $newpw )
+		  {
+			$s = substr(base64_encode(md5(microtime())),0,5); //obfuscate
+			$newpw= $s.base64_encode($s.$newpw);
 		  }
 		$this->SetPreference('masterpass',$newpw);
 	  }
