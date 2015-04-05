@@ -1,14 +1,17 @@
 <ul>
-  <li>Version 1.0 - February 2010
+  <li>CGSMS Version 1.0 - February 2010
     <ul>
-       <li>Initial release with interlinked and experimental google voice gateways.</li>
+       <li>Initial release with Interlinked and experimental Google Voice gateways.</li>
     </ul>
   </li>
-  <li>Version 1.1 - March 2015
+  <li>SMSG Version 1.0 - April 2015
     <ul>
-       <li>Gateways: add clickatell, twilio, smsbroadcast, remove interlinked.</li>
-       <li>Expanded gateway API to support checking for and using extra parameters</li>
+       <li>Work-alike replacement for CGSMS</li>
+       <li>Gateways: add Clickatell, Twilio, Smsbroadcast, remove defunct Interlinked</li>
+       <li>Expanded gateway API supports optional checks for and use of extra parameters</li>
+       <li>Enable runtime modifications of gateways' interface by authorised users</li>
        <li>More generous regex for checking message validity</li>
+       <li>Better support for later CMSMS versions, bug fixes, UI refinements</li>
     </ul>
   </li>
 </ul>
