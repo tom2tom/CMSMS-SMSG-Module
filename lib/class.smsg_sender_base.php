@@ -198,7 +198,7 @@ abstract class smsg_sender_base
 	return $this->_smsid;
   }
 
-  protected function &get_module()
+  protected function get_module()
   {
 	return $this->_module;
   }
@@ -210,7 +210,7 @@ abstract class smsg_sender_base
 	$res = '';
 	$res = ( $this->_use_curl == 0 ) ?
 		$this->_send_fopen($cmd):
-		$res = $this->_send_curl($cmd);
+		$this->_send_curl($cmd);
 	debug_to_log('smsg_sender_base - command = '.$cmd.' res = '.$res);
 	return $res;
   }
@@ -276,7 +276,7 @@ abstract class smsg_sender_base
 	$smarty = cmsms()->GetSmarty();
 	$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
 	$parms = array();
-	$query = 'SELECT gate_id,title,value,apiname,apiconvert FROM '.$pref.'module_smsg_props WHERE gate_id=?';
+	$query = 'SELECT gate_id,title,value,apiname,apiconvert,active FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 	if( !$padm )
 		$query .= ' AND active=1';
 	$query .= ' ORDER BY apiorder';
@@ -319,6 +319,7 @@ abstract class smsg_sender_base
 		$smarty->assign('titletitle',$module->Lang('title'));
 		$smarty->assign('titlevalue',$module->Lang('value'));
 		$smarty->assign('titleapiname',$module->Lang('apiname'));
+		$smarty->assign('titleenabled',$module->Lang('enabled'));
 		$smarty->assign('titlehelp',$module->Lang('helptitle'));
 		$smarty->assign('titleselect',$module->Lang('select'));
 		$smarty->assign('help',
@@ -345,30 +346,42 @@ abstract class smsg_sender_base
   */
   public function handle_setup_form($params)
   {
-	$this->custom_save($params);
-
 	$alias = $this->get_alias();
-	$module = self::get_module();
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
-	//TODO upsert needed
-	$sql1 = 'UPDATE '.$pref.'module_smsg_props SET ';
-	$sql2 = '=? WHERE gate_id=? AND apiname=?';
 
-	$gid =(int)$params[$alias.'~gate_id'];
+	$gid = (int)$params[$alias.'~gate_id'];
+	$pwfield = $db->GetOne('SELECT apiname FROM '.$pref.
+ 	 'module_smsg_props WHERE gate_id=? AND apiconvert>='.SMSG::DATA_PW,array($gid));
+	if($pwfield)
+	  {
+		$key = $alias.'~'.$pwfield.'~value';
+		$params[$key] = smsg_utils::encrypt_value($params[$key]);
+	  }
+
+	$this->custom_save($params); //any gateway-specific adjustments to $params
+
+	//2 parts of sql command, cuz' can't parameterise inserted fieldname
+	$sql1 = 'UPDATE '.$pref.'module_smsg_props SET ';
+	$sql2 = '=?,apiorder=? WHERE gate_id=? AND apiname=?';
+	//TODO upsert needed
+
 	unset($params[$alias.'~gate_id']);
+	$o = 1;
 	foreach( $params as $key=>&$val )
 	  {
+		//$key is like 'clickatell~user~title'
 		if( strpos($key,$alias) === 0 )
 		  {
-			$parts = explode('~',$key);
+			$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
 			if( $parts[2] && $parts[2] != 'check' )
 			  {
 			   if( $parts[2] == 'apiname' )
 				 {
 				 //TODO injection check for $parts[1]
 				 }
-			   $db->Execute($sql1.$parts[2].$sql2,array($val,$gid,$parts[1]));
+			   $db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
+			   $o++;
 			  }
 		  }
 	  }
