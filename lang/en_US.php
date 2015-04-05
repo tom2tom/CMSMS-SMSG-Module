@@ -197,7 +197,6 @@ $lang['installed'] = 'Module version %s installed.';
 $lang['login'] = 'Login';
 
 #M
-$lang['master_password'] = 'Master Password';
 $lang['mobile_number'] = 'Mobile Number';
 $lang['mobile_numbers'] = 'Mobile Numbers';
 $lang['module_description'] = 'A module to allow sending of SMS messages from within a CMS Made Simple Website';
@@ -218,8 +217,11 @@ $lang['perm_modify'] = 'Modify SMS Gateway Settings';
 $lang['perm_templates'] = 'Modify SMS Gateway Templates';
 $lang['postinstall'] = 'Module successfully installed, now please ensure that it is configured properly for use, and apply related permissions';
 $lang['postuninstall'] = 'Module successfully removed';
-$lang['prompt_sms_daily_limit'] = 'Number of messages that can be sent by one IP address per day';
-$lang['prompt_sms_hourly_limit'] = 'Number of messages that can be sent by one IP address per hour';
+$lang['prompt_daily_limit'] = 'Number of messages that can be sent by one IP address per day';
+$lang['prompt_hourly_limit'] = 'Number of messages that can be sent by one IP address per hour';
+$lang['prompt_log_sends'] = 'Keep local records of sent messages';
+$lang['prompt_log_retain_days'] = 'Number of days that local records (if enabled) will be retained';
+$lang['prompt_master_password'] = 'Master Password';
 
 #Q
 

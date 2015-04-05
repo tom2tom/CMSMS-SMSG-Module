@@ -27,10 +27,20 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-$smarty->assign('hourlylimit',$this->GetPreference('sms_hourlylimit',5));
-$smarty->assign('dailylimit',$this->GetPreference('sms_dailylimit',20));
+$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
+$smarty->assign('daylimit',$this->GetPreference('daylimit'));
+$smarty->assign('logsends',$this->GetPreference('logsends'));
+$smarty->assign('logdays',$this->GetPreference('logdays'));
 if( $this->CheckPermission('AdministerSMSGateways') )
-  $smarty->assign('masterpass',$this->GetPreference('masterpass'));
+  {
+	$pw = $module->GetPreference('masterpass');
+	if( $pw )
+	  {
+		$s = base64_decode(substr($pw,5));
+		$pw = substr($s,5);
+	  }
+	$smarty->assign('masterpass',$pw);
+  }
 $smarty->assign('formstart',$this->CreateFormStart($id,'admin_savesecurity'));
 $smarty->assign('formend',$this->CreateFormEnd());
 echo $this->ProcessTemplate('security_tab.tpl');
