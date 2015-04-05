@@ -6,6 +6,7 @@
 <th>{$titletitle}</th>
 <th>{$titlevalue}</th>
 <th>{$titleapiname}</th>
+<th>{$titleactive}</th>
 <th>{$titlehelp}</th>
 <th>{$titleselect}</th>
 </tr></thead>
@@ -21,6 +22,9 @@
 </td>
 <td>
  <input type="text" name="{$actionid}{$space}~{$one->apiname}~apiname" size="15" value="{$one->apiname}" />
+</td>
+<td>
+ <input type="checkbox" name="{$actionid}{$space}~{$one->apiname}~active"{if $one->active} checked="checked"{/if} />
 </td>
 <td>{if !empty($one->help)}{$one->help}>{/if}</td>
 <td>
