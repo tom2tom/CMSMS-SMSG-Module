@@ -174,7 +174,7 @@ class SMSG extends CGExtensions
 
   public function MinimumCMSVersion()
   {
-	return '1.6.5';
+	return '1.8';
   }
 
   public function UninstallPostMessage()
