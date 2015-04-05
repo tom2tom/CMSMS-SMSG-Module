@@ -319,7 +319,7 @@ abstract class smsg_sender_base
 		$smarty->assign('titletitle',$module->Lang('title'));
 		$smarty->assign('titlevalue',$module->Lang('value'));
 		$smarty->assign('titleapiname',$module->Lang('apiname'));
-		$smarty->assign('titleenabled',$module->Lang('enabled'));
+		$smarty->assign('titleactive',$module->Lang('enabled'));
 		$smarty->assign('titlehelp',$module->Lang('helptitle'));
 		$smarty->assign('titleselect',$module->Lang('select'));
 		$smarty->assign('help',
@@ -352,12 +352,13 @@ abstract class smsg_sender_base
 
 	$gid = (int)$params[$alias.'~gate_id'];
 	$pwfield = $db->GetOne('SELECT apiname FROM '.$pref.
- 	 'module_smsg_props WHERE gate_id=? AND apiconvert>='.SMSG::DATA_PW,array($gid));
+	 'module_smsg_props WHERE gate_id=? AND apiconvert>='.SMSG::DATA_PW,array($gid));
 	if($pwfield)
 	  {
 		$key = $alias.'~'.$pwfield.'~value';
 		$params[$key] = smsg_utils::encrypt_value($params[$key]);
 	  }
+	//TODO if admin, foreach missing '$alias~apiname~active' add $params[$alias~apiname~active] = '0'
 
 	$this->custom_save($params); //any gateway-specific adjustments to $params
 
