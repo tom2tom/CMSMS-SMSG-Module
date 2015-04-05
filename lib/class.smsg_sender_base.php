@@ -375,7 +375,7 @@ abstract class smsg_sender_base
 		if( strpos($key,$alias) === 0 )
 		  {
 			$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
-			if( $parts[2] && $parts[2] != 'check' )
+			if( $parts[2] && $parts[2] != 'sel' )
 			  {
 			   if( $parts[2] == 'apiname' )
 				 {

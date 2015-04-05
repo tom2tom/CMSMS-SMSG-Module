@@ -28,7 +28,7 @@
 </td>
 <td>{if !empty($one->help)}{$one->help}>{/if}</td>
 <td>
- <input type="checkbox" name="{$actionid}{$space}~{$one->apiname}~check" />
+ <input type="checkbox" name="{$actionid}{$space}~{$one->apiname}~sel" />
 </td>
 </tr>
 {/foreach}
