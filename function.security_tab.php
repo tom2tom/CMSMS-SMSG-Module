@@ -33,7 +33,7 @@ $smarty->assign('logsends',$this->GetPreference('logsends'));
 $smarty->assign('logdays',$this->GetPreference('logdays'));
 if( $this->CheckPermission('AdministerSMSGateways') )
   {
-	$pw = $module->GetPreference('masterpass');
+	$pw = $this->GetPreference('masterpass');
 	if( $pw )
 	  {
 		$s = base64_decode(substr($pw,5));
