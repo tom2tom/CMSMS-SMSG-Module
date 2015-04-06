@@ -1,31 +1,24 @@
 <?php
-#BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
-# An addon module for CMS Made Simple to provide the ability for other
-# modules to send SMS messages
+# CMS Made Simple module: SMSG
+# Copyright (C) 2014-2015 Tom Phane <tpgww@onepost.net>
+# Derived in part from module CGSMS by Robert Campbell <calguy1000@cmsmadesimple.org>
+# This module provides the ability for other modules to send SMS messages
 #-------------------------------------------------------------------------
 # CMS Made Simple (C) 2005-2015 Ted Kulp (wishy@cmsmadesimple.org)
 # Its homepage is: http://www.cmsmadesimple.org
 #-------------------------------------------------------------------------
-# This file is free software; you can redistribute it and/or modify it
+# This module is free software; you can redistribute and/or modify it
 # under the terms of the GNU Affero General Public License as published
 # by the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This file is distributed as part of an addon module for CMS Made Simple.
-# As a special extension to the AGPL, you may not use this file in any
-# non-GPL version of CMS Made Simple, or in any version of CMS Made Simple
-# that does not indicate clearly and obviously in its admin section that
-# the site was built with CMS Made Simple.
-#
-# This file is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# This module is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
 # Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
 #-------------------------------------------------------------------------
-#END_LICENSE
 
 ///////////////////////////////////////////////////////////////////////////
 // This module is derived from CGExtensions
@@ -47,12 +40,8 @@ class SMSG extends CGExtensions
 	const PREF_DFLTENTERNUMBER_TPL = 'enternumber_dflttpl';
 	const PREF_NEWENTERTEXT_TPL = 'entertext_newtpl';
 	const PREF_DFLTENTERTEXT_TPL = 'entertext_dflttpl';
-	//flags for data-conversion
-	const DATA_ASIS = 0;
-	const DATA_RAWURL = 1; //rawurlencode
-	const DATA_URL = 2; //urlencode
-	const DATA_PW = 80; //password
 
+	const ENC_DATA = 80; //save local data in encrypted form
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
 	protected $havemcrypt;
@@ -76,7 +65,7 @@ class SMSG extends CGExtensions
 
   public function GetVersion()
   {
-	return '1.0';
+	return '0.9';
   }
 
   public function GetHelp()

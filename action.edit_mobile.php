@@ -1,52 +1,22 @@
 <?php
-#BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
-# An addon module for CMS Made Simple to provide the ability for other
-# modules to send SMS messages
-#-------------------------------------------------------------------------
-# CMS Made Simple (C) 2005-2015 Ted Kulp (wishy@cmsmadesimple.org)
-# Its homepage is: http://www.cmsmadesimple.org
-#-------------------------------------------------------------------------
-# This file is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This file is distributed as part of an addon module for CMS Made Simple.
-# As a special extension to the AGPL, you may not use this file in any
-# non-GPL version of CMS Made Simple, or in any version of CMS Made Simple
-# that does not indicate clearly and obviously in its admin section that
-# the site was built with CMS Made Simple.
-#
-# This file is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-# Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
-#-------------------------------------------------------------------------
-#END_LICENSE
+#----------------------------------------------------------------------
+# This file is part of CMS Made Simple module: SMSG
+# Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
+# Refer to licence and other details at the top of file SMSG.module.php
+# More info at http://dev.cmsmadesimple.org/projects/smsg
+#----------------------------------------------------------------------
 
-//
-// initialize
-//
 $mid = '';
 $name = '';
 $mobile = '';
 $pref = cms_db_prefix();
 $this->SetCurrentTab('mobiles');
 
-//
-// get parameters
-//
 if( isset($params['mid']) )
   {
     $mid = (int)$params['mid'];
   }
 
-//
-// get the data
-//
 if( $mid != '' )
   {
 	$query = 'SELECT * FROM '.$pref.'module_smsg WHERE id=?';
@@ -60,9 +30,6 @@ if( $mid != '' )
 	$mobile = $tmp['mobile'];
   }
 
-//
-// handle form submission
-//
 if( isset($params['cancel']) )
   {
 	$this->RedirectToTab($id);
@@ -135,7 +102,5 @@ $smarty->assign('name',$name);
 $smarty->assign('mobile',$mobile);
 
 echo $this->ProcessTemplate('edit_mobile.tpl');
-#
-# EOF
-#
+
 ?>

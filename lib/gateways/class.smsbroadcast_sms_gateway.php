@@ -1,31 +1,10 @@
 <?php
-#BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
-# An addon module for CMS Made Simple to provide the ability for other
-# modules to send SMS messages
-#-------------------------------------------------------------------------
-# CMS Made Simple (C) 2005-2015 Ted Kulp (wishy@cmsmadesimple.org)
-# Its homepage is: http://www.cmsmadesimple.org
-#-------------------------------------------------------------------------
-# This file is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This file is part of an addon module for CMS Made Simple.
-# As a special extension to the AGPL, you may not use this file in any
-# non-GPL version of CMS Made Simple, or in any version of CMS Made Simple
-# that does not indicate clearly and obviously in its admin section that
-# the site was built with CMS Made Simple.
-#
-# This file is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-# Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
-#-------------------------------------------------------------------------
-#END_LICENSE
+#----------------------------------------------------------------------
+# This file is part of CMS Made Simple module: SMSG
+# Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
+# Refer to licence and other details at the top of file SMSG.module.php
+# More info at http://dev.cmsmadesimple.org/projects/smsg
+#----------------------------------------------------------------------
 
 class smsbroadcast_sms_gateway extends smsg_sender_base
 {
@@ -74,15 +53,18 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 
 	public function upsert_tables()
 	{
-		$module = parent::get_module();
-		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_RAWURL);
-	    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
-		if($gid) smsg_utils::setprops($module,$gid,array(
-			array($module->Lang('username'),'username',NULL,SMSG::DATA_RAWURL),
-			array($module->Lang('password'),'password',NULL,SMSG::DATA_PW + SMSG::DATA_RAWURL),
-			array($module->Lang('from'),'from',NULL,SMSG::DATA_RAWURL),
-			array($module->Lang('reference'),'ref',NULL,SMSG::DATA_RAWURL)
+		$gid = smsg_utils::setgate($this);
+		if($gid)
+		{
+			$module = parent::get_module();
+		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+			smsg_utils::setprops($gid,array(
+			 array($module->Lang('username'),'username',NULL,SMSG::DATA_RAWURL),
+			 array($module->Lang('password'),'password',NULL,SMSG::DATA_PW + SMSG::DATA_RAWURL),
+			 array($module->Lang('from'),'from',NULL,SMSG::DATA_RAWURL),
+			 array($module->Lang('reference'),'ref',NULL,SMSG::DATA_RAWURL)
 			));
+		}
 		return $gid;
 	}
 
@@ -93,15 +75,16 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 			if(!empty($ob->pass))
 			{
 				$ob->size = 20;
+				unset($ob->pass); //no further use
 				break;
 			}
 		}
 		unset($ob);
 		if($padm)
 		{
-			$mod = parent::get_module();
+			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $mod->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
+			 $module->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -121,16 +104,9 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 
 	protected function _command($dummy)
 	{
- 		$mod = parent::get_module();
-
-		$user = $mod->GetPreference('smsbroadcast_username');
-		$pass = $mod->GetPreference('smsbroadcast_password');
-		if($pass)
-		{
-			$s = base64_decode(substr($pass,5));
-			$pass = substr($s,5);
-		}
-		if(!$user || !$pass)
+		$gid = parent::get_gateid(self::get_alias());
+		$parms = smsg_utils::getprops($gid);
+		if(in_array(FALSE,$parms)) //TODO !$user || !$pass)
 		{
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
@@ -146,7 +122,7 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 
 		$source = parent::get_from(); //can be text e.g. 'MyCompany';
 		if(!$source)
-			$source = $mod->GetPreference('smsbroadcast_from');
+			$source = 'TODO';
 		$ref = ''; //'abc123';
 
 		$ch = curl_init('https://api.smsbroadcast.com.au/api-adv.php');
@@ -156,9 +132,6 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 			return FALSE;
 		}
 
-   		$parms = array();
-		$parms['username'] = rawurlencode($user);
-		$parms['password'] = rawurlencode($pass);
 		$parms['to'] = rawurlencode($to);
 		if($source)
 			$parms['from'] = rawurlencode($source);

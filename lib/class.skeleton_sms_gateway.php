@@ -1,31 +1,10 @@
 <?php
-#BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
-# An addon module for CMS Made Simple to provide the ability for other
-# modules to send SMS messages
-#-------------------------------------------------------------------------
-# CMS Made Simple (C) 2005-2015 Ted Kulp (wishy@cmsmadesimple.org)
-# Its homepage is: http://www.cmsmadesimple.org
-#-------------------------------------------------------------------------
-# This file is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This file is part of an addon module for CMS Made Simple.
-# As a special extension to the AGPL, you may not use this file in any
-# non-GPL version of CMS Made Simple, or in any version of CMS Made Simple
-# that does not indicate clearly and obviously in its admin section that
-# the site was built with CMS Made Simple.
-#
-# This file is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-# Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
-#-------------------------------------------------------------------------
-#END_LICENSE
+#----------------------------------------------------------------------
+# This file is part of CMS Made Simple module: SMSG
+# Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
+# Refer to licence and other details at the top of file SMSG.module.php
+# More info at http://dev.cmsmadesimple.org/projects/smsg
+#----------------------------------------------------------------------
 
 //class name must be like 'somename_sms_gateway'
 class skeleton_sms_gateway extends smsg_sender_base
@@ -36,15 +15,17 @@ class skeleton_sms_gateway extends smsg_sender_base
 
 	public function upsert_tables()
 	{
-		$module = parent::get_module();
-		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_ASIS);
-	    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
-		//by convention, apiname's which are not actually used are indicated by a '_' prefix
-		//TODO
-		if($gid) smsg_utils::setprops($module,$gid,array(
+		$gid = smsg_utils::setgate($this);
+		if($gid)
+		{
+			$module = parent::get_module();
+		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+			//by convention, apiname's which are not actually used are indicated by a '_' prefix
+			smsg_utils::setprops($gid,array(
 			array($module->Lang('username'),'user',NULL,SMSG::DATA_ASIS),
 			array($module->Lang('password'),'password',NULL,SMSG::DATA_PW)
 			));
+		}
 		return $gid;
 	}
 
@@ -67,6 +48,22 @@ class skeleton_sms_gateway extends smsg_sender_base
 	public function custom_save(&$params)
 	{
 		//TODO
+/* $params = array like (
+  'sms_gateway' => string 'clickatell' (length=10)
+  'clickatell~user~title' => string 'Username' (length=8)
+  'clickatell~user~value' => string 'M' (length=1)
+  'clickatell~user~apiname' => string 'user' (length=4)
+  'clickatell~user~active' => string 'on' (length=2)
+  'clickatell~password~title' => string 'Password' (length=8)
+  'clickatell~password~value' => string 'asdasda' (length=7)
+  'clickatell~password~apiname' => string 'password' (length=8)
+  'clickatell~password~active' => string 'on' (length=2)
+  'clickatell~api_id~title' => string 'API ID' (length=6)
+  'clickatell~api_id~value' => string '393939' (length=6)
+  'clickatell~api_id~apiname' => string 'api_id' (length=6)
+  'clickatell~gate_id' => string '1' (length=1)
+  ....
+*/
 	}
 
 	public function get_name()
@@ -124,7 +121,18 @@ class skeleton_sms_gateway extends smsg_sender_base
 
 	protected function prep_command()
 	{
-		//TODO
+		//get 'public' parameters for interface
+		$gid = parent::get_gateid(self::get_alias());
+		$parms = smsg_utils::getprops($gid);
+		//TODO maybe some valid empty parm
+		if(in_array(FALSE,$parms))
+		{
+			$this->_status = parent::STAT_ERROR_AUTH;
+			return FALSE;
+		}
+		//MORE $parms - to, from, body etc, format-adjusted as needed
+		$str = cge_array::implode_with_key($parms);
+		$str = some_url.'?'.str_replace('amp;','',$str);
 		return $str;
 	}
 

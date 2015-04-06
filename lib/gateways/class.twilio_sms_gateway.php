@@ -1,31 +1,10 @@
 <?php
-#BEGIN_LICENSE
-#-------------------------------------------------------------------------
-# Module: SMSG (C) 2010-2015 Robert Campbell (calguy1000@cmsmadesimple.org)
-# An addon module for CMS Made Simple to provide the ability for other
-# modules to send SMS messages
-#-------------------------------------------------------------------------
-# CMS Made Simple (C) 2005-2015 Ted Kulp (wishy@cmsmadesimple.org)
-# Its homepage is: http://www.cmsmadesimple.org
-#-------------------------------------------------------------------------
-# This file is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This file is part of an addon module for CMS Made Simple.
-# As a special extension to the AGPL, you may not use this file in any
-# non-GPL version of CMS Made Simple, or in any version of CMS Made Simple
-# that does not indicate clearly and obviously in its admin section that
-# the site was built with CMS Made Simple.
-#
-# This file is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-# Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
-#-------------------------------------------------------------------------
-#END_LICENSE
+#----------------------------------------------------------------------
+# This file is part of CMS Made Simple module: SMSG
+# Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
+# Refer to licence and other details at the top of file SMSG.module.php
+# More info at http://dev.cmsmadesimple.org/projects/smsg
+#----------------------------------------------------------------------
 
 class twilio_sms_gateway extends smsg_sender_base
 {
@@ -74,15 +53,18 @@ class twilio_sms_gateway extends smsg_sender_base
 
 	public function upsert_tables()
 	{
-		$module = parent::get_module();
-		$gid = smsg_utils::setgate($module,$this,SMSG::DATA_ASIS);
-		//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
-		//none of the apiname's is actually used (indicated by '_' prefix)
-		if($gid) smsg_utils::setprops($module,$gid,array(
-			array($module->Lang('account'),'_account',NULL,SMSG::DATA_ASIS),
-			array($module->Lang('token'),'_token',NULL,SMSG::DATA_PW),
-			array($module->Lang('from'),'_from',NULL,SMSG::DATA_ASIS)
+		$gid = smsg_utils::setgate($this);
+		if($gid)
+		{
+			$module = parent::get_module();
+			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+			//none of the apiname's is actually used (indicated by '_' prefix)
+			smsg_utils::setprops($gid,array(
+			 array($module->Lang('account'),'_account',NULL,SMSG::DATA_ASIS),
+			 array($module->Lang('token'),'_token',NULL,SMSG::DATA_PW),
+			 array($module->Lang('from'),'_from',NULL,SMSG::DATA_ASIS)
 			));
+		}
 		return $gid;
 	}
 
@@ -90,15 +72,21 @@ class twilio_sms_gateway extends smsg_sender_base
 	{
 		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
-			if(!empty($ob->pass) || $ob->apiname == '_account')
+			if($ob->apiname == '_account') //TODO can be renamed by Admin
 				$ob->size = 32;
+
+			if(!empty($ob->pass))
+			{
+				$ob->size = 32;
+				unset($ob->pass); //no further use
+			}
 		}
 		unset($ob);
 		if($padm)
 		{
-			$mod = parent::get_module();
+			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $mod->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
+			 $module->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -132,27 +120,23 @@ class twilio_sms_gateway extends smsg_sender_base
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
-		$mod = parent::get_module();
-		$account = $mod->GetPreference('twilio_username');
-		$token = $mod->GetPreference('twilio_password');
-		if($token)
-		{
-			$s = base64_decode(substr($token,5));
-			$token = substr($s,5);
-		}
-		if(!$account || !$token)
+
+		$gid = parent::get_gateid(self::get_alias());
+		$parms = smsg_utils::getprops($gid);
+		$ordered = array_values($parms);
+		if(!$ordered[0] || !$ordered[1])
 		{
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
 		}
-		$from = $mod->GetPreference('twilio_from');
+		$from = 'TODO';
 		if(!$from)
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 		require_once cms_join_path(dirname(__FILE__),'twilio','Twilio.php');
-		$ob = new Services_Twilio($account,$token);
+		$ob = new Services_Twilio($ordered[0],$ordered[1]);
 		try
 		{
 			//send it NOTE these array keys must be capitalised
