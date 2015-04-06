@@ -83,17 +83,17 @@ echo $this->StartTabContent();
 if( $pmod )
   {
 	echo $this->StartTab('mobiles',$params);
-	include(cms_join_path(dirname(__FILE__),'function.admin_mobiles_tab.php'));
+	include(cms_join_path(dirname(__FILE__),'function.mobiles_tab.php'));
 	echo $this->EndTab();
 
 	echo $this->StartTab('settings',$params);
-	$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_savesettings'));
+	$smarty->assign('formstart',$this->CGCreateFormStart($id,'savesettings'));
 	$smarty->assign('formend',$this->CreateFormEnd());
 	$smarty->assign('reporturl',smsg_utils::get_reporting_url());
 	$smarty->assign('gatewaynames',$listnames);
 	$smarty->assign('sms_gateway',$current);
 	$smarty->assign('objects',$objs);
-	echo $this->ProcessTemplate('admin_settingstab.tpl');
+	echo $this->ProcessTemplate('settings_tab.tpl');
 	echo $this->EndTab();
 
 	echo $this->StartTab('security',$params);
@@ -101,9 +101,9 @@ if( $pmod )
 	echo $this->EndTab();
 
 	echo $this->StartTab('test',$params);
-	$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_smstest'));
+	$smarty->assign('formstart',$this->CGCreateFormStart($id,'smstest'));
 	$smarty->assign('formend',$this->CreateFormEnd());
-	echo $this->ProcessTemplate('admin_testtab.tpl');
+	echo $this->ProcessTemplate('test_tab.tpl');
 	echo $this->EndTab();
   }
 if( $ptpl )

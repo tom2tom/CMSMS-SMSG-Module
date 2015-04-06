@@ -27,24 +27,12 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
-$smarty->assign('daylimit',$this->GetPreference('daylimit'));
-$smarty->assign('logsends',$this->GetPreference('logsends'));
-$smarty->assign('logdays',$this->GetPreference('logdays'));
-if( $this->CheckPermission('AdministerSMSGateways') )
-  {
-	$pw = $this->GetPreference('masterpass');
-	if( $pw )
-	  {
-		$s = base64_decode(substr($pw,5));
-		$pw = substr($s,5);
-	  }
-	$smarty->assign('masterpass',$pw);
-  }
-$smarty->assign('formstart',$this->CreateFormStart($id,'savesecurity'));
-$smarty->assign('formend',$this->CreateFormEnd());
-echo $this->ProcessTemplate('security_tab.tpl');
+$gid = (int)$params['gate_id'];
+$sql = 'INSERT INTO '.cms_db_prefix().'module_smsg_props (gate_id,title,apiname,apiorder,active) VALUES (?,\'---\',\'todo\',-1,0)';
+$ares = $db->Execute($sql,array($gid));
 
+$this->SetCurrentTab('settings');
+$this->RedirectToTab($id);
 #
 # EOF
 #

@@ -129,12 +129,12 @@ else if( isset($params['submit']) )
 //
 // build the form
 //
-$smarty->assign('formstart',$this->CGCreateFormStart($id,'admin_edit_mobile',$returnid,$params));
+$smarty->assign('formstart',$this->CGCreateFormStart($id,'edit_mobile',$returnid,$params));
 $smarty->assign('formend',$this->CreateFormEnd());
 $smarty->assign('name',$name);
 $smarty->assign('mobile',$mobile);
 
-echo $this->ProcessTemplate('admin_edit_mobile.tpl');
+echo $this->ProcessTemplate('edit_mobile.tpl');
 #
 # EOF
 #
