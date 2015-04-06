@@ -46,6 +46,7 @@ abstract class smsg_sender_base
 	const DELIVERY_OTHER   = 'sms_delivery_other';
 
 	private $_module;
+	private $_gate_id;
 	private $_num;
 	private $_fromnum;
 	private $_msg;
@@ -57,7 +58,25 @@ abstract class smsg_sender_base
   function __construct(&$module)
   {
 	$this->_module = $module;
+  	$this->_gate_id = 0;
 	self::reset();
+  }
+
+  protected function get_module()
+  {
+	return $this->_module;
+  }
+
+  protected function get_gateid($alias,$force = FALSE)
+  {
+	if($force || !$this->_gate_id)
+	  {
+		$db = cmsms()->GetDb();
+		$query = 'SELECT gate_id FROM '.cms_db_prefix().'module_smsg_gates WHERE alias=?';
+		$gid = $db->GetOne($query,array($alias));
+		$this->_gate_id = (int)$gid;
+	  }
+	return $this->_gate_id;
   }
 
   /**
@@ -199,11 +218,6 @@ abstract class smsg_sender_base
   public function get_smsid()
   {
 	return $this->_smsid;
-  }
-
-  protected function get_module()
-  {
-	return $this->_module;
   }
 
   //performs the send,may need to be over-ridden in some gateway-specific subclasses
