@@ -68,20 +68,21 @@ class smsg_utils
 	return FALSE;
   }
 
-  public static function setgate_full(&$module,$classname,$conversion)
+  public static function setgate_full($classname,$conversion)
   {
 	$fn = cms_join_path($module->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
 	if(is_file($fn))
 	  {
-		include($fn);
+		include_once($fn);
+		$module = cge_utils::get_module(self::MODNAME);
 		$obj = new $classname($module);
 		if( $obj )
-		  return self::setgate($module,$obj,$conversion);
+		  return self::setgate($obj,$conversion);
 	  }
 	return FALSE;
   }
 
-  public static function setgate(&$module,&$obj,$conversion)
+  public static function setgate(&$obj,$conversion)
   {
 	$alias = $obj->get_alias();
 	if( !$alias ) return FALSE;
@@ -112,7 +113,7 @@ class smsg_utils
   }
 
   //$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
-  public static function setprops(&$module,$gid,$props)
+  public static function setprops($gid,$props)
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
@@ -131,6 +132,44 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$o++;
 	  }
 	unset($data);
+  }
+
+  public static function getprops($gid)
+  {
+	$db = cmsms()->GetDb();
+	$pref = cms_db_prefix();
+	$conv = $db->GetOne('SELECT apiconvert FROM '.$pref.
+	 'module_smsg_gates WHERE gate_id=? AND enabled<>0 AND active<>0',array($gid));
+	if($conv === FALSE)
+		return array();
+	$conv = (int)$conv;
+	$props = $db->GetAssoc('SELECT apiname,value,apiconvert FROM '.$pref.
+	 'module_smsg_props WHERE gate_id=? AND active<>0 ORDER BY apiorder',
+	 array($gid));
+	foreach($props as &$row)
+	  {
+		if($row['apiconvert'] >= SMSG::DATA_PW)
+		  {
+			$row['value'] = self::decrypt_value($row['value']);
+		  	$row['apiconvert'] -= SMSG::DATA_PW;
+		  }
+	  	$rowconv = (int)$row['apiconvert'] | $conv;
+		switch($rowconv)
+		  {
+			case SMSG::DATA_RAWURL:
+			 	$row = rawurlencode($row['value']);
+				break;
+			case SMSG::DATA_URL:
+			 	$row = urlencode($row['value']);
+				break;
+			default:
+			 	$row = $row['value'];
+			 	break;
+		  }
+	  }
+	unset($row);
+	$props['apiconvert'] = $conv;
+	return $props;
   }
 
   public static function encrypt_value($value,$passwd = FALSE)
