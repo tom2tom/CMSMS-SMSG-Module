@@ -26,7 +26,7 @@ if( isset($params['masterpw']) )
 		$e = ( $this->havemcrypt ) ?
 		 new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS) : FALSE;
 		$pref = cms_db_prefix();
-		$sql = 'SELECT gate_id,title,value FROM '.$pref.'module_smsg_props WHERE apiconvert>='.SMSG::DATA_PW;
+		$sql = 'SELECT gate_id,title,value FROM '.$pref.'module_smsg_props WHERE encrypt>0';
 		$rows = $db->GetAll($sql);
 		if( $rows )
 		  {

@@ -276,9 +276,9 @@ abstract class smsg_sender_base
 	$smarty = cmsms()->GetSmarty();
 	$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
 	$parms = array();
-	$query = 'SELECT gate_id,title,value,apiname,apiconvert,active FROM '.$pref.'module_smsg_props WHERE gate_id=?';
+	$query = 'SELECT gate_id,title,value,apiname,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 	if( !$padm )
-		$query .= ' AND active=1';
+		$query .= ' AND enabled=1';
 	$query .= ' ORDER BY apiorder';
 	$gid = (int)$gdata['gate_id'];
 	$res = $db->GetAll($query,array($gid));
@@ -288,12 +288,8 @@ abstract class smsg_sender_base
 		  {
 			$ob = (object)$row;
 			//adjustments
-			if((int)$ob->apiconvert >= SMSG::DATA_PW ) //parameter is password
-			  {
+			if($ob->encrypt)
 				$ob->value = smsg_utils::decrypt_value($ob->value);
-				$ob->pass = TRUE; //signal to 'other users' this is a password
-			  }
-			unset($ob->apiconvert);
 			$parms[] = $ob;
 		  }
 		unset($row);
@@ -313,12 +309,13 @@ abstract class smsg_sender_base
 	$smarty->assign('gateid',$gid);
 	if( $padm )
 	  {
-		$smarty->assign('titletitle',$module->Lang('title'));
-		$smarty->assign('titlevalue',$module->Lang('value'));
-		$smarty->assign('titleapiname',$module->Lang('apiname'));
-		$smarty->assign('titleactive',$module->Lang('enabled'));
-		$smarty->assign('titlehelp',$module->Lang('helptitle'));
-		$smarty->assign('titleselect',$module->Lang('select'));
+		$smarty->assign('title_title',$module->Lang('title'));
+		$smarty->assign('title_value',$module->Lang('value'));
+		$smarty->assign('title_encrypt',$module->Lang('encrypt'));
+		$smarty->assign('title_apiname',$module->Lang('apiname'));
+		$smarty->assign('title_enabled',$module->Lang('enabled'));
+		$smarty->assign('title_help',$module->Lang('helptitle'));
+		$smarty->assign('title_select',$module->Lang('select'));
 		$smarty->assign('help',
 		 $module->Lang('help_dnd').'<br />'.$module->Lang('help_sure'));
 		$id = $smarty->tpl_vars['actionid']->value;
@@ -350,11 +347,11 @@ abstract class smsg_sender_base
 
 	$gid = (int)$params[$alias.'~gate_id'];
 	unset($params[$alias.'~gate_id']);
-	$pwfield = $db->GetOne('SELECT apiname FROM '.$pref.
-	 'module_smsg_props WHERE gate_id=? AND apiconvert>='.SMSG::DATA_PW,array($gid));
-	if($pwfield)
+	$fields = $db->GetColumn('SELECT apiname FROM '.$pref.
+	 'module_smsg_props WHERE gate_id=? AND encrypt>0',array($gid));
+	foreach($fields as $encfield)
 	  {
-		$key = $alias.'~'.$pwfield.'~value';
+		$key = $alias.'~'.$encfield.'~value';
 		$params[$key] = smsg_utils::encrypt_value($params[$key]);
 	  }
 

@@ -34,7 +34,7 @@ class smsg_utils
   public static function get_gateway()
   {
 	$db = cmsms()->GetDb();
-	$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active<>0 AND enabled<>0');
+	$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active>0 AND enabled>0');
 	if( !$alias ) return FALSE;
 
 	$classname = $alias.'_sms_gateway';
@@ -91,16 +91,16 @@ class smsg_utils
 	return $gid;
   }
 
-  //$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+  //$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
   public static function setprops($gid,$props)
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
 	//upsert, sort-of
 	$sql1 = 'UPDATE '.$pref.
-	 'module_smsg_props SET title=?,value=?,apiconvert=?,apiorder=? WHERE gate_id=? AND apiname=?';
+	 'module_smsg_props SET title=?,value=?,encrypt=?,apiorder=? WHERE gate_id=? AND apiname=?';
 	$sql2 = 'INSERT INTO '.$pref.
-	 'module_smsg_props (gate_id,title,value,apiname,apiconvert,apiorder)
+	 'module_smsg_props (gate_id,title,value,apiname,encrypt,apiorder)
 SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 (SELECT 1 FROM '.$pref.'module_smsg_props T1 WHERE T1.gate_id=? AND T1.apiname=?)';
 	$o = 1;
@@ -117,29 +117,11 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
-	$props = $db->GetAssoc('SELECT apiname,value,apiconvert FROM '.$pref.
-	 'module_smsg_props WHERE gate_id=? AND active<>0 ORDER BY apiorder',
+	$props = $db->GetAssoc('SELECT apiname,value,encrypt FROM '.$pref.
+	 'module_smsg_props WHERE gate_id=? AND enabled>0 ORDER BY apiorder',
 	 array($gid));
 	foreach($props as &$row)
-	  {
-		if($row['apiconvert'] >= SMSG::DATA_PW)
-		  {
-			$row['value'] = self::decrypt_value($row['value']);
-		  	$row['apiconvert'] -= SMSG::DATA_PW;
-		  }
-		switch((int)$row['apiconvert'])
-		  {
-			case SMSG::DATA_RAWURL:
-			 	$row = rawurlencode($row['value']);
-				break;
-			case SMSG::DATA_URL:
-			 	$row = urlencode($row['value']);
-				break;
-			default:
-			 	$row = $row['value'];
-			 	break;
-		  }
-	  }
+		$row = ($row['encrypt']) ? self::decrypt_value($row['value']) : $row['value'];
 	unset($row);
 	return $props;
   }

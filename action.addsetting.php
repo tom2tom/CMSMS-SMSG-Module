@@ -7,7 +7,7 @@
 #----------------------------------------------------------------------
 
 $sql = 'INSERT INTO '.cms_db_prefix().
- 'module_smsg_props (gate_id,title,apiname,apiorder,active) VALUES (?,\'---\',\'todo\',-1,0)';
+ 'module_smsg_props (gate_id,title,apiname,enabled) VALUES (?,\'---\',\'todo\',0)';
 $db->Execute($sql,array((int)$params['gate_id']));
 
 $this->SetCurrentTab('settings');
