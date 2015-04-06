@@ -35,6 +35,14 @@ if( !$objs )
 	return;
   }
 
+if( $this->GetPreference('logsends') )
+  {
+	$days = $this->GetPreference('logdays');
+	if( !$days ) $days = 1;
+	$limit = $db->DbTimeStamp(time()-$days*24*3600);
+	$db->Execute('DELETE FROM '.cms_db_prefix().'module_smsg_sent WHERE sdate<'.$limit);
+  }
+
 $listnames = array();
 $listnames[-1] = $this->Lang('none');
 foreach( $objs as $key=>&$rec )
