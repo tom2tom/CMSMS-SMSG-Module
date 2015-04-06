@@ -40,21 +40,12 @@ name C(25) KEY
 ";
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
-/**
-@apiconvert: enum for data conversion prior to transmission
-as-is = SMSG::DATA_ASIS
-rawurlencode = SMSG::DATA_RAWURL
-urlencode = SMSG::DATA_URL
-htmlentities = 4
-htmlspecialchars = 8
-for password parameter, +SMSG::DATA_PW
-*/
+
 $flds = "
 gate_id	I KEY,
 alias C(48),
 title C(128) NOTNULL,
 description C(255),
-apiconvert I(1) NOTNULL DEFAULT 0,
 enabled I(1) NOTNULL DEFAULT 1,
 active I(1) NOTNULL DEFAULT 0
 ";

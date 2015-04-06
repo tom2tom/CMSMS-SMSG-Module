@@ -68,7 +68,7 @@ class smsg_utils
 	return FALSE;
   }
 
-  public static function setgate_full($classname,$conversion)
+  public static function setgate_full($classname)
   {
 	$fn = cms_join_path($module->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
 	if(is_file($fn))
@@ -77,12 +77,12 @@ class smsg_utils
 		$module = cge_utils::get_module(self::MODNAME);
 		$obj = new $classname($module);
 		if( $obj )
-		  return self::setgate($obj,$conversion);
+		  return self::setgate($obj);
 	  }
 	return FALSE;
   }
 
-  public static function setgate(&$obj,$conversion)
+  public static function setgate(&$obj)
   {
 	$alias = $obj->get_alias();
 	if( !$alias ) return FALSE;
@@ -99,15 +99,15 @@ class smsg_utils
 	if( !$gid )
 	 {
 	  $gid = $db->GenID($pref.'module_smsg_gates_seq');
-	  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description,apiconvert) VALUES (?,?,?,?,?)';
-	  $db->Execute($sql,array($gid,$alias,$title,$desc,$conversion));
+	  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description) VALUES (?,?,?,?)';
+	  $db->Execute($sql,array($gid,$alias,$title,$desc));
 	 }
 	else
 	 {
 	   $gid = (int)$gid;
 	   $sql = 'UPDATE '.$pref.
-		'module_smsg_gates set title=?,description=?,apiconvert=? WHERE gate_id=?';
-	   $db->Execute($sql,array($title,$desc,$conversion,$gid));
+		'module_smsg_gates set title=?,description=? WHERE gate_id=?';
+	   $db->Execute($sql,array($title,$desc,$gid));
 	 }
 	return $gid;
   }
@@ -138,11 +138,6 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
-	$conv = $db->GetOne('SELECT apiconvert FROM '.$pref.
-	 'module_smsg_gates WHERE gate_id=? AND enabled<>0 AND active<>0',array($gid));
-	if($conv === FALSE)
-		return array();
-	$conv = (int)$conv;
 	$props = $db->GetAssoc('SELECT apiname,value,apiconvert FROM '.$pref.
 	 'module_smsg_props WHERE gate_id=? AND active<>0 ORDER BY apiorder',
 	 array($gid));
@@ -153,8 +148,7 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			$row['value'] = self::decrypt_value($row['value']);
 		  	$row['apiconvert'] -= SMSG::DATA_PW;
 		  }
-	  	$rowconv = (int)$row['apiconvert'] | $conv;
-		switch($rowconv)
+		switch((int)$row['apiconvert'])
 		  {
 			case SMSG::DATA_RAWURL:
 			 	$row = rawurlencode($row['value']);
@@ -168,7 +162,6 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		  }
 	  }
 	unset($row);
-	$props['apiconvert'] = $conv;
 	return $props;
   }
 
