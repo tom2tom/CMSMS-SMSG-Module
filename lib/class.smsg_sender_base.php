@@ -36,6 +36,8 @@ abstract class smsg_sender_base
 	const STAT_ERROR_LIMIT = 'sms_error_limit';
 	const STAT_ERROR_INVALID_DATA = 'sms_error_invalid_data';
 	const STAT_ERROR_BLOCKED = 'sms_error_blocked_number';
+	//CHECKME these may be used as Lang() keys
+	//see <gateway>_sms_gateway::process_delivery_report() and smsg_utils::get_delivery_msg()
 	const DELIVERY_OK = 'sms_delivery_ok';
 	const DELIVERY_PENDING = 'sms_delivery_pending';
 	const DELIVERY_INVALID = 'sms_delivery_invalid';
@@ -74,7 +76,7 @@ abstract class smsg_sender_base
 
   public function use_curl($flag = TRUE)
   {
-	$this->_use_curl =( $flag ) ? 1 : 0;
+	$this->_use_curl = ( $flag ) ? 1 : 0;
   }
 
   /**
@@ -154,7 +156,7 @@ abstract class smsg_sender_base
   {
 	$this->_smsid = '';
 
-	// check to make sure we have necessary data.
+	// check to make sure we have necessary data
 	$this->setup();
 	if( $this->_num == '' || $this->_msg == '' )
 	  {
@@ -168,7 +170,7 @@ abstract class smsg_sender_base
 		return FALSE;
 	  }
 
-	// next prepare the output.
+	// next prepare the output
 	$cmd = $this->prep_command();
 	if( $cmd === FALSE || $cmd == '' )
 	  {
@@ -176,17 +178,18 @@ abstract class smsg_sender_base
 		return FALSE;
 	  }
 
-	// send it.
+	// send it
 	$res = $this->_command($cmd);
 
-	// interpret result.
+	// interpret result
 	$this->parse_result($res);
 	$this->_statusmsg = smsg_utils::get_msg($this,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
-	$success =($this->_status == self::STAT_OK);
+	$success = ($this->_status == self::STAT_OK);
 	if( $success )
 	  {
-		smsg_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
-		audit('',$this->get_module()->GetName(),$this->_statusmsg);
+		if( $this->_module->GetPreference('logsends') )
+			smsg_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
+		$this->_module->Audit('',$this->_module->GetName(),$this->_statusmsg);
 	  }
 	return $success;
   }
@@ -211,7 +214,6 @@ abstract class smsg_sender_base
 	$res = ( $this->_use_curl == 0 ) ?
 		$this->_send_fopen($cmd):
 		$this->_send_curl($cmd);
-	debug_to_log('smsg_sender_base - command = '.$cmd.' res = '.$res);
 	return $res;
   }
 
@@ -261,9 +263,9 @@ abstract class smsg_sender_base
   */
   public function get_setup_form()
   {
-	$module = self::get_module();
+	$module = $this->_module;
 	$padm = $module->CheckPermission('AdministerSMSGateways');
-	$db = $module->GetDb();
+	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
 	$query = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
 	if( !$padm )
@@ -280,13 +282,13 @@ abstract class smsg_sender_base
 	if( !$padm )
 		$query .= ' AND active=1';
 	$query .= ' ORDER BY apiorder';
-	$gid =(int)$gdata['gate_id'];
+	$gid = (int)$gdata['gate_id'];
 	$res = $db->GetAll($query,array($gid));
 	if( $res )
 	  {
 		foreach( $res as &$row )
 		  {
-			$ob =(object)$row;
+			$ob = (object)$row;
 			//adjustments
 			if((int)$ob->apiconvert >= SMSG::DATA_PW ) //parameter is password
 			  {
@@ -330,12 +332,12 @@ abstract class smsg_sender_base
 		 '',$text,'icons/system/newobject.gif',array(),'systemicon','',FALSE));
 		$smarty->assign('btndelete',$module->CreateInputSubmit($id,$alias.'~delete',
 		 $module->Lang('delete'),'title="'.$module->Lang('delete_tip').
-		 '" onclick="if(row_selected(event,this)) {return confirm(\''.$module->Lang('sure_ask').'\');} else {return false;}"')); //TODO js
+		 '" onclick="if(row_selected(event,this)) {return confirm(\''.$module->Lang('sure_ask').'\');} else {return false;}"'));
 	  }
 	// anything else to set up for the template
 	$this->custom_setup($smarty,$padm); //e.g. each $ob->size
 
-	$tpl =($padm) ? 'gatedata_admin.tpl' : 'gatedata.tpl';
+	$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata.tpl';
 	return $module->ProcessTemplate($tpl);
   }
 
@@ -368,6 +370,8 @@ abstract class smsg_sender_base
 	//TODO upsert needed
 
 	unset($params[$alias.'~gate_id']);
+	$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
+	$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
 	$o = 1;
 	foreach( $params as $key=>&$val )
 	  {
@@ -377,12 +381,16 @@ abstract class smsg_sender_base
 			$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
 			if( $parts[2] && $parts[2] != 'sel' )
 			  {
-			   if( $parts[2] == 'apiname' )
-				 {
-				 //TODO injection check for $parts[1]
-				 }
-			   $db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
-			   $o++;
+				//foil injection-attempts
+				$parts[2] = str_replace($srch,$repl,$parts[2]);
+				if( $parts[2] == 'apiname' )
+				  {
+					$parts[1] = str_replace($srch,$repl,$parts[1]);
+					if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
+						continue;
+				  }
+				$db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
+				$o++;
 			  }
 		  }
 	  }
