@@ -121,12 +121,6 @@ $this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));
 $this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modify'));
 $this->CreatePermission('ModifySMSGateTemplates',$this->Lang('perm_templates'));
 
-//$this->CreateEvent('X');
-//$this->CreateEvent('Y');
-//$this->AddEventHandler('SMSG','?');
-//$this->AddEventHandler('Core','?');
-
-$this->Audit(0, $this->Lang('friendlyname'), $this->Lang('installed',$this->GetVersion()));
 #
 # EOF
 #

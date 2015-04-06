@@ -48,11 +48,6 @@ $this->RemovePreference();
 $this->RemovePermission('AdministerSMSGateways');
 $this->RemovePermission('ModifySMSGateways');
 $this->RemovePermission('ModifySMSGateTemplates');
-
-//$this->RemoveEvent('X');
-//$this->RemoveEvent('Y');
-
-$this->Audit(0, $this->Lang('friendlyname'), $this->Lang('uninstalled'));
 #
 # EOF
 #

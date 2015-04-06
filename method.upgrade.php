@@ -36,7 +36,7 @@ $taboptarray = array('mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_g
 switch($oldversion)
 {
 }
-
-$this->Audit(0, $this->Lang('fullname'), $this->Lang('upgraded',$newversion));
-
+#
+# EOF
+#
 ?>
