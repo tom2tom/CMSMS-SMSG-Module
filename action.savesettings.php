@@ -21,7 +21,7 @@ if( !$objs )
 if(isset($params['submit']))
   {
 	$pref = cms_db_prefix();
-	$sql = 'UPDATE '.$pref.'module_smsg_gates SET active=0 WHERE active=<>0';
+	$sql = 'UPDATE '.$pref.'module_smsg_gates SET active=0 WHERE active=1';
 	$db->Execute($sql);
 	if( $gateway != '-1' )
 	  {
