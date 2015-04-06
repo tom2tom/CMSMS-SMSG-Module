@@ -300,21 +300,18 @@ abstract class smsg_sender_base
 		  }
 		unset($row);
 	  }
-	if($parms)
-	  {
-		$smarty->assign('dcount',count($parms));
-	  }
-	else
+	$dcount = count($parms);
+	if($dcount == 0)
 	  {
 		$ob = new stdClass();
 		$ob->title = $module->Lang('error_nodatafound');
 		$ob->value = '';
 		$ob->apiname = FALSE; //prevent input-object creation
 		$parms[] = $ob;
-		$smarty->assign('dcount',0);
 	  }
-	$smarty->assign('space',$alias); //for gateway-data 'namespace'
 	$smarty->assign('data',$parms);
+	$smarty->assign('dcount',$dcount);
+	$smarty->assign('space',$alias); //for gateway-data 'namespace'
 	$smarty->assign('gateid',$gid);
 	if( $padm )
 	  {
@@ -328,11 +325,12 @@ abstract class smsg_sender_base
 		 $module->Lang('help_dnd').'<br />'.$module->Lang('help_sure'));
 		$id = $smarty->tpl_vars['actionid']->value;
 		$text = $module->Lang('add_parameter');
-		$smarty->assign('additem',$module->CreateImageLink($id,$alias.'~add',
-		 '',$text,'icons/system/newobject.gif',array(),'systemicon','',FALSE));
-		$smarty->assign('btndelete',$module->CreateInputSubmit($id,$alias.'~delete',
-		 $module->Lang('delete'),'title="'.$module->Lang('delete_tip').
-		 '" onclick="if(row_selected(event,this)) {return confirm(\''.$module->Lang('sure_ask').'\');} else {return false;}"'));
+		$smarty->assign('additem',$module->CreateImageLink($id,'admin_addsetting',
+		 '',$text,'icons/system/newobject.gif',array('gate_id'=>$gid),'systemicon','',FALSE));
+		if( $dcount > 0 )
+			$smarty->assign('btndelete',$module->CreateInputSubmit($id,$alias.'~delete',
+			 $module->Lang('delete'),'title="'.$module->Lang('delete_tip').
+			 '" onclick="if(row_selected(event,this)) {return confirm(\''.$module->Lang('sure_ask').'\');} else {return false;}"'));
 	  }
 	// anything else to set up for the template
 	$this->custom_setup($smarty,$padm); //e.g. each $ob->size
@@ -344,7 +342,7 @@ abstract class smsg_sender_base
   /**
   handle_setup_form:
   @params: array of paramters provided after admin form 'submit'
-  Parses relevant @params into stored data
+  Parses relevant @params into stored data, or deletes stored data if so instructed
   */
   public function handle_setup_form($params)
   {
@@ -353,6 +351,7 @@ abstract class smsg_sender_base
 	$pref = cms_db_prefix();
 
 	$gid = (int)$params[$alias.'~gate_id'];
+	unset($params[$alias.'~gate_id']);
 	$pwfield = $db->GetOne('SELECT apiname FROM '.$pref.
 	 'module_smsg_props WHERE gate_id=? AND apiconvert>='.SMSG::DATA_PW,array($gid));
 	if($pwfield)
@@ -360,19 +359,28 @@ abstract class smsg_sender_base
 		$key = $alias.'~'.$pwfield.'~value';
 		$params[$key] = smsg_utils::encrypt_value($params[$key]);
 	  }
-	//TODO if admin, foreach missing '$alias~apiname~active' add $params[$alias~apiname~active] = '0'
 
 	$this->custom_save($params); //any gateway-specific adjustments to $params
+	$delete = isset($params[$alias.'~delete']);
 
 	//2 parts of sql command, cuz' can't parameterise inserted fieldname
 	$sql1 = 'UPDATE '.$pref.'module_smsg_props SET ';
 	$sql2 = '=?,apiorder=? WHERE gate_id=? AND apiname=?';
 	//TODO upsert needed
 
-	unset($params[$alias.'~gate_id']);
+	if( $delete )
+	  {
+		unset($params[$alias.'~delete']);
+		$sql12 = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id=? AND apiname=?';
+	  }
+
 	$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
 	$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
-	$o = 1;
+	$padm = $this->_module->CheckPermission('AdministerSMSGateways');
+	if($padm)
+	  	$done = array();
+	$nm = '';
+	$o = 0; //first $nm-check increments to 1
 	foreach( $params as $key=>&$val )
 	  {
 		//$key is like 'clickatell~user~title'
@@ -381,17 +389,35 @@ abstract class smsg_sender_base
 			$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
 			if( $parts[2] && $parts[2] != 'sel' )
 			  {
+				if( $padm && !in_array($parts[1],$done) )
+				  {
+				  	$done[] = $parts[1];
+					//ensure checkbox-related $params are present & valid
+					$key = $alias.'~'.$parts[1].'~active';
+					$params[$key] = ( array_key_exists($key,$params) ) ? '1':'0';
+				  }
 				//foil injection-attempts
 				$parts[2] = str_replace($srch,$repl,$parts[2]);
 				if( $parts[2] == 'apiname' )
 				  {
-					$parts[1] = str_replace($srch,$repl,$parts[1]);
-					if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
-						continue;
+				  	if($parts[1])
+					  {
+						$parts[1] = str_replace($srch,$repl,$parts[1]);
+						if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
+							continue;
+					  }
+					else
+						$parts[1] = 'todo';
+				  }
+				if( $parts[1] != $nm )
+				  {
+				  	$nm = $parts[1];
+					$o++;
 				  }
 				$db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
-				$o++;
 			  }
+			elseif( $delete && $parts[2] == 'sel' )
+				$db->Execute($sql12,array($gid,$parts[1]));
 		  }
 	  }
 	unset($val);
