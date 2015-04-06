@@ -27,8 +27,11 @@
 #-------------------------------------------------------------------------
 #END_LICENSE
 
-if( !isset($params['submit']) ) return;
 $this->SetCurrentTab('settings');
+
+$gateway = $params['sms_gateway']; //e.g. 'smsbroadcast' or -1
+if( !(isset($params['submit']) || isset($params[$gateway.'~delete'])) )
+	$this->RedirectToTab($id);
 
 $objs = smsg_utils::get_gateways_full();
 if( !$objs )
@@ -36,14 +39,16 @@ if( !$objs )
 	$this->RedirectToTab($id);
   }
 
-$pref = cms_db_prefix();
-$sql = 'UPDATE '.$pref.'module_smsg_gates SET active=0 WHERE active=1';
-$db->Execute($sql);
-$gateway = $params['sms_gateway']; //e.g. 'smsbroadcast' or -1
-if( $gateway != '-1' )
+if(isset($params['submit']))
   {
-	$sql = 'UPDATE '.$pref.'module_smsg_gates SET enabled=1,active=1 WHERE alias=?';
-	$db->Execute($sql,array($gateway));
+	$pref = cms_db_prefix();
+	$sql = 'UPDATE '.$pref.'module_smsg_gates SET active=0 WHERE active=<>0';
+	$db->Execute($sql);
+	if( $gateway != '-1' )
+	  {
+		$sql = 'UPDATE '.$pref.'module_smsg_gates SET enabled=1,active=1 WHERE alias=?';
+		$db->Execute($sql,array($gateway));
+	  }
   }
 
 foreach( $objs as $classname => $rec )
