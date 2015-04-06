@@ -39,8 +39,8 @@ title C(128),
 value C(255),
 apiname C(64),
 encrypt I(1) DEFAULT 0,
-apiorder I(1) DEFAULT -1,
-enabled I(1) DEFAULT 1
+enabled I(1) DEFAULT 1,
+apiorder I(1) DEFAULT -1
 ";
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_props',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
