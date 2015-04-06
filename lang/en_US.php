@@ -186,7 +186,6 @@ $lang['info_entertext_templates'] = 'This form allows you to define and edit a t
 $lang['info_smstest'] = 'This function will send a hardcoded message to the specified mobile phone number for testing purposes.  This functionality can be used to ensure that your settings for your selected SMS gateway are correct.  Please be aware that depending upon the gateway, it may take several minutes before your phone receives the message.';
 $lang['info_sysdflt_enternumber_template'] = 'This template will be used when you create a new enternumber template.  Altering this template will have no immediate effect on any display items on your website';
 $lang['info_sysdflt_entertext_template'] = 'This template will be used when you create a new entertext template.  Altering this template will have no immediate effect on any display items on your website';
-$lang['installed'] = 'Module version %s installed.';
 
 #J
 
@@ -216,8 +215,8 @@ $lang['password'] = 'Password';
 $lang['perm_admin'] = 'Administer SMS Gateways';
 $lang['perm_modify'] = 'Modify SMS Gateway Settings';
 $lang['perm_templates'] = 'Modify SMS Gateway Templates';
-$lang['postinstall'] = 'Module successfully installed, now please ensure that it is configured properly for use, and apply related permissions';
-$lang['postuninstall'] = 'Module successfully removed';
+$lang['postinstall'] = $lang['friendlyname'].' module successfully installed, now please ensure that it is configured properly for use, and apply related permissions';
+$lang['postuninstall'] = $lang['friendlyname']. ' module successfully removed';
 $lang['prompt_daily_limit'] = 'Number of messages that can be sent by one IP address per day';
 $lang['prompt_hourly_limit'] = 'Number of messages that can be sent by one IP address per hour';
 $lang['prompt_log_sends'] = 'Keep local records of sent messages';
@@ -261,8 +260,6 @@ $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template E
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
 
 #U
-$lang['uninstalled'] = 'Module uninstalled.';
-$lang['upgraded'] = 'Module upgraded to version %s.';
 $lang['username'] = 'Username';
 
 #V
