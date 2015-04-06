@@ -105,6 +105,19 @@ class SMSG extends CGExtensions
 	return TRUE;
   }
 
+  public function HasCapability($capability,$params = array())
+  {
+	switch($capability)
+	  {
+		case 'SMSgateway':
+		case 'SMSmessaging':
+	  	case 'SMSG':
+	  	case 'CGSMS':
+			return TRUE;
+		default:
+			return FALSE;
+	  }
+  }
   public function HasAdmin()
   {
 	return TRUE;
@@ -231,7 +244,6 @@ class SMSG extends CGExtensions
 	$this->CreateParameter('smstext','',$this->Lang('help_smstext'));
 	$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
   }
-
 } // end of class
 #
 # EOF
