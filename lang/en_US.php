@@ -44,6 +44,7 @@ $lang['dflt_entertext_template'] = 'System Default &quot;Enter Your Message Text
 
 #E
 $lang['enabled'] = 'Enabled';
+$lang['encrypt'] = 'Encrypt';
 $lang['enter_mobile_number'] = 'Enter Mobile Phone Number';
 $lang['enter_number_templates'] = '&quot;Enter Your Number&quot; Templates';
 $lang['enter_text_templates'] = '&quot;Send A Message&quot; Templates';
