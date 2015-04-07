@@ -44,7 +44,7 @@ class SMSG extends CGExtensions
 	const ENC_DATA = 80; //save local data in encrypted form
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
-	protected $havemcrypt;
+	public $havemcrypt;
 
   public function __construct()
   {
