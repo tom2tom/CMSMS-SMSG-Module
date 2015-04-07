@@ -25,7 +25,7 @@ $lang['account'] = 'Account';
 $lang['add_mobile'] = 'Add Mobile';
 $lang['add_parameter'] = 'Add parameter';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
-$lang['apiname'] = 'API Name';
+$lang['apiname'] = 'API name';
 $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
 
 #B
@@ -256,7 +256,7 @@ $lang['sure_ask'] = 'Are you sure ?';
 
 #T
 $lang['test'] = 'Test';
-$lang['title'] = 'Title';
+$lang['title'] = 'Displayed title';
 $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
 
