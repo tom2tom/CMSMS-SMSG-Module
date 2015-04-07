@@ -290,6 +290,7 @@ abstract class smsg_sender_base
 			//adjustments
 			if($ob->encrypt)
 				$ob->value = smsg_utils::decrypt_value($ob->value);
+			$ob->space = $alias.'~'.$ob->apiname.'~'; //for gateway-data 'namespace'
 			$parms[] = $ob;
 		  }
 		unset($row);
@@ -301,6 +302,7 @@ abstract class smsg_sender_base
 		$ob->title = $module->Lang('error_nodatafound');
 		$ob->value = '';
 		$ob->apiname = FALSE; //prevent input-object creation
+		$ob->space = '';
 		$parms[] = $ob;
 	  }
 	$smarty->assign('data',$parms);
@@ -369,53 +371,60 @@ abstract class smsg_sender_base
 		$sql12 = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id=? AND apiname=?';
 	  }
 
-	$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
-	$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
-	$padm = $this->_module->CheckPermission('AdministerSMSGateways');
-	if($padm)
-	  	$done = array();
-	$nm = '';
-	$o = 0; //first $nm-check increments to 1
-	foreach( $params as $key=>&$val )
+	foreach( $params as $key=>$val )
 	  {
 		//$key is like 'clickatell~user~title'
 		if( strpos($key,$alias) === 0 )
 		  {
-			$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
-			if( $parts[2] && $parts[2] != 'sel' )
-			  {
-				if( $padm && !in_array($parts[1],$done) )
+			$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
+			$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
+			$padm = $this->_module->CheckPermission('AdministerSMSGateways');
+			if($padm)
+				$done = array();
+			$nm = '';
+			$o = 0; //first $nm-check increments to 1
+		  	do {
+				$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
+				if( $parts[2] && $parts[2] != 'sel' )
 				  {
-				  	$done[] = $parts[1];
-					//ensure checkbox-related $params are present & valid
-					$key = $alias.'~'.$parts[1].'~active';
-					$params[$key] = ( array_key_exists($key,$params) ) ? '1':'0';
-				  }
-				//foil injection-attempts
-				$parts[2] = str_replace($srch,$repl,$parts[2]);
-				if( $parts[2] == 'apiname' )
-				  {
-				  	if($parts[1])
+					if( $padm && !in_array($parts[1],$done) )
 					  {
-						$parts[1] = str_replace($srch,$repl,$parts[1]);
-						if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
-							continue;
+						$done[] = $parts[1];
+						//ensure checkbox-related $params are present & valid
+						$key = $alias.'~'.$parts[1].'~active';
+						$params[$key] = ( array_key_exists($key,$params) ) ? '1':'0';
 					  }
-					else
-						$parts[1] = 'todo';
+					//foil injection-attempts
+					$parts[2] = str_replace($srch,$repl,$parts[2]);
+					if( $parts[2] == 'apiname' )
+					  {
+						if($parts[1])
+						  {
+							$parts[1] = str_replace($srch,$repl,$parts[1]);
+							if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
+								continue;
+						  }
+						else
+							$parts[1] = 'todo';
+					  }
+					if( $parts[1] != $nm )
+					  {
+						$nm = $parts[1];
+						$o++;
+					  }
+					$db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
 				  }
-				if( $parts[1] != $nm )
+				elseif( $delete && $parts[2] == 'sel' )
 				  {
-				  	$nm = $parts[1];
-					$o++;
+					$db->Execute($sql12,array($gid,$parts[1]));
+					break 2;
 				  }
-				$db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
-			  }
-			elseif( $delete && $parts[2] == 'sel' )
-				$db->Execute($sql12,array($gid,$parts[1]));
+				$val = next($params);
+				$key = ($val !== FALSE) ? key($params) : '';
+			  } while ( $val !== FALSE && strpos($key,$alias ) === 0);
+			break;
 		  }
 	  }
-	unset($val);
   }
 
   //For internal use only
