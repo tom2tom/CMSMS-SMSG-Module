@@ -11,7 +11,7 @@ $this->SetPreference('hourlimit',(int)$params['hourlimit']);
 $this->SetPreference('daylimit',(int)$params['daylimit']);
 $this->SetPreference('logsends',!empty($params['logsends']));
 $this->SetPreference('logdays',(int)$params['logdays']);
-if( isset($params['masterpw']) )
+if( isset($params['masterpass']) )
   {
 	$oldpw = $this->GetPreference('masterpass');
 	if( $oldpw )
@@ -23,30 +23,39 @@ if( isset($params['masterpw']) )
 	if( $oldpw != $newpw )
 	  {
 		//update current passwords
-		$e = ( $this->havemcrypt ) ?
-		 new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS) : FALSE;
 		$pref = cms_db_prefix();
-		$sql = 'SELECT gate_id,title,value FROM '.$pref.'module_smsg_props WHERE encrypt>0';
+		$sql = 'SELECT gate_id,title,value,encvalue FROM '.$pref.'module_smsg_props WHERE encrypt>0';
 		$rows = $db->GetAll($sql);
 		if( $rows )
 		  {
-			$sql = 'UPDATE '.$pref.'module_smsg_props SET value=? WHERE gate_id=? AND title=?';
+			$e = ( $this->havemcrypt ) ?
+			 new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS) : FALSE;
+			if( $e && $newpw )
+			  {
+				$tofield = 'encvalue';
+				$notfield = 'value';
+				$encval = 1;
+			  }
+			else
+			  {
+				$tofield = 'value';
+				$notfield = 'encvalue';
+				$encval = 0;
+			  }
+			$sql = 'UPDATE '.$pref.'module_smsg_props SET '.$tofield.'=?,'.$notfield.'=NULL,encrypt=? WHERE gate_id=? AND title=?';
 			foreach( $rows as &$onerow )
 			  {
 				if( $oldpw )
-					$raw = ($e && $onerow['value']) ? $e->decrypt($onerow['value'],$oldpw) : $onerow['value'];
+					$raw = ($e && $onerow['encvalue']) ? $e->decrypt($onerow['encvalue'],$oldpw) : $onerow['encvalue'];
 				else
 					$raw = $onerow['value'];
-				if( $raw )
-				  {
-					if( $newpw )
-						$revised = ($e) ? $e->encrypt($raw,$newpw) : $raw;
-					else
-						$revised = $raw;
-				  }
+				if( $newpw )
+					$revised = ($raw && $e) ? $e->encrypt($raw,$newpw) : $raw;
 				else
+					$revised = $raw;
+				if( !$revised )
 					$revised = NULL;
-				$db->Execute($sql,array($revised,$onerow['gate_id'],$onerow['title']))
+				$db->Execute($sql,array($revised,$encval,$onerow['gate_id'],$onerow['title']));
 			  }
 			unset( $onerow );
 		  }
