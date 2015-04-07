@@ -19,11 +19,11 @@ class skeleton_sms_gateway extends smsg_sender_base
 		if($gid)
 		{
 			$module = parent::get_module();
-		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//by convention, apiname's which are not actually used are indicated by a '_' prefix
 			smsg_utils::setprops($gid,array(
-			array($module->Lang('username'),'user',NULL,SMSG::DATA_ASIS),
-			array($module->Lang('password'),'password',NULL,SMSG::DATA_PW)
+			array($module->Lang('username'),'user',NULL,0),
+			array($module->Lang('password'),'password',NULL,1)
 			));
 		}
 		return $gid;
@@ -130,6 +130,7 @@ class skeleton_sms_gateway extends smsg_sender_base
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
 		}
+		//convert $parms data format if needed
 		//MORE $parms - to, from, body etc, format-adjusted as needed
 		$str = cge_array::implode_with_key($parms);
 		$str = some_url.'?'.str_replace('amp;','',$str);
