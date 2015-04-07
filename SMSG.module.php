@@ -75,12 +75,12 @@ class SMSG extends CGExtensions
 
   public function GetAuthor()
   {
-	return 'calguy1000';
+	return 'tomphantoo';
   }
 
   public function GetAuthorEmail()
   {
-	return 'calguy1000@cmsmadesimple.org';
+	return 'tpgww@onepost.net';
   }
 
   public function GetChangeLog()
