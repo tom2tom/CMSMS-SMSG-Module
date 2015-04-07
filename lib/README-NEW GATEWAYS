@@ -1,0 +1,11 @@
+Each working gateway needs a class file, named like 'class.somename_sms_gateway.php',
+located in module directory '.../lib/gateways', and containing at least a class
+named like 'somename_sms_gateway'.
+
+The file 'class.skeleton_sms_gateway.php' constitutes a template of sorts.
+
+Gateway class developers should become familiar with the API of the parent-class
+(smsg_sender_base), and may get some inspiration from existing gateways, of course.
+
+Existing 'infrastructure' from gateway providers can be used, provided there's a
+suitable interface to it.
