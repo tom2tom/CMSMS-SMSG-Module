@@ -84,17 +84,36 @@ $lang['help_smstext'] = 'Applicable only to the enternumber action, this paramet
 $lang['help_sure'] = 'Be <strong>very sure</strong> about what you\'re doing, before modifying anything except title(s) and/or value(s)!';
 $lang['help_urlcheck'] = 'Refer to the <a href="%s">%s</a> for details';
 $lang['help_urlonly'] = 'This parameter indicates that instead of a full link only the URL should be echoed, allowing you to build your own link.';
-$lang['help'] = <<<EOT
-<h3>What Does This Do?</h3>
-<p>This module allows website visitors to either send a pre-determined (and encrypted) text message to any text capable phone, or to allow sending a user specified text message to a pre-determined (and hidden) mobile phone number.  It is useful for such things as sending addresses from a directory to a persons mobile phone number... or for messaging a website administrator with urgent information.</p>
-<h3>Security</h3>
-<p>Attempts have been made to ensure a reasonable level of security at all times.  This is accomplished in a variety of ways:</p>
+$lang['help'] = <<<EOS
+<h3>What does this do?</h3>
+<p>This module allows website visitors to either send a pre-determined (and encrypted) text
+ message to any text capable phone, or to allow sending a user specified text message to a pre-determined
+ (and hidden) mobile phone number.  It is useful for such things as sending addresses from a directory to a mobile phone number...
+ or for messaging a website administrator with urgent information.</p>
+<h3>How do I use it?</h3>
+<p>The first thing to do is grant relevant permissions to users. Three permissions are available:</p>
+<ul>
+<li>Modify module settings other than templates</li>
+<li>Modify module templates</li>
+<li>Administration, which includes the above two plus more-extensive settings manipulation</li>
+</ul>
+<p>Then, via the module's admin panel (menu &quot;Extensions &gt;&gt; SMS Utility&quot;), record information
+about how the module is to work.
+Choose one of the available gateways and enter the corresponding interface parameters.
+Choose values for module settings such as the SMS sending-limits (to reduce spam).</p>
+<p>Then perform at least one test (there\'s a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
+<br />
+<p>There are two primary ways to use this module in the website front end:</p>
 <ol>
-<li>All text messages are checked for length limits, and valid characters before sending.</li>
-<li>All text messages are recorded in the database, including the IP address of the sender.</li>
-<li>Before any text message is sent, a check is made to ensure that the user has not exceeded the maximum amount of messages sent for that IP address.</li>
-<li>When sending to a pre-defined mobile phone the SMS number is hidden from the website visitor at all times to prevent spamming.</li>
-<li>When sending a pre-defined message the text of the message is stored in the database and the visitor is given a unique key to the text of the message, preventing alteration of the text itself.</li>
+ <li>To send predefined text to a user-specified phone number, put a tag like
+ <code>{SMSG action='enternumber' text='the quick brown fox'}</code> into a page or template.
+ That creates a link that when clicked will display a form for the user to enter a mobile phone number.</p>
+ </li>
+ <li>To send user-specified text to a predefined phone number, put a tag like
+ <code>{SMSG action='entertext' smsnum=5}</code> into a page or template.
+ That creates a link that when clicked will display a form for the user to enter a 160-character message
+ that is then sent to a predetermined mobile number (in the example, the one with id=5)
+</li>
 </ol>
 <h3>SMS Gateways</h3>
 <p>This module depends on selecting a supported SMS gateway and recording the corresponding authentication and other parameters. You will need to sign up to at least one of the supported gateways.  This will typically involve paying money to the service provider.</p>
@@ -106,18 +125,8 @@ $lang['help'] = <<<EOT
 <li>{$lang['advice_smsbroadcast']}</li>
 <li>{$lang['advice_twilio']}</li>
 </ul>
-<h3>How do I use it</h3>
-<p>The first thing you should do is to go into the module's admin panel under &quot;Extensions &gt;&gt; Calguys SMS Utility&quot;.  There you will be able to choose one of the available gateways and to enter the authentication information for that gateway.  At this time you can also define the SMS sending limits to reduce spam.</p>
-<p>Secondly you should perform at least one SMS Test (there is a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
-<p>Thirdly you need to place at least one tag into a page, or page template in the CMSMS Admin console.  There are two primary ways in which to use this module:</p>
-<ol>
- <li>Send predefined text to a user defined mobile number <code>{SMSG action='enternumber' text='the quick brown fox'}</code>
-  <p>This will generate a link that when clicked will display a form to the user to allow them to enter a mobile phone number.</p>
- </li>
- <li>Send user defined text to a predefined mobile number <code>{SMSG action='entertext' smsnum=5}</code>
-  <p>This will generate a link that when clicked will display a form to allow the user to enter a 160 character SMS Message that is then sent to a predetermined mobile number witht he id=5.</p>
- </li>
-</ol>
+<h3>Extra gateways</h3>
+<p>A PHP-class must be created for each gateway. Refer to the README document in the module folder .../lib/gateways.</p>
 <h3>API</h3>
 <p>This module contains a rich API for sending SMS messages from other modules or from UDTs.
 The API for each gateway is set out in file .../lib/class.smsg_sender_base.php. It comprises</p>
@@ -138,46 +147,51 @@ The API for each gateway is set out in file .../lib/class.smsg_sender_base.php. 
 <li>support_custom_sender()</li>
 <li>support_mms()</li>
 </ul>
-<p>A brief example of how to use it is:</p>
-<pre style="margin-left: 5em;"><code>
+<p>A brief example of how to use it is:
+<pre style="margin-left: 2em;"><code>
 \$gateway = smsg_utils::get_gateway();
 \$gateway->set_msg('hello world');
 \$gateway->set_num('12225551212');
 \$gateway->send();
-</code></pre>
+</code></pre></p>
+<h3>Security</h3>
+<p>Attempts have been made to ensure a reasonable level of security at all times.
+This is accomplished in a variety of ways:</p>
+<ol>
+<li>All text messages are checked for length limits and valid characters, before sending.</li>
+<li>All text messages are recorded in the database, including the IP address of the sender.</li>
+<li>Before any text message is sent, there\'s a check that the allowed maximum (daily, hourly) counts of messages from that IP address have not been exceeded.</li>
+<li>When sending to a pre-defined phone, the destination number is hidden from the initiator, to prevent spamming.</li>
+<li>When sending a message, the message text is stored in the database and cannot be altered.</li>
+</ol>
 <h3>Requirements:</h3>
-<p>The requirements are numerous, please use caution:</p>
 <ul>
-<li>CMS Made Simple 1.6.6 or greater</li>
+<li>CMS Made Simple 1.8 or greater</li>
 <li>PHP Version 5.2+ (5.2.11 or better is recommended)</li>
-<li>A subscription or access to at least one suported gateway.</li>
+<li>A subscription or access to at least one suported gateway</li>
 <li>The website host must allow outgoing HTTP connections</li>
 </ul>
 <h3>Support</h3>
-<p>This module does not include commercial support. However, there are a number of resources available to help you with it:</p>
+<p>This module is provided as-is. Please read the text of the license for the full disclaimer.</p>
+<p>For help:</p>
 <ul>
-<li>For the latest version of this module, FAQs, or to report a bug or buy commercial support, please visit calguy's
-module homepage at <a href="http://calguy1000.com">calguy1000.com</a>.</li>
-<li>Additional discussion of this module may also be found in the <a href="http://forum.cmsmadesimple.org">CMS Made Simple Forums</a>.</li>
-<li>The author, calguy1000, can often be found in the <a href="irc://irc.freenode.net/#cms">CMS IRC Channel</a>.</li>
-<li>Lastly, you may have some success emailing the author directly.</li>  
+<li>discussion may be found in the <a href="http://forum.cmsmadesimple.org">CMS Made Simple Forums</a>; or</li>
+<li>you may have some success emailing the author directly.</li>
 </ul>
+<p>For the latest version of the module, or to report a bug, visit the module's <a href="http://dev.cmsmadesimple.org/projects/smsg">forge-page</a>.</p>
 <h3>Copyright and License</h3>
-<p>Copyright &copy; 2010-2015, Robert Campbell <a href="mailto:calguy1000@cmsmadesimple.org">&lt;calguy1000@cmsmadesimple.org&gt;</a>. All rights reserved.</p>
-<p>This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
+<p>Portions copyright &copy; 2015 Tom Phane &lt;tpgww@onepost.net&gt;.<br />
+Portions copyright &copy; 2010 Robert Campbell &lt;calguy1000@cmsmadesimple.org&gt;.<br />
+All rights reserved.</p>
+<p>This module is free software. It may be redistributed and/or modified
+under the terms of the GNU Affero General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.</p>
-<p>This software is distributed as an addon module for <a href="http://www.cmsmadesimple.org">CMS Made Simple</a>.
-As a special addition to the AGPL, this software may not be used in
-any non-GPL version of CMS Made Simple, or in any version of CMS Made
-Simple that does not indicate clearly and obviously in its admin section
-that the site was built with CMS Made Simple.</p>
-<p>This software is distributed in the hope that it will be useful,
+<p>This module is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 <a href="http://www.gnu.org/licenses/licenses.html#AGPL">GNU Affero General Public License</a> for more details.</p>
-EOT;
+EOS;
 $lang['helptitle'] = 'Help';
 
 #I
