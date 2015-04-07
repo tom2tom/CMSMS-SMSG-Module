@@ -98,16 +98,26 @@ class smsg_utils
 	$pref = cms_db_prefix();
 	//upsert, sort-of
 	$sql1 = 'UPDATE '.$pref.
-	 'module_smsg_props SET title=?,value=?,encrypt=?,apiorder=? WHERE gate_id=? AND apiname=?';
+	 'module_smsg_props SET title=?,value=?,encvalue=?,encrypt=?,apiorder=? WHERE gate_id=? AND apiname=?';
 	$sql2 = 'INSERT INTO '.$pref.
-	 'module_smsg_props (gate_id,title,value,apiname,encrypt,apiorder)
-SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
+	 'module_smsg_props (gate_id,title,value,encvalue,apiname,encrypt,apiorder)
+SELECT ?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 (SELECT 1 FROM '.$pref.'module_smsg_props T1 WHERE T1.gate_id=? AND T1.apiname=?)';
 	$o = 1;
 	foreach($props as &$data)
 	  {
-		$db->Execute($sql1,array($data[0],$data[2],$data[3],$o,$gid,$data[1]));
-		$db->Execute($sql2,array($gid,$data[0],$data[2],$data[1],$data[3],$o,$gid,$data[1]));
+		if($data[3])
+		  {
+			$a1 = array($data[0],NULL,$data[2],1,$o,$gid,$data[1]);
+			$a2 = array($gid,$data[0],NULL,$data[2],$data[1],1,$o,$gid,$data[1]);
+		  }
+		else
+		  {
+			$a1 = array($data[0],$data[2],NULL,0,$o,$gid,$data[1]);
+			$a2 = array($gid,$data[0],$data[2],NULL,$data[1],0,$o,$gid,$data[1]);
+		  }
+		$db->Execute($sql1,$a1);
+		$db->Execute($sql2,$a2);
 		$o++;
 	  }
 	unset($data);
@@ -117,11 +127,11 @@ SELECT ?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
-	$props = $db->GetAssoc('SELECT apiname,value,encrypt FROM '.$pref.
+	$props = $db->GetAssoc('SELECT apiname,value,encvalue,encrypt FROM '.$pref.
 	 'module_smsg_props WHERE gate_id=? AND enabled>0 ORDER BY apiorder',
 	 array($gid));
 	foreach($props as &$row)
-		$row = ($row['encrypt']) ? self::decrypt_value($row['value']) : $row['value'];
+		$row = ($row['encrypt']) ? self::decrypt_value($row['encvalue']) : $row['value'];
 	unset($row);
 	return $props;
   }

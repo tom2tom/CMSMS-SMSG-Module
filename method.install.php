@@ -24,7 +24,7 @@ $flds = "
 gate_id	I KEY,
 alias C(48),
 title C(128) NOTNULL,
-description C(255),
+description C(256),
 enabled I(1) NOTNULL DEFAULT 1,
 active I(1) NOTNULL DEFAULT 0
 ";
@@ -33,10 +33,13 @@ $dict->ExecuteSQLArray($sqlarray);
 
 $db->CreateSequence($pref.'module_smsg_gates_seq');
 
+//postgres supported pre-1.11
+$ftype = (preg_match('/mysql/i',$config['dbms'])) ? 'VARBINARY(256)':'BIT VARYING(2048)';
 $flds = "
 gate_id I NOTNULL,
 title C(128),
-value C(255),
+value C(256),
+encvalue $ftype,
 apiname C(64),
 encrypt I(1) DEFAULT 0,
 enabled I(1) DEFAULT 1,

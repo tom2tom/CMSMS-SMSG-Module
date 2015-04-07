@@ -276,7 +276,7 @@ abstract class smsg_sender_base
 	$smarty = cmsms()->GetSmarty();
 	$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
 	$parms = array();
-	$query = 'SELECT gate_id,title,value,apiname,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
+	$query = 'SELECT gate_id,title,value,encvalue,apiname,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 	if( !$padm )
 		$query .= ' AND enabled=1';
 	$query .= ' ORDER BY apiorder';
@@ -289,7 +289,8 @@ abstract class smsg_sender_base
 			$ob = (object)$row;
 			//adjustments
 			if($ob->encrypt)
-				$ob->value = smsg_utils::decrypt_value($ob->value);
+				$ob->value = smsg_utils::decrypt_value($ob->encvalue);
+			unset($ob->encvalue);
 			$ob->space = $alias.'~'.$ob->apiname.'~'; //for gateway-data 'namespace'
 			$parms[] = $ob;
 		  }
@@ -349,82 +350,77 @@ abstract class smsg_sender_base
 
 	$gid = (int)$params[$alias.'~gate_id'];
 	unset($params[$alias.'~gate_id']);
-	$fields = $db->GetColumn('SELECT apiname FROM '.$pref.
-	 'module_smsg_props WHERE gate_id=? AND encrypt>0',array($gid));
-	foreach($fields as $encfield)
-	  {
-		$key = $alias.'~'.$encfield.'~value';
-		$params[$key] = smsg_utils::encrypt_value($params[$key]);
-	  }
 
 	$this->custom_save($params); //any gateway-specific adjustments to $params
 	$delete = isset($params[$alias.'~delete']);
 
-	//2 parts of sql command, cuz' can't parameterise inserted fieldname
-	$sql1 = 'UPDATE '.$pref.'module_smsg_props SET ';
-	$sql2 = '=?,apiorder=? WHERE gate_id=? AND apiname=?';
-	//TODO upsert needed
+	$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
+	$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
+	$conds = array();
 
 	if( $delete )
 	  {
 		unset($params[$alias.'~delete']);
 		$sql12 = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id=? AND apiname=?';
 	  }
-
+	//accumulate data (in any order) into easily-usable format
 	foreach( $params as $key=>$val )
 	  {
 		//$key is like 'clickatell~user~title'
 		if( strpos($key,$alias) === 0 )
 		  {
-			$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
-			$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
-			$padm = $this->_module->CheckPermission('AdministerSMSGateways');
-			if($padm)
-				$done = array();
-			$nm = '';
-			$o = 0; //first $nm-check increments to 1
-		  	do {
-				$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
-				if( $parts[2] && $parts[2] != 'sel' )
+			$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
+			if( $parts[2] && $parts[2] != 'sel' && !$delete )
+			  {
+				//foil injection-attempts
+				$parts[2] = str_replace($srch,$repl,$parts[2]);
+				if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[2]) )
+					continue;
+				if($parts[1])
 				  {
-					if( $padm && !in_array($parts[1],$done) )
-					  {
-						$done[] = $parts[1];
-						//ensure checkbox-related $params are present & valid
-						$key = $alias.'~'.$parts[1].'~active';
-						$params[$key] = ( array_key_exists($key,$params) ) ? '1':'0';
-					  }
-					//foil injection-attempts
-					$parts[2] = str_replace($srch,$repl,$parts[2]);
-					if( $parts[2] == 'apiname' )
-					  {
-						if($parts[1])
-						  {
-							$parts[1] = str_replace($srch,$repl,$parts[1]);
-							if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
-								continue;
-						  }
-						else
-							$parts[1] = 'todo';
-					  }
-					if( $parts[1] != $nm )
-					  {
-						$nm = $parts[1];
-						$o++;
-					  }
-					$db->Execute($sql1.$parts[2].$sql2,array($val,$o,$gid,$parts[1]));
+					$parts[1] = str_replace($srch,$repl,$parts[1]);
+					if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
+						continue;
 				  }
-				elseif( $delete && $parts[2] == 'sel' )
-				  {
-					$db->Execute($sql12,array($gid,$parts[1]));
-					break 2;
-				  }
-				$val = next($params);
-				$key = ($val !== FALSE) ? key($params) : '';
-			  } while ( $val !== FALSE && strpos($key,$alias ) === 0);
-			break;
+				else
+					$parts[1] = 'todo';
+				if(!array_key_exists($parts[1],$conds))
+					$conds[$parts[1]] = array();
+				$conds[$parts[1]][$parts[2]] = $val;
+			  }
+			elseif( $delete && $parts[2] == 'sel' )
+			  {
+				$db->Execute($sql12,array($gid,$parts[1]));
+			  }
 		  }
 	  }
+	if( $delete )
+		return;
+
+	$padm = $this->_module->CheckPermission('AdministerSMSGateways');
+	$o = 1;
+	foreach($conds as $apiname=>&$data)
+	  {
+		$enc = (isset($data['encrypt'])) ? 1:0;
+		$data['encrypt'] = $enc;
+		if($enc)
+		  {
+			$data['encvalue'] = smsg_utils::encrypt_value($data['value']);
+			$data['value'] = NULL;
+		  }
+		else
+			$data['encvalue'] = NULL;
+		if($padm)
+			$data['enabled'] = (isset($data['enabled'])) ? 1:0;
+		//TODO upsert needed
+		$sql = 'UPDATE '.$pref.'module_smsg_props SET '
+			.implode('=?,',array_keys($data)).
+			'=?,apiorder=? WHERE gate_id=? AND apiname=?';
+		$args = array_merge(array_values($data),array($o,$gid,$apiname));
+		$db->Execute($sql,$args);
+		$o++;
+	  }
+	unset($data);
   }
 
   //For internal use only
