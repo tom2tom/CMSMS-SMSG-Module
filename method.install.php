@@ -37,10 +37,11 @@ $db->CreateSequence($pref.'module_smsg_gates_seq');
 $ftype = (preg_match('/mysql/i',$config['dbms'])) ? 'VARBINARY(256)':'BIT VARYING(2048)';
 $flds = "
 gate_id I NOTNULL,
-title C(128),
+title C(96),
 value C(256),
 encvalue $ftype,
 apiname C(64),
+signature C(64),
 encrypt I(1) DEFAULT 0,
 enabled I(1) DEFAULT 1,
 apiorder I(1) DEFAULT -1
