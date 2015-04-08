@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-abstract class smsg_sender_base
+abstract class sms_gateway_base
 {
 	const STAT_OK = 'sms_sent';
 	const STAT_NOTSENT = 'sms_notsent';
@@ -92,7 +92,6 @@ abstract class smsg_sender_base
 	$this->_msg = $msg;
   }
 
-
   protected function get_msg()
   {
 	return $this->_msg;
@@ -107,7 +106,6 @@ abstract class smsg_sender_base
   {
 	$this->_num = $num;
   }
-
 
   protected function get_num()
   {
@@ -412,7 +410,7 @@ abstract class smsg_sender_base
 			$data['encvalue'] = NULL;
 		if($padm)
 			$data['enabled'] = (isset($data['enabled'])) ? 1:0;
-		//TODO upsert needed
+
 		$sql = 'UPDATE '.$pref.'module_smsg_props SET '
 			.implode('=?,',array_keys($data)).
 			'=?,apiorder=? WHERE gate_id=? AND apiname=?';
