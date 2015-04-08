@@ -60,7 +60,7 @@ if( isset($params['smsg_submit']) )
 
 			$stat = $gateway->get_status();
 			$msg = $gateway->get_statusmsg();
-			if( $stat != smsg_sender_base::STAT_OK )
+			if( $stat != sms_gateway_base::STAT_OK )
 			  {
 				$error = $msg;
 			  }

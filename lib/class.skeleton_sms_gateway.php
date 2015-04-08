@@ -7,7 +7,7 @@
 #----------------------------------------------------------------------
 
 //class name must be like 'somename_sms_gateway'
-class skeleton_sms_gateway extends smsg_sender_base
+class skeleton_sms_gateway extends sms_gateway_base
 {
 	//TODO specific name and real URL for API reference
 	const SKEL_API_URL = 'https://somewhere.com/...';
@@ -149,7 +149,7 @@ class skeleton_sms_gateway extends smsg_sender_base
 		//TODO
 	    $smsto = '';
 		$smsid = '';
-		$status = smsg_sender_base::DELIVERY_UNKNOWN; //or whatever
+		$status = sms_gateway_base::DELIVERY_UNKNOWN; //or whatever
 		return smsg_utils::get_delivery_msg($this,$status,$smsid,$smsto);
 	}
 

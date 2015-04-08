@@ -35,7 +35,7 @@ if( isset($params['submit']) )
 			$sender->send();
 			$status = $sender->get_status();
 			$msg = $sender->get_statusmsg();
-			if( $status != smsg_sender_base::STAT_OK )
+			if( $status != sms_gateway_base::STAT_OK )
 			  {
 				$this->SetError($msg);
 			  }
