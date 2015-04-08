@@ -12,7 +12,7 @@ $lang['advice_googlevoice'] = '<a href="http://voice.google.com"><strong>Google 
 $lang['description_googlevoice'] = 'TODO';
 $lang['email'] = 'Email address';
 
-$lang['advice_smsbroadcast'] = '<a href="https://www.smsbroadcast.com.au/"><strong>Smsbroadcast</strong></a> - Australia-only coverage, highly regarded';
+$lang['advice_smsbroadcast'] = '<a href="https://www.smsbroadcast.com.au"><strong>Smsbroadcast</strong></a> - Australia-only coverage, highly regarded';
 $lang['description_smsbroadcast'] = 'Simple, Australia-only coverage gateway, highly-rated';
 $lang['reference'] = 'Reference';
 
