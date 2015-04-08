@@ -13,6 +13,54 @@ class skeleton_sms_gateway extends smsg_sender_base
 	const SKEL_API_URL = 'https://somewhere.com/...';
 	private $_rawstatus;
 
+	public function get_name()
+	{
+		//TODO
+		return 'My Name';
+	}
+
+	public function get_alias()
+	{
+		//must be this class' name less the trailing '_sms_gateway'
+		//TODO
+		return 'skeleton';
+	}
+
+	public function get_description()
+	{
+		//DEPRECATED see database table
+		return '';
+	}
+
+	public function support_custom_sender()
+	{
+		//TODO
+		return FALSE;
+	}
+
+	public function support_mms()
+	{
+		//TODO
+		return FALSE;
+	}
+
+	public function require_country_prefix()
+	{
+		//TODO
+		return TRUE;
+	}
+
+	public function require_plus_prefix()
+	{
+		return FALSE;
+	}
+
+	public function multi_number_separator()
+	{
+		//TODO
+		return FALSE;
+	}
+
 	public function upsert_tables()
 	{
 		$gid = smsg_utils::setgate($this);
@@ -64,54 +112,6 @@ class skeleton_sms_gateway extends smsg_sender_base
   'clickatell~gate_id' => string '1' (length=1)
   ....
 */
-	}
-
-	public function get_name()
-	{
-		//TODO
-		return 'My Name';
-	}
-
-	public function get_alias()
-	{
-		//must be this class' name less the trailing '_sms_gateway'
-		//TODO
-		return 'skeleton';
-	}
-
-	public function get_description()
-	{
-		//DEPRECATED see database table
-		return '';
-	}
-
-	public function support_custom_sender()
-	{
-		//TODO
-		return FALSE;
-	}
-
-	public function support_mms()
-	{
-		//TODO
-		return FALSE;
-	}
-
-	public function require_country_prefix()
-	{
-		//TODO
-		return TRUE;
-	}
-
-	public function require_plus_prefix()
-	{
-		return FALSE;
-	}
-
-	public function multi_number_separator()
-	{
-		//TODO
-		return FALSE;
 	}
 
 	protected function setup()
