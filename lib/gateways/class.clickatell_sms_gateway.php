@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class clickatell_sms_gateway extends smsg_sender_base
+class clickatell_sms_gateway extends sms_gateway_base
 {
 	const CTELL_HTTP_GATEWAY = 'http://api.clickatell.com/http';
 	const CTELL_API_URL = 'https://www.clickatell.com/apis-scripts/apis/http-s';
@@ -58,12 +58,13 @@ class clickatell_sms_gateway extends smsg_sender_base
 		$gid = smsg_utils::setgate($this);
 		if($gid)
 		{
+			parent::set_gateid($gid);
 			$module = parent::get_module();
-		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			smsg_utils::setprops($gid,array(
-			 array($module->Lang('username'),'user',NULL,SMSG::DATA_ASIS),
-			 array($module->Lang('password'),'password',NULL,SMSG::DATA_PW),
-			 array($module->Lang('apiid'),'api_id',NULL,SMSG::DATA_ASIS)
+			 array($module->Lang('username'),'user',NULL,0),
+			 array($module->Lang('password'),'password',NULL,1),
+			 array($module->Lang('apiid'),'api_id',NULL,0)
 			));
 		}
 		return $gid;
@@ -73,10 +74,9 @@ class clickatell_sms_gateway extends smsg_sender_base
 	{
 		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
-			if(!empty($ob->pass))
+			if($ob->signature == 'password')
 			{
 				$ob->size = 20;
-				unset($ob->pass); //no further use
 				break;
 			}
 		}
@@ -102,15 +102,23 @@ class clickatell_sms_gateway extends smsg_sender_base
 	{
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($gid);
-		//TODO maybe some valid empty parm
-		if(in_array(FALSE,$parms))
+		if(
+		 $parms['user']['value'] == FALSE ||
+		 $parms['password']['value'] == FALSE ||
+		 $parms['api_id']['value'] == FALSE
+		)
 		{
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
 		}
 
-		$parms['to'] = parent::get_num();
-		if($parms['to'] === '') return FALSE;
+		$sends = array();
+		foreach($parms as &$val)
+			$sends[$val['apiname']] = $val['value'];
+		unset($val);
+
+		$sends['to'] = parent::get_num();
+		if($sends['to'] == FALSE) return FALSE;
 /*
 from = international format number, registered and approved
 callback to registered URL
@@ -119,10 +127,10 @@ req_feat
 queue 1,2,3 1=highest priority, 3=default
 */
 		$text = substr(strip_tags(parent::get_msg()),0,160);
-		if($text === '') return FALSE;
-		$parms['text'] = urlencode($text);
+		if($text == FALSE) return FALSE;
+		$sends['text'] = urlencode($text);
 
-		$str = cge_array::implode_with_key($parms);
+		$str = cge_array::implode_with_key($sends);
 		$str = self::CTELL_HTTP_GATEWAY.'/sendmsg?'.str_replace('amp;','',$str);
 		return $str;
 	}

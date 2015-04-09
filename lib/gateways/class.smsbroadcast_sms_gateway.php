@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class smsbroadcast_sms_gateway extends smsg_sender_base
+class smsbroadcast_sms_gateway extends sms_gateway_base
 {
 	const SMSBC_API_URL = 'https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf';
 	private $_rawstatus;
@@ -56,13 +56,14 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 		$gid = smsg_utils::setgate($this);
 		if($gid)
 		{
+			parent::set_gateid($gid);
 			$module = parent::get_module();
-		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			smsg_utils::setprops($gid,array(
-			 array($module->Lang('username'),'username',NULL,SMSG::DATA_RAWURL),
-			 array($module->Lang('password'),'password',NULL,SMSG::DATA_PW + SMSG::DATA_RAWURL),
-			 array($module->Lang('from'),'from',NULL,SMSG::DATA_RAWURL),
-			 array($module->Lang('reference'),'ref',NULL,SMSG::DATA_RAWURL)
+			 array($module->Lang('username'),'username',NULL,0),
+			 array($module->Lang('password'),'password',NULL,1),
+			 array($module->Lang('from'),'from',NULL,0),
+			 array($module->Lang('reference'),'ref',NULL,0)
 			));
 		}
 		return $gid;
@@ -72,10 +73,9 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 	{
 		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
-			if(!empty($ob->pass))
+			if($ob->signature == 'password')
 			{
 				$ob->size = 20;
-				unset($ob->pass); //no further use
 				break;
 			}
 		}
@@ -106,7 +106,8 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 	{
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($gid);
-		if(in_array(FALSE,$parms)) //TODO !$user || !$pass)
+		if($parms['username']['value'] == FALSE ||
+		 $parms['password']['value'] == FALSE)
 		{
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
@@ -131,6 +132,10 @@ class smsbroadcast_sms_gateway extends smsg_sender_base
 			$this->_status = parent::STAT_ERROR_OTHER;
 			return FALSE;
 		}
+
+		foreach($parms as &$val)
+			$val = rawurlencode($val['value']);
+		unset($val);
 
 		$parms['to'] = rawurlencode($to);
 		if($source)

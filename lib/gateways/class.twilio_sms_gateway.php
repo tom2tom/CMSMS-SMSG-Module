@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class twilio_sms_gateway extends smsg_sender_base
+class twilio_sms_gateway extends sms_gateway_base
 {
 	const TWILIO_API_URL = 'https://www.twilio.com/docs/api';
 	private $_rawstatus;
@@ -56,13 +56,14 @@ class twilio_sms_gateway extends smsg_sender_base
 		$gid = smsg_utils::setgate($this);
 		if($gid)
 		{
+			parent::set_gateid($gid);
 			$module = parent::get_module();
-			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//none of the apiname's is actually used (indicated by '_' prefix)
 			smsg_utils::setprops($gid,array(
-			 array($module->Lang('account'),'_account',NULL,SMSG::DATA_ASIS),
-			 array($module->Lang('token'),'_token',NULL,SMSG::DATA_PW),
-			 array($module->Lang('from'),'_from',NULL,SMSG::DATA_ASIS)
+			 array($module->Lang('account'),'_account',NULL,0),
+			 array($module->Lang('token'),'_token',NULL,1),
+			 array($module->Lang('from'),'_from',NULL,0)
 			));
 		}
 		return $gid;
@@ -72,14 +73,9 @@ class twilio_sms_gateway extends smsg_sender_base
 	{
 		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
-			if($ob->apiname == '_account') //TODO can be renamed by Admin
+			if($ob->signature == '_account'
+			|| $ob->signature == '_token')
 				$ob->size = 32;
-
-			if(!empty($ob->pass))
-			{
-				$ob->size = 32;
-				unset($ob->pass); //no further use
-			}
 		}
 		unset($ob);
 		if($padm)
@@ -97,6 +93,7 @@ class twilio_sms_gateway extends smsg_sender_base
 
 	protected function setup()
 	{
+		require_once cms_join_path(dirname(__FILE__),'twilio','Twilio.php');
 	}
 
 	protected function prep_command()
@@ -121,22 +118,20 @@ class twilio_sms_gateway extends smsg_sender_base
 			return FALSE;
 		}
 
-		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($gid);
-		$ordered = array_values($parms);
-		if(!$ordered[0] || !$ordered[1])
-		{
-			$this->_status = parent::STAT_ERROR_AUTH;
-			return FALSE;
-		}
 		$from = 'TODO';
 		if(!$from)
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
-		require_once cms_join_path(dirname(__FILE__),'twilio','Twilio.php');
-		$ob = new Services_Twilio($ordered[0],$ordered[1]);
+
+		$gid = parent::get_gateid(self::get_alias());
+		$parms = smsg_utils::getprops($gid);
+		$ob = new Services_Twilio(
+		 $parms['_account']['value'],
+		 $parms['_token']['value']
+		);
+
 		try
 		{
 			//send it NOTE these array keys must be capitalised

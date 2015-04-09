@@ -6,9 +6,9 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class googlevoice_sms_gateway extends smsg_sender_base
+class googlevoice_sms_gateway extends sms_gateway_base
 {
-  const GOOGLEVOICE_API_URL = ''; 
+  const GOOGLEVOICE_API_URL = 'https://code.google.com/p/phpgooglevoice';
   private $_rawstatus;
 
   public function get_name()
@@ -56,12 +56,13 @@ class googlevoice_sms_gateway extends smsg_sender_base
 	$gid = smsg_utils::setgate($this);
 	if($gid)
 	  {
+		parent::set_gateid($gid);
 		$module = parent::get_module();
-		//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=apiconvert
+		//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 		//none of the apiname's is actually used (indicated by '_' prefix)
 		smsg_utils::setprops($gid,array(
-		 array($module->Lang('email'),'_email',NULL,SMSG::DATA_ASIS),
-		 array($module->Lang('password'),'_password',NULL,SMSG::DATA_PW)
+		 array($module->Lang('email'),'_email',NULL,0),
+		 array($module->Lang('password'),'_password',NULL,1)
 		));
 	  }
 	return $gid;
@@ -71,13 +72,10 @@ class googlevoice_sms_gateway extends smsg_sender_base
   {
     foreach($smarty->tpl_vars['data']->value as &$ob)
       {
-        if($ob->apiname == '_email')
+        if($ob->signature == '_email')
           $ob->size = 24;
-        elseif(!empty($ob->pass))
-		{
+		elseif($ob->signature == '_password')
           $ob->size = 20;
-          unset($ob->pass); //no further use
-        }
       }
     unset($ob);
     if($padm)
@@ -95,38 +93,37 @@ class googlevoice_sms_gateway extends smsg_sender_base
 
   protected function setup()
   {
+	require_once(cms_join_path(dirname(__FILE__),'googlevoice','class.googlevoice2.php'));
   }
 
   protected function prep_command()
   {
-    // need to return something. even though we ignore it.
+    // need to return something. even though we ignore it
     return 'good';
   }
 
   protected function _command($cmd)
   {
-	try {
-	  $mod = parent::get_module();
-	  require_once(cms_join_path(dirname(__FILE__),'googlevoice','class.googlevoice2.php'));
-	  $gid = parent::get_gateid(self::get_alias());
-	  $parms = smsg_utils::getprops($gid);
-	  if( in_array(FALSE,$parms) ) return FALSE;
-	  $parms = array_values($parms);
-	  $gv = new GoogleVoice($parms[0],$parms[1]);
+	try
+	  {
+		$mod = parent::get_module();
+		$gid = parent::get_gateid(self::get_alias());
+		$parms = smsg_utils::getprops($gid);
+		$gv = new GoogleVoice(
+		$parms['_email']['value'],
+		$parms['_password']['value']);
 
-	  $num = $this->get_num();
-	  $num = preg_replace('/[^\d]/','',$num);
+		$num = preg_replace('/[^\d]/','',parent::get_num());
+		$msg = substr(strip_tags($this->get_msg()),0,160);
+		$gv->sms($num,$msg); //result ignored
 
-	  $msg = substr(strip_tags($this->get_msg()),0,160);
-	  $gv->sms($num,$msg); //result ignored
-
-	  // need to return a status;
-	  return 'good';
-    }
-    catch(Exception $e)
-      {
-        return $e->getMessage();
-      }
+		// need to return a status
+		return 'good';
+	  }
+	catch(Exception $e)
+	  {
+		return $e->getMessage();
+	  }
   }
 
   protected function parse_result($str)
