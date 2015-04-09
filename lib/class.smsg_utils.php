@@ -21,7 +21,9 @@ class smsg_utils
 	foreach( $aliases as $thisone )
 	  {
 		$classname = $thisone.'_sms_gateway';
-		include($dir.'class.'.$classname.'.php');
+		if( !class_exists($classname) )
+			include($dir.'class.'.$classname.'.php');
+
 		$obj = new $classname($module);
 		//return array, so other keys may be added, upstream
 		$objs[$thisone] = array('obj' => $obj);
@@ -37,8 +39,11 @@ class smsg_utils
 	if( !$alias ) return FALSE;
 
 	$classname = $alias.'_sms_gateway';
-	$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
-	require_once($fn);
+	if( !class_exists($classname) )
+	  {
+		$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
+		require_once($fn);
+	  }
  	if( $module === NULL )
 		$module = cge_utils::get_module(SMSG::MODNAME);
 	$obj = new $classname($module);
