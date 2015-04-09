@@ -39,16 +39,6 @@ $(document).ready(function() {
  }
 });
 
-var st = null, cl = null;
-function smsg_entertext_onchange() {
- if(st == null) st = document.getElementById('smsg_entertext_smstext');
- var charsleft = |MAXSMSCHARS| - st.value.length - 1;
- if(charsleft < 0) return false;
- if(cl == null) cl = document.getElementById('smsg_entertext_charsleft');
- cl.innerHTML = charsleft;
- return true;
-}
-
 function row_selected(ev,btn) {
  var nm = btn.name,
   alias = nm.substr(0,nm.indexOf('~'));
