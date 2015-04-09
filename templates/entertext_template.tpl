@@ -10,3 +10,4 @@
  <span id="smsg_entertext_charsleft">{$maxsmschars}</span>
 {$formend}
 </div>
+{$js}
