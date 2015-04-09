@@ -126,7 +126,9 @@ concat 2 or 3 joined messages
 req_feat
 queue 1,2,3 1=highest priority, 3=default
 */
-		$text = substr(strip_tags(parent::get_msg()),0,160);
+		$text = strip_tags(parent::get_msg());
+		if( !self::support_mms() )
+			$text = substr($text,0,160);
 		if($text == FALSE) return FALSE;
 		$sends['text'] = urlencode($text);
 

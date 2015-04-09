@@ -113,7 +113,9 @@ class googlevoice_sms_gateway extends sms_gateway_base
 		$parms['_password']['value']);
 
 		$num = preg_replace('/[^\d]/','',parent::get_num());
-		$msg = substr(strip_tags($this->get_msg()),0,160);
+		$msg = strip_tags($this->get_msg());
+		if( !self::support_mms() )
+			$msg = substr($msg,0,160);
 		$gv->sms($num,$msg); //result ignored
 
 		// need to return a status

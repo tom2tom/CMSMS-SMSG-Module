@@ -114,7 +114,9 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		}
 
 		$to = parent::get_num();
-		$text = substr(strip_tags(parent::get_msg()),0,160);
+		$text = strip_tags(parent::get_msg());
+		if( !self::support_mms() )
+			$text = substr($text,0,160);
 		if(!$to || !$text)
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
