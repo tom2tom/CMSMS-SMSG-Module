@@ -274,7 +274,7 @@ abstract class sms_gateway_base
 	$smarty = cmsms()->GetSmarty();
 	$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
 	$parms = array();
-	$query = 'SELECT gate_id,title,value,encvalue,apiname,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
+	$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 	if( !$padm )
 		$query .= ' AND enabled=1';
 	$query .= ' ORDER BY apiorder';
@@ -410,12 +410,13 @@ abstract class sms_gateway_base
 			$data['encvalue'] = NULL;
 		if($padm)
 			$data['enabled'] = (isset($data['enabled'])) ? 1:0;
-
-		$sql = 'UPDATE '.$pref.'module_smsg_props SET '
+ 		$sql = 'UPDATE '.$pref.'module_smsg_props SET '
 			.implode('=?,',array_keys($data)).
-			'=?,apiorder=? WHERE gate_id=? AND apiname=?';
-		$args = array_merge(array_values($data),array($o,$gid,$apiname));
-		$db->Execute($sql,$args);
+			'=?,signature=CASE WHEN signature IS NULL THEN ? ELSE signature END,apiorder=? WHERE gate_id=? AND apiname=?';
+		//NOTE any record for a new parameter includes apiname='todo' & signature=NULL
+		$sig = ($apiname != 'todo') ? $apiname : $data['apiname'];
+		$args = array_merge(array_values($data),array($sig,$o,$gid,$apiname));
+		$ares = $db->Execute($sql,$args);
 		$o++;
 	  }
 	unset($data);
@@ -515,3 +516,4 @@ abstract class sms_gateway_base
 } // end of class
 
 ?>
+
