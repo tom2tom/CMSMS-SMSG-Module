@@ -24,6 +24,7 @@ if( isset($params['enternumbertemplate']) )
 //
 $query = 'SELECT mobile FROM '.cms_db_prefix().'module_smsg WHERE id=?';
 $mobile = $db->GetOne($query,array($smsnum));
+$smstext = '';
 
 if( isset($params['smsg_submit']) )
   {
@@ -63,7 +64,7 @@ if( isset($params['smsg_submit']) )
 	  }
   }
 
-// now display the form.
+// now display the form
 $smarty->assign('message',$message);
 $smarty->assign('error',$error);
 $smarty->assign('maxsmschars',160);
@@ -71,7 +72,23 @@ $smarty->assign('smstext',$smstext);
 $smarty->assign('formstart',$this->CGCreateFormStart($id,'do_entertext',
 	$returnid,$params));
 $smarty->assign('formend',$this->CreateFormEnd());
+$js = <<<EOS
+<script type="text/javascript">
+//<![CDATA[{literal}
+var st = null, cl = null;
+function smsg_entertext_onchange() {
+ if(st == null) st = document.getElementById('smsg_entertext_smstext');
+ var charsleft = 160 - st.value.length - 1;
+ if(charsleft < 0) return false;
+ if(cl == null) cl = document.getElementById('smsg_entertext_charsleft');
+ cl.innerHTML = charsleft;
+ return true;
+}
+//]]>{/literal}
+</script>
 
+EOS;
+$smarty->assign('js',$js);
 echo $this->ProcessTemplateFromDatabase('entertext_'.$thetemplate);
 
 ?>
