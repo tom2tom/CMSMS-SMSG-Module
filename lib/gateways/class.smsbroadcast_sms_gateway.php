@@ -105,7 +105,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 	protected function _command($dummy)
 	{
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($gid);
+		$parms = smsg_utils::getprops(parent::get_module(),$gid);
 		if($parms['username']['value'] == FALSE ||
 		 $parms['password']['value'] == FALSE)
 		{

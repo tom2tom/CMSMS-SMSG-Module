@@ -9,7 +9,7 @@
 // receive delivery reports
 // must parse $_REQUEST directly
 
-$gateway = smsg_utils::get_gateway();
+$gateway = smsg_utils::get_gateway($this);
 $msg = $gateway->process_delivery_report();
 //TODO make this prerential
 if( $msg )

@@ -165,7 +165,7 @@ abstract class sms_gateway_base
 		return FALSE;
 	  }
 
-	if( !smsg_utils::ip_can_send(getenv('REMOTE_ADDR')) )
+	if( !smsg_utils::ip_can_send($this->_module,getenv('REMOTE_ADDR')) )
 	  {
 		$this->_status = self::STAT_ERROR_LIMIT;
 		return FALSE;
@@ -184,7 +184,7 @@ abstract class sms_gateway_base
 
 	// interpret result
 	$this->parse_result($res);
-	$this->_statusmsg = smsg_utils::get_msg($this,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
+	$this->_statusmsg = smsg_utils::get_msg($this->_module,$this,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
 	$success = ($this->_status == self::STAT_OK);
 	if( $success )
 	  {
@@ -287,7 +287,7 @@ abstract class sms_gateway_base
 			$ob = (object)$row;
 			//adjustments
 			if($ob->encrypt)
-				$ob->value = smsg_utils::decrypt_value($ob->encvalue);
+				$ob->value = smsg_utils::decrypt_value($module,$ob->encvalue);
 			unset($ob->encvalue);
 			$ob->space = $alias.'~'.$ob->apiname.'~'; //for gateway-data 'namespace'
 			$parms[] = $ob;
@@ -403,7 +403,7 @@ abstract class sms_gateway_base
 		$data['encrypt'] = $enc;
 		if($enc)
 		  {
-			$data['encvalue'] = smsg_utils::encrypt_value($data['value']);
+			$data['encvalue'] = smsg_utils::encrypt_value($this->_module,$data['value']);
 			$data['value'] = NULL;
 		  }
 		else

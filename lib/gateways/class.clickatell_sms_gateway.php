@@ -101,7 +101,7 @@ class clickatell_sms_gateway extends sms_gateway_base
 	protected function prep_command()
 	{
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($gid);
+		$parms = smsg_utils::getprops(parent::get_module(),$gid);
 		if(
 		 $parms['user']['value'] == FALSE ||
 		 $parms['password']['value'] == FALSE ||

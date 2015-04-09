@@ -106,9 +106,8 @@ class googlevoice_sms_gateway extends sms_gateway_base
   {
 	try
 	  {
-		$mod = parent::get_module();
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($gid);
+		$parms = smsg_utils::getprops(parent::get_module(),$gid);
 		$gv = new GoogleVoice(
 		$parms['_email']['value'],
 		$parms['_password']['value']);

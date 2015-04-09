@@ -8,21 +8,20 @@
 
 class smsg_utils
 {
-  const MODNAME = 'SMSG';
-
-  public static function get_gateways_full()
+  public static function get_gateways_full(&$module=NULL)
   {
 	$db = cmsms()->GetDb();
-	$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled<>0');
+	$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled>0');
 	if( !$aliases )
 		return FALSE;
 	$dir = cms_join_path(dirname(__FILE__),'gateways','');
-	$module = cge_utils::get_module(self::MODNAME);
+ 	if( $module === NULL )
+		$module = cge_utils::get_module(SMSG::MODNAME);
 	$objs = array();
 	foreach( $aliases as $thisone )
 	  {
 		$classname = $thisone.'_sms_gateway';
-		include_once($dir.'class.'.$classname.'.php');
+		include($dir.'class.'.$classname.'.php');
 		$obj = new $classname($module);
 		//return array, so other keys may be added, upstream
 		$objs[$thisone] = array('obj' => $obj);
@@ -31,7 +30,7 @@ class smsg_utils
 	return $objs;
   }
 
-  public static function get_gateway()
+  public static function get_gateway(&$module=NULL)
   {
 	$db = cmsms()->GetDb();
 	$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active>0 AND enabled>0');
@@ -40,20 +39,20 @@ class smsg_utils
 	$classname = $alias.'_sms_gateway';
 	$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
 	require_once($fn);
-	$module = cge_utils::get_module(self::MODNAME);
+ 	if( $module === NULL )
+		$module = cge_utils::get_module(SMSG::MODNAME);
 	$obj = new $classname($module);
 
 	if( $obj ) return $obj;
 	return FALSE;
   }
 
-  public static function setgate_full($classname)
+  public static function setgate_full(&$module,$classname)
   {
 	$fn = cms_join_path($module->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
 	if(is_file($fn))
 	  {
 		include_once($fn);
-		$module = cge_utils::get_module(self::MODNAME);
 		$obj = new $classname($module);
 		if( $obj )
 		  return self::setgate($obj);
@@ -89,6 +88,37 @@ class smsg_utils
 	   $db->Execute($sql,array($title,$desc,$gid));
 	 }
 	return $gid;
+  }
+
+  public static function refresh_gateways(&$module)
+  {
+	$dir = cms_join_path(dirname(__FILE__),'gateways','');
+	$files = glob($dir.'class.*sms_gateway.php');
+	if( !$files )
+		 return;
+
+	$db = cmsms()->GetDb();
+	$pref = cms_db_prefix();
+	$query = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
+	$found = array();
+	foreach( $files as &$thisfile )
+	  {
+		include($thisfile);
+		$classname = str_replace(array($dir,'class.','.php'),array('','',''),$thisfile);
+		$obj = new $classname($module);
+		$alias = $obj->get_alias();
+		$res = $db->GetOne($query,array($alias));
+		if( !$res )
+			$res = $obj->upsert_tables();
+		$found[] = $res;
+	  }
+	unset($thisfile);
+
+	$fillers = implode(',',$found);
+	$query = 'DELETE FROM '.$pref.'module_smsg_gates WHERE gate_id NOT IN ('.$fillers.')';
+	$db->Execute($query);
+	$query = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id NOT IN ('.$fillers.')';
+	$db->Execute($query);
   }
 
   //$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
@@ -130,7 +160,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
   Returns array, each key = signature-field value, each value = array
    with keys 'apiname' and 'value' (for which the actual value is decrypted if relevant)
   */
-  public static function getprops($gid)
+  public static function getprops(&$module,$gid)
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
@@ -140,7 +170,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	foreach($props as &$row)
 	  {
 		if ($row['encrypt'])
-			$row['value'] = self::decrypt_value($row['encvalue']);
+			$row['value'] = self::decrypt_value($module,$row['encvalue']);
 		unset($row['encrypt']);
 		unset($row['encvalue']);
 	  }
@@ -148,11 +178,10 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	return $props;
   }
 
-  public static function encrypt_value($value,$passwd = FALSE)
+  public static function encrypt_value(&$module,$value,$passwd = FALSE)
   {
 	if( $value )
 	  {
-		$module = cge_utils::get_module(self::MODNAME);
 		if( !$passwd )
 		  {
 			$passwd = $module->GetPreference('masterpass');
@@ -171,11 +200,10 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	return $value;
   }
 
-  public static function decrypt_value($value,$passwd = FALSE)
+  public static function decrypt_value(&$module,$value,$passwd = FALSE)
   {
 	if( $value )
 	  {
-		$module = cge_utils::get_module(self::MODNAME);
 		if( !$passwd )
 		  {
 			$passwd = $module->GetPreference('masterpass');
@@ -194,41 +222,8 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	return $value;
   }
 
-  public static function refresh_gateways()
+  public static function get_msg(&$module,&$gateway,$num,$stat,$msg,$opt = '')
   {
-	$dir = cms_join_path(dirname(__FILE__),'gateways','');
-	$files = glob($dir.'class.*sms_gateway.php');
-	if( !$files )
-		 return;
-
-	$db = cmsms()->GetDb();
-	$pref = cms_db_prefix();
-	$query = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
-	$module = cge_utils::get_module(self::MODNAME);
-	$found = array();
-	foreach( $files as &$thisfile )
-	  {
-		include($thisfile);
-		$classname = str_replace(array($dir,'class.','.php'),array('','',''),$thisfile);
-		$obj = new $classname($module);
-		$alias = $obj->get_alias();
-		$res = $db->GetOne($query,array($alias));
-		if( !$res )
-			$res = $obj->upsert_tables();
-		$found[] = $res;
-	  }
-	unset($thisfile);
-
-	$fillers = implode(',',$found);
-	$query = 'DELETE FROM '.$pref.'module_smsg_gates WHERE gate_id NOT IN ('.$fillers.')';
-	$db->Execute($query);
-	$query = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id NOT IN ('.$fillers.')';
-	$db->Execute($query);
-  }
-
-  public static function get_msg(&$gateway,$num,$stat,$msg,$opt = '')
-  {
-	$module = cge_utils::get_module(self::MODNAME);
 	$ip = getenv('REMOTE_ADDR');
 	$txt = '';
 	if( $stat == sms_gateway_base::STAT_OK )
@@ -246,19 +241,17 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	return $txt;
   }
 
-  public static function get_delivery_msg(&$gateway,$stat,$smsid,$smsto)
+  public static function get_delivery_msg(&$module,&$gateway,$stat,$smsid,$smsto)
   {
-	$module = cge_utils::get_module(self::MODNAME);
 	$ip = getenv('REMOTE_ADDR');
 	return ''.$module->Lang($stat,$smsid,$smsto,$ip); //CHECKME
   }
 
-  public static function get_reporting_url()
+  public static function get_reporting_url(&$module)
   {
 	// get the default page id
 	$contentops = cmsms()->GetContentOperations();
 	$returnid = $contentops->GetDefaultContent();
-	$module = cge_utils::get_module(self::MODNAME);
 
 	$prettyurl = 'SMSG/devreport';
 	$url = $module->CreateURL('cntnt01','devreport',$returnid,array(),false,$prettyurl);
@@ -267,22 +260,25 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
   public static function is_valid_phone($number)
   {
-	$formats = array(
-	 '+##########',
-	 '+###########',
-	 '###-###-####', 
-	 '####-###-###',
-	 '(###) ###-###', 
-	 '####-####-####',
-	 '##-###-####-####', 
-	 '####-####', 
-	 '###-###-###',
-	 '#####-###-###', 
-	 '##########',
-	 '###########');
+	if( $number )
+	  {
+		$formats = array(
+		 '+##########',
+		 '+###########',
+		 '###-###-####', 
+		 '####-###-###',
+		 '(###) ###-###', 
+		 '####-####-####',
+		 '##-###-####-####', 
+		 '####-####', 
+		 '###-###-###',
+		 '#####-###-###', 
+		 '##########',
+		 '###########');
 
-	$str = ereg_replace('[0-9]','#',$number);
-	if( in_array($str,$formats) ) return TRUE;
+		$str = ereg_replace('[0-9]','#',$number);
+		if( in_array($str,$formats) ) return TRUE;
+	  }
 	return FALSE;
   }
 
@@ -294,7 +290,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	$db->Execute($query,array($mobile,$ip_address,$msg));
   }
 
-  public static function ip_can_send($ip_address)
+  public static function ip_can_send(&$module,$ip_address)
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
@@ -306,7 +302,6 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date1 and $now)";
 	$num = $db->GetOne($query,array($ip_address));
 
-	$module = cge_utils::get_module(self::MODNAME);
 	$hourly = $module->GetPreference('hourlimit');
 	if( $num > $hourly ) return FALSE;
 

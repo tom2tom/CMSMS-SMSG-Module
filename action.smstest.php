@@ -12,39 +12,29 @@ if( isset($params['submit']) )
   {
 	$number = '';
 	if( isset($params['mobile']) )
-	  {
 		$number = trim($params['mobile']);
-	  }
 
-	if( $number == '' || !smsg_utils::is_valid_phone($number) )
-	  {
-		$this->SetError($this->Lang('error_invalidnumber'));
-	  }
-	else
+	if( smsg_utils::is_valid_phone($number) )
 	  {
 		// ready to test
-		$sender = smsg_utils::get_gateway();
-		if( !$sender )
+		$gateway = smsg_utils::get_gateway($this);
+		if( $gateway )
 		  {
-			$this->SetError($this->Lang('error_nogateway'));
+			$gateway->set_num($number);
+			$gateway->set_msg($this->Lang('test_message',SMSG::MODNAME.' @ '.strftime('%X %Z'));
+			$gateway->send();
+			$status = $gateway->get_status();
+			$msg = $gateway->get_statusmsg();
+			if( $status == sms_gateway_base::STAT_OK )
+				$this->SetMessage($msg);
+			else
+				$this->SetError($msg);
 		  }
 		else
-		  {
-			$sender->set_num($number);
-			$sender->set_msg(SMSG::TEST_MESSAGE.' @'.strftime('%X %Z'));
-			$sender->send();
-			$status = $sender->get_status();
-			$msg = $sender->get_statusmsg();
-			if( $status != sms_gateway_base::STAT_OK )
-			  {
-				$this->SetError($msg);
-			  }
-			else
-			  {
-				$this->SetMessage($msg);
-			  }
-		  }
+			$this->SetError($this->Lang('error_nogateway'));
 	  }
+	else
+		$this->SetError($this->Lang('error_invalidnumber'));
   }
 
 $this->RedirectToTab($id);

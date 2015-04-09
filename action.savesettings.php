@@ -12,7 +12,7 @@ $gateway = $params['sms_gateway']; //e.g. 'smsbroadcast' or -1
 if( !(isset($params['submit']) || isset($params[$gateway.'~delete'])) )
 	$this->RedirectToTab($id);
 
-$objs = smsg_utils::get_gateways_full();
+$objs = smsg_utils::get_gateways_full($this);
 if( !$objs )
   {
 	$this->RedirectToTab($id);

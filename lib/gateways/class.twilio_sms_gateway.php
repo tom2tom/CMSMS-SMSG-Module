@@ -126,7 +126,7 @@ class twilio_sms_gateway extends sms_gateway_base
 		}
 
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($gid);
+		$parms = smsg_utils::getprops(parent::get_module(),$gid);
 		$ob = new Services_Twilio(
 		 $parms['_account']['value'],
 		 $parms['_token']['value']

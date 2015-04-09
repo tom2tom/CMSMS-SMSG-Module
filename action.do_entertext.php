@@ -41,13 +41,8 @@ if( isset($params['smsg_submit']) )
 	if( !$error )
 	  {
 		// now we're ready to send
-		$gateway = smsg_utils::get_gateway();
-		if( !$gateway )
-		  {
-			$this->Audit(0,$this->Lang('error_nogatewayfound'),'enternumber');
-			$error = $this->Lang('error_nogatewayfound');
-		  }
-		else
+		$gateway = smsg_utils::get_gateway($this);
+		if( $gateway )
 		  {
 			$gateway->set_msg($smstext);
 			$gateway->set_num($mobile);
@@ -56,26 +51,21 @@ if( isset($params['smsg_submit']) )
 			$stat = $gateway->get_status();
 			$msg = $gateway->get_statusmsg();
 			if( $stat == sms_gateway_base::STAT_OK )
-			  {
 				$message = $this->Lang('sms_message_sent',$mobile);
-			  }
 			else
-			  {
 				$error = $msg;
-			  }
+		  }
+		else
+		  {
+			$error = $this->Lang('error_nogatewayfound');
+			$this->Audit(0,$this->Lang('error_nogatewayfound'),'entertext');
 		  }
 	  }
   }
 
 // now display the form.
-if( $error != '' )
-  {
-	$smarty->assign('error',$error);
-  }
-if( $message != '' )
-  {
-	$smarty->assign('message',$message);
-  }
+$smarty->assign('message',$message);
+$smarty->assign('error',$error);
 $smarty->assign('maxsmschars',160);
 $smarty->assign('smstext',$smstext);
 $smarty->assign('formstart',$this->CGCreateFormStart($id,'do_entertext',

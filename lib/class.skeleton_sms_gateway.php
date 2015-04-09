@@ -124,7 +124,7 @@ class skeleton_sms_gateway extends sms_gateway_base
 	{
 		//get 'public' parameters for interface
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($gid);
+		$parms = smsg_utils::getprops(parent::get_module(),$gid);
 		if(
 		 $parms['whatever']['value'] == FALSE ||
 		 $parms['someother']['value'] == FALSE
@@ -153,7 +153,7 @@ class skeleton_sms_gateway extends sms_gateway_base
 	    $smsto = '';
 		$smsid = '';
 		$status = sms_gateway_base::DELIVERY_UNKNOWN; //or whatever
-		return smsg_utils::get_delivery_msg($this,$status,$smsid,$smsto);
+		return smsg_utils::get_delivery_msg(parent::get_module(),$this,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()
