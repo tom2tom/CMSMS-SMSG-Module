@@ -274,6 +274,7 @@ $lang['sure_ask'] = 'Are you sure ?';
 
 #T
 $lang['test'] = 'Test';
+$lang['test_message'] = 'Test message from %s';
 $lang['title'] = 'Displayed title';
 $lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
 $lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
