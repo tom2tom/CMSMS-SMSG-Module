@@ -52,6 +52,16 @@ class SMSG extends CGExtensions
 	$this->RegisterModulePlugin();
   }
 
+  public function AllowAutoInstall()
+  {
+	return FALSE;
+  }
+
+  public function AllowAutoUpgrade()
+  {
+	return FALSE;
+  }
+
   public function GetName()
   {
 	return self::MODNAME;
@@ -144,7 +154,7 @@ class SMSG extends CGExtensions
 	if( $js )
 	  {
 		$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
-		$js = str_replace(array('|PADM|','|MAXSMSCHARS|'),array($p,160),$js);
+		$js = str_replace('|PADM|'$p,$js);
 		return
 		 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
 		 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
@@ -157,19 +167,15 @@ class SMSG extends CGExtensions
 	return array('CGExtensions'=>'1.17.7');
   }
 
-  function AllowSmartyCaching()
+  //for 1.11+
+  public function AllowSmartyCaching()
   {
 	return TRUE;
   }
 
-  function LazyLoadFrontend()
+  public function LazyLoadFrontend()
   {
 	return TRUE;
-  }
-
-  public function InstallPostMessage()
-  {
-	return $this->Lang('postinstall');
   }
 
   public function MinimumCMSVersion()
@@ -177,19 +183,24 @@ class SMSG extends CGExtensions
 	return '1.8';
   }
 
+  public function MaximumCMSVersion()
+  {
+	return '1.11.99';
+  }
+
+  public function InstallPostMessage()
+  {
+	return $this->Lang('postinstall');
+  }
+
+  public function UninstallPreMessage()
+  {
+	return $this->Lang('confirm_uninstall');
+  }
+
   public function UninstallPostMessage()
   {
 	return $this->Lang('postuninstall');
-  }
-
-  public function AllowAutoInstall() 
-  {
-	return FALSE;
-  }
-
-  public function AllowAutoUpgrade() 
-  {
-	return FALSE;
   }
 
   //setup for pre-1.10
@@ -232,8 +243,5 @@ class SMSG extends CGExtensions
 	$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
   }
 } // end of class
-#
-# EOF
-#
-?>
 
+?>
