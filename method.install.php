@@ -63,7 +63,7 @@ $this->SetPreference('logsends',TRUE);
 $this->SetPreference('logdays',7);
 
 //enter-number templates
-$fn = cms_join_path(dirname(__FILE__),'templates','orig_enternumber_template.tpl');
+$fn = cms_join_path(dirname(__FILE__),'templates','enternumber_template.tpl');
 if(is_file($fn))
   {
     $template = file_get_contents($fn);
@@ -73,7 +73,7 @@ if(is_file($fn))
   }
 
 //enter-text templates
-$fn = cms_join_path(dirname(__FILE__),'templates','orig_entertext_template.tpl');
+$fn = cms_join_path(dirname(__FILE__),'templates','entertext_template.tpl');
 if(is_file($fn))
   {
     $template = file_get_contents($fn);

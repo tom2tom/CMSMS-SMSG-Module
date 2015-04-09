@@ -5,14 +5,14 @@
 
 {$formstart}
  <div class="row">
-  <p class="leftcol">{$SMSG->Lang('enter_mobile_number')}:</p>
+  <p class="leftcol">{$mod->Lang('enter_mobile_number')}:</p>
   <p class="rightcol">
    <input type="text" name="{$actionid}smsg_mobile" value="" size="14" maxlength="14" />
   </p>
  </div>
  <br />
  <p class="rightcol">
-  <input type="submit" name="{$actionid}smsg_submit" value="{$SMSG->Lang('send')}" />
+  <input type="submit" name="{$actionid}smsg_submit" value="{$mod->Lang('send')}" />
  </p>
 {$formend}
 </div>

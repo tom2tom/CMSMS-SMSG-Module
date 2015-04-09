@@ -119,13 +119,13 @@ if( $padm)
 		$this->GetDefaultTemplateForm($this,$id,$returnid,
 		SMSG::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
 		$this->Lang('dflt_enternumber_template'),
-		'orig_enternumber_template.tpl',
+		'enternumber_template.tpl',
 		$this->Lang('info_sysdflt_enternumber_template')));
 	$smarty->assign('defaulttext',
 		$this->GetDefaultTemplateForm($this,$id,$returnid,
 		SMSG::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
 		$this->Lang('dflt_entertext_template'),
-		'orig_entertext_template.tpl',
+		'entertext_template.tpl',
 		$this->Lang('info_sysdflt_entertext_template')));
 
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
