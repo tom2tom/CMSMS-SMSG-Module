@@ -1,7 +1,7 @@
 <?php
 #-------------------------------------------------------------------------
 # CMS Made Simple module: SMSG
-# Copyright (C) 2014-2015 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
 # Derived in part from module CGSMS by Robert Campbell <calguy1000@cmsmadesimple.org>
 # This module provides the ability for other modules to send SMS messages
 #-------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class SMSG extends CGExtensions
 
   public function GetVersion()
   {
-	return '0.9';
+	return '1.0';
   }
 
   public function GetHelp()
@@ -238,3 +238,4 @@ class SMSG extends CGExtensions
 # EOF
 #
 ?>
+
