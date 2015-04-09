@@ -6,8 +6,8 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-smsg_utils::refresh_gateways();
-$objs = smsg_utils::get_gateways_full();
+smsg_utils::refresh_gateways($this);
+$objs = smsg_utils::get_gateways_full($this);
 if( !$objs )
   {
 	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
@@ -56,11 +56,25 @@ $smarty->assign('formend',$this->CreateFormEnd());
 if( $pmod )
   {
 	$smarty->assign('tabstart_mobiles',$this->StartTab('mobiles',$params));
-	include(cms_join_path(dirname(__FILE__),'function.mobiles_tab.php'));
+	// get list of mobiles
+	$query = 'SELECT * FROM  '.cms_db_prefix().'module_smsg ORDER BY id';
+	$data = $db->GetAll($query);
+	if( $data )
+	  {
+		$prompt = $this->Lang('ask_delete_mobile');
+		foreach( $data as &$rec )
+		  {
+			$rec['edit_link'] = $this->CreateImageLink($id,'edit_mobile','','','icons/system/edit.gif',array('mid'=>$rec['id']));
+			$rec['del_link'] = $this->CreateImageLink($id,'del_mobile','','','icons/system/delete.gif',array('mid'=>$rec['id']),'delitemlink',$prompt);
+		  }
+		unset( $rec );
+	  }
+	$smarty->assign('mobiles',$data);
+	$smarty->assign('add_mobile',$this->CreateImageLink($id,'edit_mobile','',$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',FALSE));
 
 	$smarty->assign('tabstart_settings',$this->StartTab('settings',$params));
 	$smarty->assign('formstart_settings',$this->CGCreateFormStart($id,'savesettings'));
-	$smarty->assign('reporturl',smsg_utils::get_reporting_url());
+	$smarty->assign('reporturl',smsg_utils::get_reporting_url($this));
 
 	$names = array(-1 => $this->Lang('none'));
 	foreach( $objs as $key=>&$rec )
@@ -83,19 +97,50 @@ if( $pmod )
 if( $ptpl )
   {
 	$smarty->assign('tabstart_enternumber',$this->StartTab('enternumber',$params));
-	include(cms_join_path(dirname(__FILE__),'function.enternumber_templates_tab.php'));
+	$smarty->assign('enternumber',
+		$this->ShowTemplateList($id,$returnid,'enternumber_',
+		SMSG::PREF_NEWENTERNUMBER_TPL,'enternumber',
+		SMSG::PREF_DFLTENTERNUMBER_TPL,
+		$this->Lang('title_enternumber_templates'),
+		$this->Lang('info_enternumber_templates')));
 
 	$smarty->assign('tabstart_entertext',$this->StartTab('entertext',$params));
-	include(cms_join_path(dirname(__FILE__),'function.entertext_templates_tab.php'));
+	$smarty->assign('entertext',
+		$this->ShowTemplateList($id,$returnid,'entertext_',
+		SMSG::PREF_NEWENTERTEXT_TPL,'entertext',
+		SMSG::PREF_DFLTENTERTEXT_TPL,
+		$this->Lang('title_entertext_templates'),
+		$this->Lang('info_entertext_templates')));
   }
 if( $padm)
   {
 	$smarty->assign('tabstart_defaults',$this->StartTab('dflt_templates',$params));
-	include(cms_join_path(dirname(__FILE__),'function.dflt_templates_tab.php'));
-  
+	$smarty->assign('defaultnumber',
+		$this->GetDefaultTemplateForm($this,$id,$returnid,
+		SMSG::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
+		$this->Lang('dflt_enternumber_template'),
+		'orig_enternumber_template.tpl',
+		$this->Lang('info_sysdflt_enternumber_template')));
+	$smarty->assign('defaulttext',
+		$this->GetDefaultTemplateForm($this,$id,$returnid,
+		SMSG::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
+		$this->Lang('dflt_entertext_template'),
+		'orig_entertext_template.tpl',
+		$this->Lang('info_sysdflt_entertext_template')));
+
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
 	$smarty->assign('formstart_security',$this->CGCreateFormStart($id,'savesecurity'));
-	include(cms_join_path(dirname(__FILE__),'function.security_tab.php'));
+	$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
+	$smarty->assign('daylimit',$this->GetPreference('daylimit'));
+	$smarty->assign('logsends',$this->GetPreference('logsends'));
+	$smarty->assign('logdays',$this->GetPreference('logdays'));
+	$pw = $this->GetPreference('masterpass');
+	if( $pw )
+	  {
+		$s = base64_decode(substr($pw,5));
+		$pw = substr($s,5);
+	  }
+	$smarty->assign('masterpass',$pw);
   }
 
 echo $this->ProcessTemplate('adminpanel.tpl');
