@@ -23,7 +23,7 @@ $lang['token'] = 'Token';
 #A
 $lang['account'] = 'Account';
 $lang['add_mobile'] = 'Add Mobile';
-$lang['add_parameter'] = 'Add parameter';
+$lang['add_parameter'] = 'add parameter';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
 $lang['apiname'] = 'API name';
 $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
@@ -64,6 +64,7 @@ $lang['friendlyname'] = 'SMS Utility';
 $lang['from'] = 'From';
 
 #G
+$lang['gateways'] = 'Gateways';
 
 #H
 $lang['help_action'] = <<<EOT
@@ -198,7 +199,10 @@ $lang['helptitle'] = 'Help';
 $lang['id'] = 'Id';
 $lang['info_enternumber_templates'] = 'This form allows you to define and edit a template that allows website visitors to enter their mobile phone number to receive a predefined text message';
 $lang['info_entertext_templates'] = 'This form allows you to define and edit a template that allows website visitors to enter a message that will be sent to a predefined mobile phone number';
-$lang['info_smstest'] = 'This function will send a hardcoded message to the specified mobile phone number for testing purposes.  This functionality can be used to ensure that your settings for your selected SMS gateway are correct.  Please be aware that depending upon the gateway, it may take several minutes before your phone receives the message.';
+$lang['info_smstest'] = <<<EOS
+To testing whether the settings for the selected SMS gateway are correct, you can send a hardcoded message to the specified mobile phone number.
+Please be aware that it may take several minutes before the phone receives the message.
+EOS;
 $lang['info_sysdflt_enternumber_template'] = 'This template will be used when you create a new enternumber template.  Altering this template will have no immediate effect on any display items on your website';
 $lang['info_sysdflt_entertext_template'] = 'This template will be used when you create a new entertext template.  Altering this template will have no immediate effect on any display items on your website';
 
