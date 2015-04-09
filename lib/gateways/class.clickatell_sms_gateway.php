@@ -25,7 +25,7 @@ class clickatell_sms_gateway extends sms_gateway_base
 
 	public function get_description()
 	{
-		return $this->get_module()->Lang('description_clickatell');
+		return parent::get_module()->Lang('description_clickatell');
 	}
 
 	public function support_custom_sender()

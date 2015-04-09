@@ -23,7 +23,7 @@ class googlevoice_sms_gateway extends sms_gateway_base
 
   public function get_description()
   {
-    return $this->get_module()->Lang('description_googlevoice');
+    return parent::get_module()->Lang('description_googlevoice');
   }
 
   public function support_custom_sender()
