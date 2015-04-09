@@ -317,7 +317,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
   public static function text_is_valid($text,$len = 160)
   {
 	if( $text == '' ) return FALSE;
-	if( $len && strlen($text) > $len ) return FALSE;
+	if( $len  > 0 && strlen($text) > $len ) return FALSE;
 	if( preg_match(
 	  '~[^\w\s@£$¥èéùìòÇ\fØø\nÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./\:;<=>\?¡ÄÖÑÜ§¿äöñüà\^\{\}\[\]\~\|€]~',
 	  $text) ) return FALSE;
