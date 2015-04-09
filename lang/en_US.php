@@ -33,6 +33,7 @@ $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone 
 
 #C
 $lang['cancel'] = 'Cancel';
+$lang['confirm_uninstall']='You\'re sure you want to uninstall the SMS Utility module?';
 $lang['custom'] = 'Custom';
 
 #D
@@ -107,7 +108,7 @@ Choose values for module settings such as the SMS sending-limits (to reduce spam
 <p>There are two primary ways to use this module in the website front end:</p>
 <ol>
  <li>To send predefined text to a user-specified phone number, put a tag like
- <code>{SMSG action='enternumber' text='the quick brown fox'}</code> into a page or template.
+ <code>{SMSG action='enternumber' smstext='the quick brown fox'}</code> into a page or template.
  That creates a link that when clicked will display a form for the user to enter a mobile phone number.</p>
  </li>
  <li>To send user-specified text to a predefined phone number, put a tag like
