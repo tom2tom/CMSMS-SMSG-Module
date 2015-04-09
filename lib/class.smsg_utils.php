@@ -100,7 +100,7 @@ class smsg_utils
 	//NOTE new parameters added with apiname 'todo' & signature NULL
 	$sql1 = 'UPDATE '.$pref.
 	 'module_smsg_props SET title=?,value=?,encvalue=?,
-signature = CASE IS NULL signature THEN ? ELSE signature END,
+signature = CASE WHEN signature IS NULL THEN ? ELSE signature END,
 encrypt=?,apiorder=? WHERE gate_id=? AND apiname=?';
 	$sql2 = 'INSERT INTO '.$pref.
 	 'module_smsg_props (gate_id,title,value,encvalue,apiname,signature,encrypt,apiorder)
