@@ -97,24 +97,27 @@ class smsg_utils
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
 	//upsert, sort-of
+	//NOTE new parameters added with apiname 'todo' & signature NULL
 	$sql1 = 'UPDATE '.$pref.
-	 'module_smsg_props SET title=?,value=?,encvalue=?,encrypt=?,apiorder=? WHERE gate_id=? AND apiname=?';
+	 'module_smsg_props SET title=?,value=?,encvalue=?,
+signature = CASE IS NULL signature THEN ? ELSE signature END,
+encrypt=?,apiorder=? WHERE gate_id=? AND apiname=?';
 	$sql2 = 'INSERT INTO '.$pref.
-	 'module_smsg_props (gate_id,title,value,encvalue,apiname,encrypt,apiorder)
-SELECT ?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
+	 'module_smsg_props (gate_id,title,value,encvalue,apiname,signature,encrypt,apiorder)
+SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 (SELECT 1 FROM '.$pref.'module_smsg_props T1 WHERE T1.gate_id=? AND T1.apiname=?)';
 	$o = 1;
 	foreach($props as &$data)
 	  {
 		if($data[3])
 		  {
-			$a1 = array($data[0],NULL,$data[2],1,$o,$gid,$data[1]);
-			$a2 = array($gid,$data[0],NULL,$data[2],$data[1],1,$o,$gid,$data[1]);
+			$a1 = array($data[0],NULL,$data[2],$data[1],1,$o,$gid,$data[1]);
+			$a2 = array($gid,$data[0],NULL,$data[2],$data[1],$data[1],1,$o,$gid,$data[1]);
 		  }
 		else
 		  {
-			$a1 = array($data[0],$data[2],NULL,0,$o,$gid,$data[1]);
-			$a2 = array($gid,$data[0],$data[2],NULL,$data[1],0,$o,$gid,$data[1]);
+			$a1 = array($data[0],$data[2],NULL,$data[1],0,$o,$gid,$data[1]);
+			$a2 = array($gid,$data[0],$data[2],NULL,$data[1],$data[1],0,$o,$gid,$data[1]);
 		  }
 		$db->Execute($sql1,$a1);
 		$db->Execute($sql2,$a2);
@@ -123,15 +126,24 @@ SELECT ?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	unset($data);
   }
 
+  /**
+  Returns array, each key = signature-field value, each value = array
+   with keys 'apiname' and 'value' (for which the actual value is decrypted if relevant)
+  */
   public static function getprops($gid)
   {
 	$db = cmsms()->GetDb();
 	$pref = cms_db_prefix();
-	$props = $db->GetAssoc('SELECT apiname,value,encvalue,encrypt FROM '.$pref.
+	$props = $db->GetAssoc('SELECT signature,apiname,value,encvalue,encrypt FROM '.$pref.
 	 'module_smsg_props WHERE gate_id=? AND enabled>0 ORDER BY apiorder',
 	 array($gid));
 	foreach($props as &$row)
-		$row = ($row['encrypt']) ? self::decrypt_value($row['encvalue']) : $row['value'];
+	  {
+		if ($row['encrypt'])
+			$row['value'] = self::decrypt_value($row['encvalue']);
+		unset($row['encrypt']);
+		unset($row['encvalue']);
+	  }
 	unset($row);
 	return $props;
   }
@@ -219,15 +231,15 @@ SELECT ?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	$module = cge_utils::get_module(self::MODNAME);
 	$ip = getenv('REMOTE_ADDR');
 	$txt = '';
-	if( $stat == smsg_sender_base::STAT_OK )
+	if( $stat == sms_gateway_base::STAT_OK )
 	  {
 		$txt .= $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
 	  }
-	else if( $stat == smsg_sender_base::STAT_ERROR_OTHER )
+	else if( $stat == sms_gateway_base::STAT_ERROR_OTHER )
 	  {
 		$txt .= $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
 	  }
-	else if( $stat != smsg_sender_base::STAT_NOTSENT )
+	else if( $stat != sms_gateway_base::STAT_NOTSENT )
 	  {
 		$txt .= $module->Lang($stat,$msg,$num,$ip); //CHECKME
 	  }
