@@ -116,8 +116,9 @@ class googlevoice_sms_gateway extends sms_gateway_base
 		$msg = strip_tags($this->get_msg());
 		if( !self::support_mms() )
 			$msg = substr($msg,0,160);
+		if( !smsg_utils::text_is_valid($msg,0) )
+			return FALSE; //CHECKME message
 		$gv->sms($num,$msg); //result ignored
-
 		// need to return a status
 		return 'good';
 	  }

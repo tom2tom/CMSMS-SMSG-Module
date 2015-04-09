@@ -117,7 +117,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		$text = strip_tags(parent::get_msg());
 		if( !self::support_mms() )
 			$text = substr($text,0,160);
-		if(!$to || !$text)
+		if(!$to || !smsg_utils::text_is_valid($text,0) )
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;

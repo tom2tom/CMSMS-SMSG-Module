@@ -108,7 +108,7 @@ class twilio_sms_gateway extends sms_gateway_base
 		$body = strip_tags(parent::get_msg());
 		if( !self::support_mms() )
 			$body = substr($body,0,160);
-		if( !$to || !$body )
+		if( !$to || !smsg_utils::text_is_valid($body,0) )
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;

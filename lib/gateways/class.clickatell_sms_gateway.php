@@ -129,7 +129,7 @@ queue 1,2,3 1=highest priority, 3=default
 		$text = strip_tags(parent::get_msg());
 		if( !self::support_mms() )
 			$text = substr($text,0,160);
-		if($text == FALSE) return FALSE;
+		if( !smsg_utils::text_is_valid($text,0) ) return FALSE;
 		$sends['text'] = urlencode($text);
 
 		$str = cge_array::implode_with_key($sends);
