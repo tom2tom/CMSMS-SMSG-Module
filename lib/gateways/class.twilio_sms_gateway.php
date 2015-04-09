@@ -105,7 +105,7 @@ class twilio_sms_gateway extends sms_gateway_base
 	protected function _command($dummy)
 	{
 		$to = parent::get_num();
-		$msg = parent::get_msg();
+		$msg = substr(strip_tags(parent::get_msg()),0,160);
 		if(!$to || !$msg)
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
