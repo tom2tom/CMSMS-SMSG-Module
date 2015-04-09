@@ -200,7 +200,7 @@ $lang['id'] = 'Id';
 $lang['info_enternumber_templates'] = 'This form allows you to define and edit a template that allows website visitors to enter their mobile phone number to receive a predefined text message';
 $lang['info_entertext_templates'] = 'This form allows you to define and edit a template that allows website visitors to enter a message that will be sent to a predefined mobile phone number';
 $lang['info_smstest'] = <<<EOS
-To testing whether the settings for the selected SMS gateway are correct, you can send a hardcoded message to the specified mobile phone number.
+To test whether the settings for the selected SMS gateway are correct, you can send a message to the specified mobile phone number.
 Please be aware that it may take several minutes before the phone receives the message.
 EOS;
 $lang['info_sysdflt_enternumber_template'] = 'This template will be used when you create a new enternumber template.  Altering this template will have no immediate effect on any display items on your website';
