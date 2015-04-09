@@ -48,7 +48,7 @@ if( $smstext == '' )
   }
 
 // given the text... get a key
-$key = md5($text);
+$key = md5($smstext);
 
 // store the data in the temporary data store.
 // in case this is a realoaded page, make sure we erase the data first
