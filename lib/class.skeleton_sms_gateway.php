@@ -66,12 +66,13 @@ class skeleton_sms_gateway extends sms_gateway_base
 		$gid = smsg_utils::setgate($this);
 		if($gid)
 		{
+			parent::set_gateid($gid);
 			$module = parent::get_module();
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//by convention, apiname's which are not actually used are indicated by a '_' prefix
 			smsg_utils::setprops($gid,array(
-			array($module->Lang('username'),'user',NULL,0),
-			array($module->Lang('password'),'password',NULL,1)
+			 array($module->Lang('username'),'user',NULL,0),
+			 array($module->Lang('password'),'password',NULL,1)
 			));
 		}
 		return $gid;
@@ -82,13 +83,14 @@ class skeleton_sms_gateway extends sms_gateway_base
 		//TODO e.g.
 		foreach($smarty->tpl_vars['data']->value as &$ob)
 		{
+			//set stuff e.g. $ob->size, $ob->help
 		}
 		unset($ob)
 		if($padm)
 		{
-			$mod = parent::get_module();
+			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $mod->Lang('help_urlcheck',self::SKEL_API_URL,self::get_name().' API');
+			 $module->Lang('help_urlcheck',self::SKEL_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -97,19 +99,18 @@ class skeleton_sms_gateway extends sms_gateway_base
 	{
 		//TODO
 /* $params = array like (
-  'sms_gateway' => string 'clickatell' (length=10)
-  'clickatell~user~title' => string 'Username' (length=8)
-  'clickatell~user~value' => string 'M' (length=1)
-  'clickatell~user~apiname' => string 'user' (length=4)
-  'clickatell~user~active' => string 'on' (length=2)
-  'clickatell~password~title' => string 'Password' (length=8)
-  'clickatell~password~value' => string 'asdasda' (length=7)
-  'clickatell~password~apiname' => string 'password' (length=8)
-  'clickatell~password~active' => string 'on' (length=2)
-  'clickatell~api_id~title' => string 'API ID' (length=6)
-  'clickatell~api_id~value' => string '393939' (length=6)
-  'clickatell~api_id~apiname' => string 'api_id' (length=6)
-  'clickatell~gate_id' => string '1' (length=1)
+  'sms_gateway' => 'skeleton'
+  ....
+  'skeleton~user~title' => 'Username'
+  'skeleton~user~value' => 'Me'
+  'skeleton~user~apiname' => 'user'
+  'skeleton~user~active' => 'on'
+  'skeleton~password~title' => 'Password'
+  'skeleton~password~value' => 'asdasda'
+  'skeleton~password~apiname' => 'password'
+  'skeleton~password~active' => 'on'
+  ....
+  'skeleton~gate_id' => string '1')
   ....
 */
 	}
@@ -124,8 +125,10 @@ class skeleton_sms_gateway extends sms_gateway_base
 		//get 'public' parameters for interface
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($gid);
-		//TODO maybe some valid empty parm
-		if(in_array(FALSE,$parms))
+		if(
+		 $parms['whatever']['value'] == FALSE ||
+		 $parms['someother']['value'] == FALSE
+		)
 		{
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
