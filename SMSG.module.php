@@ -35,13 +35,12 @@ require_once($cgextensions);
 
 class SMSG extends CGExtensions
 {
-	const TEST_MESSAGE = 'Test Message from SMSG';
+	const MODNAME = 'SMSG';
 	const PREF_NEWENTERNUMBER_TPL = 'enternumber_newtpl';
 	const PREF_DFLTENTERNUMBER_TPL = 'enternumber_dflttpl';
 	const PREF_NEWENTERTEXT_TPL = 'entertext_newtpl';
 	const PREF_DFLTENTERTEXT_TPL = 'entertext_dflttpl';
 
-	const ENC_DATA = 80; //save local data in encrypted form
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
 	public $havemcrypt;
@@ -55,7 +54,7 @@ class SMSG extends CGExtensions
 
   public function GetName()
   {
-	return 'SMSG';
+	return self::MODNAME;
   }
 
   public function GetFriendlyName()
@@ -85,8 +84,7 @@ class SMSG extends CGExtensions
 
   public function GetChangeLog()
   {
-	$txt = ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.inc'));
-	return $txt;
+	return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.inc'));
   }
 
   public function IsPluginModule()
