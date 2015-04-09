@@ -6,10 +6,11 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-echo $this->ShowTemplateList($id,$returnid,'enternumber_',
+$smarty->assign('enternumber',
+	$this->ShowTemplateList($id,$returnid,'enternumber_',
 	SMSG::PREF_NEWENTERNUMBER_TPL,'enternumber',
 	SMSG::PREF_DFLTENTERNUMBER_TPL,
 	$this->Lang('title_enternumber_templates'),
-	$this->Lang('info_enternumber_templates'));
+	$this->Lang('info_enternumber_templates')));
 
 ?>

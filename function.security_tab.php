@@ -10,19 +10,12 @@ $smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
 $smarty->assign('daylimit',$this->GetPreference('daylimit'));
 $smarty->assign('logsends',$this->GetPreference('logsends'));
 $smarty->assign('logdays',$this->GetPreference('logdays'));
-if( $this->CheckPermission('AdministerSMSGateways') )
+$pw = $this->GetPreference('masterpass');
+if( $pw )
   {
-	$pw = $this->GetPreference('masterpass');
-	if( $pw )
-	  {
-		$s = base64_decode(substr($pw,5));
-		$pw = substr($s,5);
-	  }
-	$smarty->assign('masterpass',$pw);
+	$s = base64_decode(substr($pw,5));
+	$pw = substr($s,5);
   }
-$smarty->assign('formstart',$this->CreateFormStart($id,'savesecurity'));
-$smarty->assign('formend',$this->CreateFormEnd());
-
-echo $this->ProcessTemplate('security_tab.tpl');
+$smarty->assign('masterpass',$pw);
 
 ?>

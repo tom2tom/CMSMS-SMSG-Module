@@ -6,16 +6,17 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-echo $this->GetDefaultTemplateForm($this,$id,$returnid,
+$smarty->assign('defaultnumber',
+	$this->GetDefaultTemplateForm($this,$id,$returnid,
 	SMSG::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
 	$this->Lang('dflt_enternumber_template'),
 	'orig_enternumber_template.tpl',
-	$this->Lang('info_sysdflt_enternumber_template'));
-echo '<br /><hr />';
-echo $this->GetDefaultTemplateForm($this,$id,$returnid,
+	$this->Lang('info_sysdflt_enternumber_template')));
+$smarty->assign('defaulttext',
+	$this->GetDefaultTemplateForm($this,$id,$returnid,
 	SMSG::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
 	$this->Lang('dflt_entertext_template'),
 	'orig_entertext_template.tpl',
-	$this->Lang('info_sysdflt_entertext_template'));
+	$this->Lang('info_sysdflt_entertext_template')));
 
 ?>

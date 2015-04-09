@@ -6,8 +6,6 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-if(!($this->CheckPermission('AdministerSMSGateways') || $this->CheckPermission('ModifySMSGateways'))) return;
-
 // get list of mobiles
 $query = 'SELECT * FROM  '.cms_db_prefix().'module_smsg ORDER BY id';
 $data = $db->GetAll($query);
@@ -23,8 +21,6 @@ if( $data )
   }
 $smarty->assign('mobiles',$data);
 
-$smarty->assign('add_link',$this->CreateImageLink($id,'edit_mobile','',$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',FALSE));
-
-echo $this->ProcessTemplate('mobiles_tab.tpl');
+$smarty->assign('add_mobile',$this->CreateImageLink($id,'edit_mobile','',$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',FALSE));
 
 ?>
