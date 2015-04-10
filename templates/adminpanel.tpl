@@ -106,6 +106,10 @@
  <p class="pageinput">
   <input type="text" name="{$actionid}logdays" value="{$logdays}" size="2" maxlength="3" />
  </p>
+ <p class="pagetext">{$mod->Lang('prompt_log_delivers')}:</p>
+ <p class="pageinput">
+  <input type="checkbox" name="{$actionid}logdeliveries"{if $logdeliveries} checked="checked"{/if} />
+ </p>
  <p class="pagetext">{$mod->Lang('prompt_master_password')}:</p>
  <p class="pageinput">
   <input type="password" name="{$actionid}masterpass" value="{$masterpass}" size="20" maxlength="64" />
