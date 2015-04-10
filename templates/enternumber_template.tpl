@@ -1,8 +1,7 @@
-{* enter number for sms message template *}
+{* default enter-number template *}
 <div class="smsg_enternumber">
 {if !empty($error)}<p class="errormsg">{$error}</p>{/if}
 {if !empty($message)}<p class="infomsg">{$message}</p>{/if}
-
 {$formstart}
  <div class="row">
   <p class="leftcol">{$mod->Lang('enter_mobile_number')}:</p>
