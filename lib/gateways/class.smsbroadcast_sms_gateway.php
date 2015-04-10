@@ -180,8 +180,8 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 
 	public function process_delivery_report()
 	{
-		//TODO
-	    $smsto = '';
+		//TODO must parse $_REQUEST directly
+		$smsto = '';
 		$smsid = '';
 		$status = parent::DELIVERY_UNKNOWN; //or whatever
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);

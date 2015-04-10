@@ -245,8 +245,8 @@ queue 1,2,3 1=highest priority, 3=default
 012 0x00C Out of credit The message cannot be delivered due to a lack of funds in your account. Please re-purchase credits.
 014 0x00E Maximum MT limit exceeded The allowable amount for MT messaging has been exceeded.
 */
-		//TODO
-	    $smsto = '';
+		//TODO must parse $_REQUEST directly
+		$smsto = '';
 		$smsid = '';
 		$status = parent::DELIVERY_UNKNOWN; //or whatever
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
