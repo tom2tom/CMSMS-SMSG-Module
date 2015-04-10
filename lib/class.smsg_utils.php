@@ -227,29 +227,47 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	return $value;
   }
 
-  public static function get_msg(&$module,&$gateway,$num,$stat,$msg,$opt = '')
+  //this is a varargs function, 2nd argument (if it exists) is either a
+  //Lang key or one of the sms_gateway_base::STAT_* constants
+  public static function get_msg(&$module)
   {
 	$ip = getenv('REMOTE_ADDR');
-	$txt = '';
-	if( $stat == sms_gateway_base::STAT_OK )
+	if( func_num_args() > 1 )
 	  {
-		$txt .= $module->Lang($stat,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
+		$parms = array_slice(func_get_args(),1);
+		if( array_key_exists($parms[0],array(0)) ) //TODO current-lang[]
+		  {
+			$txt = $module->Lang($parms[0],array_slice($parms,1));
+			if( $ip )
+				$txt .= ','.$ip;
+		  }
+		else
+		  {
+			$txt = implode(',',$parms);
+			if( $ip && $parms[0] != sms_gateway_base::STAT_NOTSENT )
+				$txt .= ','.$ip;
+		  }
+		return $txt;
 	  }
-	else if( $stat == sms_gateway_base::STAT_ERROR_OTHER )
-	  {
-		$txt .= $module->Lang($stat,$opt,$msg,$num,$ip,$gateway->get_smsid()); //CHECKME
-	  }
-	else if( $stat != sms_gateway_base::STAT_NOTSENT )
-	  {
-		$txt .= $module->Lang($stat,$msg,$num,$ip); //CHECKME
-	  }
-	return $txt;
+ 	return $ip;
   }
 
-  public static function get_delivery_msg(&$module,&$gateway,$stat,$smsid,$smsto)
+  //this is a varargs function, 2nd argument (if it exists) may be a Lang key
+  public static function get_delivery_msg(&$module)
   {
 	$ip = getenv('REMOTE_ADDR');
-	return ''.$module->Lang($stat,$smsid,$smsto,$ip); //CHECKME
+	if( func_num_args() > 1 )
+	  {
+		$parms = array_slice(func_get_args(),1);
+		if( array_key_exists($parms[0],array(0)) ) //TODO current-lang[]
+			$txt = $module->Lang($parms[0],array_slice($parms,1));
+		else
+			$txt = implode(','$parms);
+		if( $ip )
+			$txt .= ','.$ip;
+		return $txt;
+	  }
+	return $ip;
   }
 
   public static function get_reporting_url(&$module)
