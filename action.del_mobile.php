@@ -8,19 +8,15 @@
 
 $this->SetCurrentTab('mobiles');
 if( isset($params['mid']) )
-  {
-	$query = 'DELETE FROM '.cms_db_prefix().'module_smsg WHERE id=?';
-	$tmp = $db->Execute($query,array((int)$params['mid']));
+{
+	$query = 'DELETE FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
+	$res = $db->Execute($query,array((int)$params['mid']));
 
-	if( $tmp )
-	  {
+	if( $res )
 		$this->SetMessage($this->Lang('msg_rec_deleted'));
-	  }
 	else
-	  {
 		$this->SetError($this->Lang('error_notfound'));
-	  }
-  }
+}
 $this->RedirectToTab($id);
 
 ?>
