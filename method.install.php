@@ -17,7 +17,7 @@ id I KEY AUTO,
 mobile C(25),
 name C(25) KEY
 ";
-$sqlarray = $dict->CreateTableSQL($pref.'module_smsg',$flds,$taboptarray);
+$sqlarray = $dict->CreateTableSQL($pref.'module_smsg_nums',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
 $flds = "
@@ -61,29 +61,37 @@ $this->SetPreference('hourlimit',5);
 $this->SetPreference('daylimit',20);
 $this->SetPreference('logsends',TRUE);
 $this->SetPreference('logdays',7);
+$this->SetPreference('logdeliveries',TRUE);
 
-//enter-number templates
+$sample = $this->Lang('sample');
+//enter-number template
 $fn = cms_join_path(dirname(__FILE__),'templates','enternumber_template.tpl');
 if(is_file($fn))
-  {
-    $template = file_get_contents($fn);
-    $this->SetPreference(SMSG::PREF_NEWENTERNUMBER_TPL,$template);
-    $this->SetTemplate('enternumber_Sample',$template);
-    $this->SetPreference(SMSG::PREF_DFLTENTERNUMBER_TPL,'Sample');
-  }
+{
+	$this->SetTemplate('enternumber_'.$sample,@file_get_contents($fn));
+	$name = $sample;
+}
+else
+	$name = '';
+$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$name);
+$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLS,$name);
 
-//enter-text templates
+//enter-text template
 $fn = cms_join_path(dirname(__FILE__),'templates','entertext_template.tpl');
 if(is_file($fn))
-  {
-    $template = file_get_contents($fn);
-    $this->SetPreference(SMSG::PREF_NEWENTERTEXT_TPL,$template);
-    $this->SetTemplate('entertext_Sample',$template);
-    $this->SetPreference(SMSG::PREF_DFLTENTERTEXT_TPL,'Sample');
-  }
+{
+	$this->SetTemplate('entertext_'.$sample,@file_get_contents($fn));
+	$name = $sample;
+}
+else
+	$name = '';
+$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$name);
+$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLS,$name);
 
 $this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));
 $this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modify'));
 $this->CreatePermission('ModifySMSGateTemplates',$this->Lang('perm_templates'));
+
+$this->CreateEvent('SMSDeliveryReported');
 
 ?>
