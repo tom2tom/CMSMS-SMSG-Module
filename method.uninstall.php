@@ -10,7 +10,7 @@ $db = cmsms()->GetDb();
 $dict = NewDataDictionary($db);
 $pref = cms_db_prefix();
 
-$sqlarray = $dict->DropTableSQL($pref.'module_smsg');
+$sqlarray = $dict->DropTableSQL($pref.'module_smsg_nums');
 $dict->ExecuteSQLArray($sqlarray);
 $sqlarray = $dict->DropTableSQL($pref.'module_smsg_gates');
 $dict->ExecuteSQLArray($sqlarray);
@@ -27,5 +27,7 @@ $this->RemovePreference();
 $this->RemovePermission('AdministerSMSGateways');
 $this->RemovePermission('ModifySMSGateways');
 $this->RemovePermission('ModifySMSGateTemplates');
+
+$this->RemoveEvent($this->GetName(),'SMSDeliveryReported');
 
 ?>
