@@ -15,8 +15,7 @@ abstract class sms_gateway_base
 	const STAT_ERROR_LIMIT = 'sms_error_limit';
 	const STAT_ERROR_INVALID_DATA = 'sms_error_invalid_data';
 	const STAT_ERROR_BLOCKED = 'sms_error_blocked_number';
-	//CHECKME these may be used as Lang() keys
-	//see <gateway>_sms_gateway::process_delivery_report() and smsg_utils::get_delivery_msg()
+
 	const DELIVERY_OK = 'sms_delivery_ok';
 	const DELIVERY_PENDING = 'sms_delivery_pending';
 	const DELIVERY_INVALID = 'sms_delivery_invalid';
@@ -24,12 +23,12 @@ abstract class sms_gateway_base
 	const DELIVERY_BILLING = 'sms_delivery_billing';
 	const DELIVERY_OTHER   = 'sms_delivery_other';
 
-	private $_module;
-	private $_gate_id;
-	private $_num;
-	private $_fromnum;
-	private $_msg;
-	private $_statusmsg;
+	protected $_module;
+	protected $_gate_id;
+	protected $_num;
+	protected $_fromnum;
+	protected $_msg;
+	protected $_statusmsg;
 	protected $_use_curl;
 	protected $_status;
 	protected $_smsid;
@@ -39,11 +38,6 @@ abstract class sms_gateway_base
 	$this->_module = $module;
   	$this->_gate_id = 0;
 	self::reset();
-  }
-
-  protected function get_module()
-  {
-	return $this->_module;
   }
 
   protected function set_gateid($gid)
@@ -92,11 +86,6 @@ abstract class sms_gateway_base
 	$this->_msg = $msg;
   }
 
-  protected function get_msg()
-  {
-	return $this->_msg;
-  }
-
   /**
   set_num:
   @num: destination phone-number(or separated numbers,if the gateway supports
@@ -107,11 +96,6 @@ abstract class sms_gateway_base
 	$this->_num = $num;
   }
 
-  protected function get_num()
-  {
-	return $this->_num;
-  }
-
   /**
   set_from:
   @from: the source phone-number(if the gateway supports that) appropriately formatted
@@ -119,16 +103,6 @@ abstract class sms_gateway_base
   public function set_from($from)
   {
 	$this->_fromnum = ( $from ) ? $from : FALSE;
-  }
-
-  protected function get_from()
-  {
-	return $this->_fromnum;
-  }
-
-  protected function set_status($stat)
-  {
-	$this->_status = $stat;
   }
 
   /**
@@ -184,7 +158,7 @@ abstract class sms_gateway_base
 
 	// interpret result
 	$this->parse_result($res);
-	$this->_statusmsg = smsg_utils::get_msg($this->_module,$this,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
+	$this->_statusmsg = smsg_utils::get_msg($this->_module,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
 	$success = ($this->_status == self::STAT_OK);
 	if( $success )
 	  {

@@ -23,7 +23,7 @@ class twilio_sms_gateway extends sms_gateway_base
 
 	public function get_description()
 	{
-		return parent::get_module()->Lang('description_twilio');
+		return $this->_module->Lang('description_twilio');
 	}
 
 	public function support_custom_sender()
@@ -57,7 +57,7 @@ class twilio_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = parent::get_module();
+			$module = $this->_module;
 			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//none of the apiname's is actually used (indicated by '_' prefix)
 			smsg_utils::setprops($gid,array(
@@ -80,9 +80,8 @@ class twilio_sms_gateway extends sms_gateway_base
 		unset($ob);
 		if($padm)
 		{
-			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $module->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
+			 $this->_module->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -104,8 +103,8 @@ class twilio_sms_gateway extends sms_gateway_base
 	//returns object: Services_Twilio_Rest_Message or Services_Twilio_RestException, or FALSE
 	protected function _command($dummy)
 	{
-		$to = parent::get_num();
-		$body = strip_tags(parent::get_msg());
+		$to = $this->_num;
+		$body = strip_tags($this->_msg);
 		if( !self::support_mms() )
 			$body = substr($body,0,160);
 		if( !$to || !smsg_utils::text_is_valid($body,0) )
@@ -122,7 +121,7 @@ class twilio_sms_gateway extends sms_gateway_base
 		}
 
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops(parent::get_module(),$gid);
+		$parms = smsg_utils::getprops($this->_module,$gid);
 		$ob = new Services_Twilio(
 		 $parms['_account']['value'],
 		 $parms['_token']['value']
@@ -209,7 +208,11 @@ class twilio_sms_gateway extends sms_gateway_base
 
 	public function process_delivery_report()
 	{
-		return ''; //TODO
+		//TODO
+	    $smsto = '';
+		$smsid = '';
+		$status = parent::DELIVERY_UNKNOWN; //or whatever
+		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()

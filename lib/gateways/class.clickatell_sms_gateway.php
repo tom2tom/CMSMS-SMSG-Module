@@ -25,7 +25,7 @@ class clickatell_sms_gateway extends sms_gateway_base
 
 	public function get_description()
 	{
-		return parent::get_module()->Lang('description_clickatell');
+		return $this->_module->Lang('description_clickatell');
 	}
 
 	public function support_custom_sender()
@@ -59,7 +59,7 @@ class clickatell_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = parent::get_module();
+			$module = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			smsg_utils::setprops($gid,array(
 			 array($module->Lang('username'),'user',NULL,0),
@@ -83,9 +83,8 @@ class clickatell_sms_gateway extends sms_gateway_base
 		unset($ob);
 		if($padm)
 		{
-			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $module->Lang('help_urlcheck',self::CTELL_API_URL,self::get_name().' API');
+			 $this->_module->Lang('help_urlcheck',self::CTELL_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -101,7 +100,7 @@ class clickatell_sms_gateway extends sms_gateway_base
 	protected function prep_command()
 	{
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops(parent::get_module(),$gid);
+		$parms = smsg_utils::getprops($this->_module,$gid);
 		if(
 		 $parms['user']['value'] == FALSE ||
 		 $parms['password']['value'] == FALSE ||
@@ -111,14 +110,26 @@ class clickatell_sms_gateway extends sms_gateway_base
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
 		}
+		if( $this->_num == FALSE )
+		{
+			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+			return FALSE;
+		}
+		$text = strip_tags($this->_msg);
+		if( !self::support_mms() )
+			$text = substr($text,0,160);
+		if( !smsg_utils::text_is_valid($text,0) )
+		{
+			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+			return FALSE;
+		}
 
 		$sends = array();
 		foreach($parms as &$val)
-			$sends[$val['apiname']] = $val['value'];
+			$sends[$val['apiname']] = $val['value']; //CHECKME urlencode ?
 		unset($val);
 
-		$sends['to'] = parent::get_num();
-		if($sends['to'] == FALSE) return FALSE;
+		$sends['to'] = $this->_num;
 /*
 from = international format number, registered and approved
 callback to registered URL
@@ -126,10 +137,6 @@ concat 2 or 3 joined messages
 req_feat
 queue 1,2,3 1=highest priority, 3=default
 */
-		$text = strip_tags(parent::get_msg());
-		if( !self::support_mms() )
-			$text = substr($text,0,160);
-		if( !smsg_utils::text_is_valid($text,0) ) return FALSE;
 		$sends['text'] = urlencode($text);
 
 		$str = cge_array::implode_with_key($sends);
@@ -185,7 +192,7 @@ queue 1,2,3 1=highest priority, 3=default
 		$parts = explode(':',$str);
 		if($parts[0] == 'ID')
 		{
-			parent::set_status(self::STAT_OK);
+			$this->_status = parent::STAT_OK;
 			$this->_smsid = trim($parts[1]);
 		}
 		else
@@ -199,23 +206,23 @@ queue 1,2,3 1=highest priority, 3=default
 			 case 7:
 			 case 103:
 			 case 108:
-				parent::set_status(parent::STAT_ERROR_AUTH);
+				$this->_status = parent::STAT_ERROR_AUTH;
 				break;
 			 case 101:
 			 case 106:
 			 case 107:
 			 case 113:
 			 case 116:
-				parent::set_status(parent::STAT_ERROR_INVALID_DATA);
+				$this->_status = parent::STAT_ERROR_INVALID_DATA;
 				break;
 			 case 121:
-				parent::set_status(parent::STAT_ERROR_BLOCKED);
+				$this->_status = parent::STAT_ERROR_BLOCKED;
 				break;
 			 case 130:
-				parent::set_status(parent::STAT_ERROR_LIMIT);
+				$this->_status = parent::STAT_ERROR_LIMIT;
 				break;
 			 default:
-				parent::set_status(parent::STAT_ERROR_OTHER);
+				$this->_status = parent::STAT_ERROR_OTHER;
 				break;
 			}
 		}
@@ -238,7 +245,11 @@ queue 1,2,3 1=highest priority, 3=default
 012 0x00C Out of credit The message cannot be delivered due to a lack of funds in your account. Please re-purchase credits.
 014 0x00E Maximum MT limit exceeded The allowable amount for MT messaging has been exceeded.
 */
-		return ''; //TODO
+		//TODO
+	    $smsto = '';
+		$smsid = '';
+		$status = parent::DELIVERY_UNKNOWN; //or whatever
+		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()

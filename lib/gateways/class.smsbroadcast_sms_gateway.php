@@ -23,7 +23,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 
 	public function get_description()
 	{
-		return parent::get_module()->Lang('description_smsbroadcast');
+		return $this->_module->Lang('description_smsbroadcast');
 	}
 
 	public function support_custom_sender()
@@ -57,7 +57,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = parent::get_module();
+			$module = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			smsg_utils::setprops($gid,array(
 			 array($module->Lang('username'),'username',NULL,0),
@@ -82,9 +82,8 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		unset($ob);
 		if($padm)
 		{
-			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $module->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
+			 $this->_module->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -105,7 +104,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 	protected function _command($dummy)
 	{
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops(parent::get_module(),$gid);
+		$parms = smsg_utils::getprops($this->_module,$gid);
 		if($parms['username']['value'] == FALSE ||
 		 $parms['password']['value'] == FALSE)
 		{
@@ -113,19 +112,17 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 			return FALSE;
 		}
 
-		$to = parent::get_num();
-		$text = strip_tags(parent::get_msg());
+		$to = $this->_num;
+		$text = strip_tags($this->_msg);
 		if( !self::support_mms() )
 			$text = substr($text,0,160);
-		if(!$to || !smsg_utils::text_is_valid($text,0) )
+		if( !$to || !smsg_utils::text_is_valid($text,0) )
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
-		$source = parent::get_from(); //can be text e.g. 'MyCompany';
-		if(!$source)
-			$source = 'TODO';
+		$source = $this->_fromnum; //can be text e.g. 'MyCompany';
 		$ref = ''; //'abc123';
 
 		$ch = curl_init('https://api.smsbroadcast.com.au/api-adv.php');
@@ -183,7 +180,11 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 
 	public function process_delivery_report()
 	{
-		return ''; //TODO
+		//TODO
+	    $smsto = '';
+		$smsid = '';
+		$status = parent::DELIVERY_UNKNOWN; //or whatever
+		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()

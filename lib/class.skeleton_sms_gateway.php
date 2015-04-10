@@ -67,7 +67,7 @@ class skeleton_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = parent::get_module();
+			$module = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//by convention, apiname's which are not actually used are indicated by a '_' prefix
 			smsg_utils::setprops($gid,array(
@@ -88,9 +88,8 @@ class skeleton_sms_gateway extends sms_gateway_base
 		unset($ob)
 		if($padm)
 		{
-			$module = parent::get_module();
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $module->Lang('help_urlcheck',self::SKEL_API_URL,self::get_name().' API');
+			 $this->_module->Lang('help_urlcheck',self::SKEL_API_URL,self::get_name().' API');
 			$smarty->assign('help',$help);
 		}
 	}
@@ -124,7 +123,7 @@ class skeleton_sms_gateway extends sms_gateway_base
 	{
 		//get 'public' parameters for interface
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops(parent::get_module(),$gid);
+		$parms = smsg_utils::getprops($this->_module,$gid);
 		if(
 		 $parms['whatever']['value'] == FALSE ||
 		 $parms['someother']['value'] == FALSE
@@ -140,11 +139,17 @@ class skeleton_sms_gateway extends sms_gateway_base
 		return $str;
 	}
 
+/* if we can't use the internal mechanism to send messages, populate this instead of prep_command()
+   and make prep_command { return 'good'; //or anything else not FALSE }
+	protected function _command($cmd)
+	{
+	}
+*/
 	protected function parse_result($str)
 	{
 		$this->_rawstatus = $str;
-		//TODO
-		$this->set_status(self::STAT_ERROR_AUTH); //or whatever
+		//TODO parse $str
+		$this->_status = parent::STAT_ERROR_AUTH; //or whatever
 	}
 
 	public function process_delivery_report()
@@ -152,8 +157,8 @@ class skeleton_sms_gateway extends sms_gateway_base
 		//TODO
 	    $smsto = '';
 		$smsid = '';
-		$status = sms_gateway_base::DELIVERY_UNKNOWN; //or whatever
-		return smsg_utils::get_delivery_msg(parent::get_module(),$this,$status,$smsid,$smsto);
+		$status = parent::DELIVERY_UNKNOWN; //or whatever
+		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()

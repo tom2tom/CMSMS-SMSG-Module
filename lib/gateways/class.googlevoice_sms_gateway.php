@@ -23,7 +23,7 @@ class googlevoice_sms_gateway extends sms_gateway_base
 
   public function get_description()
   {
-    return parent::get_module()->Lang('description_googlevoice');
+    return $this->_module->Lang('description_googlevoice');
   }
 
   public function support_custom_sender()
@@ -38,12 +38,12 @@ class googlevoice_sms_gateway extends sms_gateway_base
 
   public function require_country_prefix()
   {
-    return FALSE; //TODO
+    return TRUE; //TODO
   }
 
   public function require_plus_prefix()
   {
-    return FALSE; //TODO
+    return FALSE;
   }
 
   public function multi_number_separator()
@@ -57,7 +57,7 @@ class googlevoice_sms_gateway extends sms_gateway_base
 	if($gid)
 	  {
 		parent::set_gateid($gid);
-		$module = parent::get_module();
+		$module = $this->_module;
 		//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 		//none of the apiname's is actually used (indicated by '_' prefix)
 		smsg_utils::setprops($gid,array(
@@ -80,9 +80,8 @@ class googlevoice_sms_gateway extends sms_gateway_base
     unset($ob);
     if($padm)
       {
-        $module = parent::get_module();
         $help = $smarty->tpl_vars['help']->value.'<br />'.
-         $module->Lang('help_urlcheck',self::GOOGLEVOICE_API_URL,self::get_name().' API');
+         $this->_module->Lang('help_urlcheck',self::GOOGLEVOICE_API_URL,self::get_name().' API');
         $smarty->assign('help',$help);
       }
   }
@@ -107,17 +106,19 @@ class googlevoice_sms_gateway extends sms_gateway_base
 	try
 	  {
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops(parent::get_module(),$gid);
+		$parms = smsg_utils::getprops($this->_module,$gid);
 		$gv = new GoogleVoice(
 		$parms['_email']['value'],
 		$parms['_password']['value']);
 
-		$num = preg_replace('/[^\d]/','',parent::get_num());
-		$msg = strip_tags($this->get_msg());
+		$num = $this->_num;
+		if( !$num )
+			return FALSE;
+		$msg = strip_tags($this->_msg);
 		if( !self::support_mms() )
 			$msg = substr($msg,0,160);
 		if( !smsg_utils::text_is_valid($msg,0) )
-			return FALSE; //CHECKME message
+			return FALSE;
 		$gv->sms($num,$msg); //result ignored
 		// need to return a status
 		return 'good';
@@ -131,16 +132,17 @@ class googlevoice_sms_gateway extends sms_gateway_base
   protected function parse_result($str)
   {
     $this->_rawstatus = $str;
-    if( $str != 'good' )
-      {
-        $this->set_status(self::STAT_ERROR_OTHER);
-      }
-    $this->set_status(self::STAT_OK);
+    if( $str == 'good' )
+		$this->_status = parent::STAT_OK;
+	elseif( $str === FALSE )
+		$this->_status = parent::STAT_ERROR_INVALID_DATA;
+	else
+		$this->_status = parent::STAT_ERROR_OTHER;
   }
 
   public function process_delivery_report()
   {
-    return ''; //nothing to do here
+    return ''; //nothing to report here
   }
 
   public function get_raw_status()
