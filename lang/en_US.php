@@ -40,8 +40,8 @@ $lang['custom'] = 'Custom';
 $lang['default_templates'] = 'Default Templates';
 $lang['delete'] = 'Delete';
 $lang['delete_tip'] = 'delete selected parameter(s)';
-$lang['dflt_enternumber_template'] = 'System Default &quot;Enter Your Number&quot; Template';
-$lang['dflt_entertext_template'] = 'System Default &quot;Enter Your Message Text&quot; Template';
+$lang['dflt_enternumber_template'] = 'Default &quot;Enter Your Number&quot; template';
+$lang['dflt_entertext_template'] = 'Default &quot;Enter Your Message Text&quot; template';
 
 #E
 $lang['enabled'] = 'Enabled';
@@ -58,6 +58,16 @@ $lang['error_nodatafound'] = 'No data are available';
 $lang['error_nogatewaysfound'] = 'Could not find any SMS gateway';
 $lang['error_noparentclass'] = 'Could not find the CGExtensions module';
 $lang['error_notfound'] = 'Could not find the requested item';
+$lang['event_desc_delivery'] = 'Sent when a message-delivery-report is received from the current gateway (if such reports are enabled)';
+$lang['event_help_delivery'] = <<<EOS
+Parameters:
+<ol>
+<li>'gateway' the gateway name</li>
+<li>'status' the short-form status-descriptor recorded by the gateway object</li>
+<li>'message' a long-form status message</li>
+<li>'timestamp' a date-time string, formatted by strftime() as '%X %Z'</li>
+</ol>
+EOS;
 
 #F
 $lang['frame_title'] = '%s SMS Gateway';
@@ -198,8 +208,8 @@ $lang['helptitle'] = 'Help';
 
 #I
 $lang['id'] = 'Id';
-$lang['info_enternumber_templates'] = 'This form allows you to define and edit a template that allows website visitors to enter their mobile phone number to receive a predefined text message';
-$lang['info_entertext_templates'] = 'This form allows you to define and edit a template that allows website visitors to enter a message that will be sent to a predefined mobile phone number';
+$lang['info_enternumber_templates'] = 'This template allows website visitors to enter a mobile phone number to receive a predefined text message';
+$lang['info_entertext_templates'] = 'This template allows website visitors to enter a message that will be sent to a predefined mobile phone number';
 $lang['info_smstest'] = <<<EOS
 To test whether the settings for the selected SMS gateway are correct, you can send a message to the specified mobile phone number.
 Please be aware that it may take several minutes before the phone receives the message.
@@ -239,6 +249,7 @@ $lang['postinstall'] = $lang['friendlyname'].' module successfully installed, no
 $lang['postuninstall'] = $lang['friendlyname']. ' module successfully removed';
 $lang['prompt_daily_limit'] = 'Number of messages that can be sent by one IP address per day';
 $lang['prompt_hourly_limit'] = 'Number of messages that can be sent by one IP address per hour';
+$lang['prompt_log_delivers'] = 'Record in the admin log information about received gateway-delivery-reports';
 $lang['prompt_log_sends'] = 'Keep local records of sent messages';
 $lang['prompt_log_retain_days'] = 'Number of days that local records (if enabled) will be retained';
 $lang['prompt_master_password'] = 'Master Password';
@@ -250,6 +261,7 @@ $lang['prompt_master_password'] = 'Master Password';
 $lang['reporting_url'] = 'URL to which the SMS gateway can send delivery reports';
 
 #S
+$lang'[sample'] = 'Sample';
 $lang['security_tab_lbl'] = 'Security / Anti-Spam';
 $lang['select'] = 'Select';
 $lang['selected_gateway'] = 'Selected Gateway';
@@ -274,11 +286,12 @@ $lang['submit'] = 'Submit';
 $lang['sure_ask'] = 'Are you sure ?';
 
 #T
+$lang['template_saved'] = 'Template saved';
 $lang['test'] = 'Test';
 $lang['test_message'] = 'Test message from %s';
 $lang['title'] = 'Displayed title';
-$lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; Template Edit Form';
-$lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; Template Edit Form';
+$lang['title_enternumber_templates'] = '&quot;Enter Your Number&quot; template';
+$lang['title_entertext_templates'] = '&quot;Enter Your Message&quot; template';
 
 #U
 $lang['username'] = 'Username';
