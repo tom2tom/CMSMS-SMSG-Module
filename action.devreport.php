@@ -6,15 +6,15 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-// receive delivery reports
-// must parse $_REQUEST directly
-
 $gateway = smsg_utils::get_gateway($this);
+// downstream must parse $_REQUEST directly
 $msg = $gateway->process_delivery_report();
-//TODO make this prerential
-if( $msg )
-  {
+if( $msg && $this->GetPreference('logdeliveries') )
 	$this->Audit('',$this->GetName(),$msg);
-  }
 
+$this->SendEvent('SMSDeliveryReported',array(
+	'gateway'=>$gateway->get_name(),
+	'status'=>$gateway->get_status(),
+	'message'=>$msg,
+	'timestamp'=>strftime('%X %Z')));
 ?>
