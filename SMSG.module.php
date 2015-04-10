@@ -36,10 +36,10 @@ require_once($cgextensions);
 class SMSG extends CGExtensions
 {
 	const MODNAME = 'SMSG';
-	const PREF_NEWENTERNUMBER_TPL = 'enternumber_newtpl';
-	const PREF_DFLTENTERNUMBER_TPL = 'enternumber_dflttpl';
-	const PREF_NEWENTERTEXT_TPL = 'entertext_newtpl';
-	const PREF_DFLTENTERTEXT_TPL = 'entertext_dflttpl';
+	const PREF_ENTERNUMBER_TPLS = 'enternumber_templates';
+	const PREF_ENTERNUMBER_TPLDFLT = 'enternumber_dflttpl';
+	const PREF_ENTERTEXT_TPLS = 'entertext_templates';
+	const PREF_ENTERTEXT_TPLDFLT = 'entertext_dflttpl';
 
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
@@ -154,7 +154,7 @@ class SMSG extends CGExtensions
 	if( $js )
 	  {
 		$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
-		$js = str_replace('|PADM|'$p,$js);
+		$js = str_replace('|PADM|',$p,$js);
 		return
 		 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
 		 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
@@ -180,7 +180,7 @@ class SMSG extends CGExtensions
 
   public function MinimumCMSVersion()
   {
-	return '1.8';
+	return '1.9';
   }
 
   public function MaximumCMSVersion()
@@ -242,6 +242,29 @@ class SMSG extends CGExtensions
 	$this->CreateParameter('smstext','',$this->Lang('help_smstext'));
 	$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
   }
+
+  function GetEventDescription($eventname)
+  {
+	switch($eventname)
+	  {
+		case 'SMSDeliveryReported':
+		 return $this->Lang('event_desc_delivery');
+		default:
+		 return '';
+	  }
+  }
+
+  function GetEventHelp($eventname) 
+  {
+	switch($eventname)
+	  {
+		case 'SMSDeliveryReported':
+		 return $this->Lang('event_help_delivery');
+		default:
+		 return '';
+	  }
+  }
+  
 } // end of class
 
 ?>
