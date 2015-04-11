@@ -11,6 +11,7 @@ $this->SetPreference('hourlimit',(int)$params['hourlimit']);
 $this->SetPreference('daylimit',(int)$params['daylimit']);
 $this->SetPreference('logsends',!empty($params['logsends']));
 $this->SetPreference('logdays',(int)$params['logdays']);
+$this->SetPreference('logdeliveries',!empty($params['logdeliveries']));
 if( isset($params['masterpass']) )
   {
 	$oldpw = $this->GetPreference('masterpass');
