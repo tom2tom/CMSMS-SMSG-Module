@@ -123,3 +123,20 @@
 {$endtab}
 {/if}{*$padm*}
 {$endtabcontent}
+
+{if $padm}
+<script type="text/javascript">
+//<![CDATA[{literal}
+ $(document).ready(function() {
+  $('.dflt_template').hide().first().show();
+  $('h4.dflt_template_hdr').click(function() {
+  $('.dflt_template').hide();
+  $(this).next('.dflt_template').show();
+  $('html,body').animate({
+   scrollTop: $(this).offset().top 
+  });
+ });
+});
+//]]>{/literal}
+</script>
+{/if}
