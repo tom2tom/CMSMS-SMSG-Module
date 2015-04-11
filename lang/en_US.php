@@ -214,8 +214,8 @@ $lang['info_smstest'] = <<<EOS
 To test whether the settings for the selected SMS gateway are correct, you can send a message to the specified mobile phone number.
 Please be aware that it may take several minutes before the phone receives the message.
 EOS;
-$lang['info_sysdflt_enternumber_template'] = 'This template will be used when you create a new enternumber template.  Altering this template will have no immediate effect on any display items on your website';
-$lang['info_sysdflt_entertext_template'] = 'This template will be used when you create a new entertext template.  Altering this template will have no immediate effect on any display items on your website';
+$lang['info_sysdflt_enternumber_template'] = 'This is the starting point for creating new \'enter number\' templates. Altering this template will have no immediate effect on anything displayed on the website.';
+$lang['info_sysdflt_entertext_template'] = 'This is the starting point for creating new \'enter text\' templates. Altering this template will have no immediate effect on anything displayed on the website.';
 
 #J
 
@@ -259,9 +259,12 @@ $lang['prompt_master_password'] = 'Master Password';
 
 #R
 $lang['reporting_url'] = 'URL to which the SMS gateway can send delivery reports';
+$lang['reset'] = 'Reset';
+$lang['reset_tip'] = 'revert to factory default';
+
 
 #S
-$lang'[sample'] = 'Sample';
+$lang['sample'] = 'Sample';
 $lang['security_tab_lbl'] = 'Security / Anti-Spam';
 $lang['select'] = 'Select';
 $lang['selected_gateway'] = 'Selected Gateway';
