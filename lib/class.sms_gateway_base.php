@@ -193,11 +193,11 @@ abstract class sms_gateway_base
 		$res = '';
 		$fh = @fopen($cmd,'r');
 		if( $fh )
-		  {
+		{
 			while( $line = @fgets($fh,1024) ) $res .= $line;
 			fclose($fh);
 			return $res;
-		  }
+		}
 		else
 			return FALSE;
 	}
@@ -374,22 +374,22 @@ abstract class sms_gateway_base
 		$o = 1;
 		foreach($conds as $apiname=>&$data)
 		{
-			$enc = (isset($data['encrypt'])) ? 1:0;
+			$enc = ( isset($data['encrypt']) ) ? 1:0;
 			$data['encrypt'] = $enc;
-			if($enc)
-			  {
+			if( $enc )
+			{
 				$data['encvalue'] = smsg_utils::encrypt_value($this->_module,$data['value']);
 				$data['value'] = NULL;
-			  }
+			}
 			else
 				$data['encvalue'] = NULL;
-			if($padm)
+			if( $padm )
 				$data['enabled'] = (isset($data['enabled'])) ? 1:0;
 			$sql = 'UPDATE '.$pref.'module_smsg_props SET '
 				.implode('=?,',array_keys($data)).
 				'=?,signature=CASE WHEN signature IS NULL THEN ? ELSE signature END,apiorder=? WHERE gate_id=? AND apiname=?';
 			//NOTE any record for a new parameter includes apiname='todo' & signature=NULL
-			$sig = ($apiname != 'todo') ? $apiname : $data['apiname'];
+			$sig = ( $apiname != 'todo' ) ? $apiname : $data['apiname'];
 			$args = array_merge(array_values($data),array($sig,$o,$gid,$apiname));
 			$ares = $db->Execute($sql,$args);
 			$o++;
@@ -488,7 +488,7 @@ abstract class sms_gateway_base
 	//Get string returned by gateway in response to message-send process
 	abstract public function get_raw_status();
 
-} // end of class
+}
 
 ?>
 

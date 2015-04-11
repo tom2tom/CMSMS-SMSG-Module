@@ -9,17 +9,17 @@
 $this->SetCurrentTab('test');
 
 if( isset($params['submit']) )
-  {
+{
 	$number = '';
 	if( isset($params['mobile']) )
 		$number = trim($params['mobile']);
 
 	if( smsg_utils::is_valid_phone($number) )
-	  {
+	{
 		// ready to test
 		$gateway = smsg_utils::get_gateway($this);
 		if( $gateway )
-		  {
+		{
 			$gateway->set_num($number);
 			$gateway->set_msg($this->Lang('test_message',SMSG::MODNAME.' @ '.strftime('%X %Z'));
 			$gateway->send();
@@ -29,13 +29,13 @@ if( isset($params['submit']) )
 				$this->SetMessage($msg);
 			else
 				$this->SetError($msg);
-		  }
+		}
 		else
 			$this->SetError($this->Lang('error_nogateway'));
-	  }
+	}
 	else
 		$this->SetError($this->Lang('error_invalidnumber'));
-  }
+}
 
 $this->RedirectToTab($id);
 

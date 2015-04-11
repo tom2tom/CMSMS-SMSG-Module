@@ -9,10 +9,10 @@
 smsg_utils::refresh_gateways($this);
 $objs = smsg_utils::get_gateways_full($this);
 if( !$objs )
-  {
+{
 	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
 	return;
-  }
+}
 //while we're here, do a cleanup
 smsg_utils::clean_log($this);
 
@@ -47,21 +47,21 @@ $smarty->assign('endtabcontent',$this->EndTabContent());
 $smarty->assign('formend',$this->CreateFormEnd());
 
 if( $pmod )
-  {
+{
 	$smarty->assign('tabstart_mobiles',$this->StartTab('mobiles',$params));
 	// get list of mobiles
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
 	$data = $db->GetAll($query);
 	if( $data )
-	  {
+	{
 		$prompt = $this->Lang('ask_delete_mobile');
 		foreach( $data as &$rec )
-		  {
+		{
 			$rec['edit_link'] = $this->CreateImageLink($id,'edit_mobile','','','icons/system/edit.gif',array('mid'=>$rec['id']));
 			$rec['del_link'] = $this->CreateImageLink($id,'del_mobile','','','icons/system/delete.gif',array('mid'=>$rec['id']),'delitemlink',$prompt);
-		  }
+		}
 		unset( $rec );
-	  }
+	}
 	$smarty->assign('mobiles',$data);
 	$smarty->assign('add_mobile',$this->CreateImageLink($id,'edit_mobile','',$this->Lang('add_mobile'),'icons/system/newobject.gif',array(),'','',FALSE));
 
@@ -71,10 +71,10 @@ if( $pmod )
 
 	$names = array(-1 => $this->Lang('none'));
 	foreach( $objs as $key=>&$rec )
-	  {
+	{
 		$names[$key] = $rec['obj']->get_name();
 		$rec = $rec['obj']->get_setup_form();
-	  }
+	}
 	unset($rec);
 	$current = $db->GetOne('SELECT alias FROM '.cms_db_prefix().
 		'module_smsg_gates WHERE enabled=1 AND active=1');
@@ -87,10 +87,10 @@ if( $pmod )
 
 	$smarty->assign('tabstart_test',$this->StartTab('test',$params));
 	$smarty->assign('formstart_test',$this->CGCreateFormStart($id,'smstest'));
-  }
+}
 //in the following, we don't use CGExtensions::funcs cuz' they have an unsuitable API
 if( $ptpl )
-  {
+{
 	$smarty->assign('tabstart_enternumber',$this->StartTab('enternumber',$params));
 	$smarty->assign('enternumber',
 		smsg_utils::ShowTemplateList($this,$id,$returnid,
@@ -112,9 +112,9 @@ if( $ptpl )
 		SMSG::PREF_ENTERTEXT_TPLDFLT,
 		$this->Lang('title_entertext_templates'),
 		$this->Lang('info_entertext_templates')));
-  }
+}
 if( $padm)
-  {
+{
 	$smarty->assign('tabstart_defaults',$this->StartTab('dflt_templates',$params));
 	$smarty->assign('defaultnumber',
 		smsg_utils::GetDefaultTemplateForm($this,$id,$returnid,
@@ -138,12 +138,12 @@ if( $padm)
 	$smarty->assign('logdeliveries',$this->GetPreference('logdeliveries'));
 	$pw = $this->GetPreference('masterpass');
 	if( $pw )
-	  {
+	{
 		$s = base64_decode(substr($pw,5));
 		$pw = substr($s,5);
-	  }
+	}
 	$smarty->assign('masterpass',$pw);
-  }
+}
 
 echo $this->ProcessTemplate('adminpanel.tpl');
 

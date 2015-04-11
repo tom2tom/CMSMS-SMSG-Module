@@ -26,10 +26,10 @@ $config = cmsms()->GetConfig();
 $cgextensions = cms_join_path($config['root_path'],'modules','CGExtensions',
 	'CGExtensions.module.php');
 if( !is_readable($cgextensions) )
-  {
+{
 	echo '<h1 style="color:red;">ERROR: '.$this->Lang('error_noparentclass').'</h1>';
 	return;
-  }
+}
 require_once($cgextensions);
 ///////////////////////////////////////////////////////////////////////////
 
@@ -45,226 +45,227 @@ class SMSG extends CGExtensions
 	//whether password encryption is supported
 	public $havemcrypt;
 
-  public function __construct()
-  {
-	parent::__construct();
-	$this->havemcrypt = (function_exists('mcrypt_encrypt'));
-	$this->RegisterModulePlugin();
-  }
+	public function __construct()
+	{
+		parent::__construct();
+		$this->havemcrypt = (function_exists('mcrypt_encrypt'));
+		$this->RegisterModulePlugin();
+	}
 
-  public function AllowAutoInstall()
-  {
-	return FALSE;
-  }
+	public function AllowAutoInstall()
+	{
+		return FALSE;
+	}
 
-  public function AllowAutoUpgrade()
-  {
-	return FALSE;
-  }
+	public function AllowAutoUpgrade()
+	{
+		return FALSE;
+	}
 
-  public function GetName()
-  {
-	return self::MODNAME;
-  }
+	public function GetName()
+	{
+		return self::MODNAME;
+	}
 
-  public function GetFriendlyName()
-  {
-	return $this->Lang('friendlyname');
-  }
+	public function GetFriendlyName()
+	{
+		return $this->Lang('friendlyname');
+	}
 
-  public function GetVersion()
-  {
-	return '1.0';
-  }
+	public function GetVersion()
+	{
+		return '1.0';
+	}
 
-  public function GetHelp()
-  {
-	return $this->Lang('help');
-  }
+	public function GetHelp()
+	{
+		return $this->Lang('help');
+	}
 
-  public function GetAuthor()
-  {
-	return 'tomphantoo';
-  }
+	public function GetAuthor()
+	{
+		return 'tomphantoo';
+	}
 
-  public function GetAuthorEmail()
-  {
-	return 'tpgww@onepost.net';
-  }
+	public function GetAuthorEmail()
+	{
+		return 'tpgww@onepost.net';
+	}
 
-  public function GetChangeLog()
-  {
-	return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.inc'));
-  }
+	public function GetChangeLog()
+	{
+		return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.inc'));
+	}
 
-  public function IsPluginModule()
-  {
-	return TRUE;
-  }
+	public function IsPluginModule()
+	{
+		return TRUE;
+	}
 
-  public function HasCapability($capability,$params = array())
-  {
-	switch($capability)
-	  {
-		case 'SMSgateway':
-		case 'SMSmessaging':
-	  	case 'SMSG':
-	  	case 'CGSMS':
-			return TRUE;
-		default:
-			return FALSE;
-	  }
-  }
-  public function HasAdmin()
-  {
-	return TRUE;
-  }
+	public function HasCapability($capability,$params = array())
+	{
+		switch($capability)
+		{
+			case 'SMSgateway':
+			case 'SMSmessaging':
+			case 'SMSG':
+			case 'CGSMS':
+				return TRUE;
+			default:
+				return FALSE;
+		}
+	}
 
-  function LazyLoadAdmin()
-  {
-	return FALSE;
-  }
+	public function HasAdmin()
+	{
+		return TRUE;
+	}
 
-  public function GetAdminSection()
-  {
-	return 'extensions';
-  }
+	function LazyLoadAdmin()
+	{
+		return FALSE;
+	}
 
-  public function GetAdminDescription()
-  {
-	return $this->Lang('module_description');
-  }
+	public function GetAdminSection()
+	{
+		return 'extensions';
+	}
 
-  public function VisibleToAdminUser()
-  {
-	return
-	 $this->CheckPermission('AdministerSMSGateways') ||
-	 $this->CheckPermission('ModifySMSGateways') ||
-	 $this->CheckPermission('ModifySMSGateTemplates');
-  }
+	public function GetAdminDescription()
+	{
+		return $this->Lang('module_description');
+	}
 
-  function AdminStyle()
-  {
-  }
-
-  function GetHeaderHTML()
-  {
-	$fp = cms_join_path(dirname(__FILE__),'include','module.js');
-	$js = ''.@file_get_contents($fp);
-	if( $js )
-	  {
-		$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
-		$js = str_replace('|PADM|',$p,$js);
+	public function VisibleToAdminUser()
+	{
 		return
-		 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
-		 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
-	  }
-	return '';
-  }	
+		 $this->CheckPermission('AdministerSMSGateways') ||
+		 $this->CheckPermission('ModifySMSGateways') ||
+		 $this->CheckPermission('ModifySMSGateTemplates');
+	}
 
-  public function GetDependencies()
-  {
-	return array('CGExtensions'=>'1.17.7');
-  }
+	function AdminStyle()
+	{
+	}
 
-  //for 1.11+
-  public function AllowSmartyCaching()
-  {
-	return TRUE;
-  }
+	function GetHeaderHTML()
+	{
+		$fp = cms_join_path(dirname(__FILE__),'include','module.js');
+		$js = ''.@file_get_contents($fp);
+		if( $js )
+		{
+			$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
+			$js = str_replace('|PADM|',$p,$js);
+			return
+			 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
+			 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
+		}
+		return '';
+	}	
 
-  public function LazyLoadFrontend()
-  {
-	return TRUE;
-  }
+	public function GetDependencies()
+	{
+		return array('CGExtensions'=>'1.17.7');
+	}
 
-  public function MinimumCMSVersion()
-  {
-	return '1.9';
-  }
+	//for 1.11+
+	public function AllowSmartyCaching()
+	{
+		return TRUE;
+	}
 
-  public function MaximumCMSVersion()
-  {
-	return '1.11.99';
-  }
+	public function LazyLoadFrontend()
+	{
+		return TRUE;
+	}
 
-  public function InstallPostMessage()
-  {
-	return $this->Lang('postinstall');
-  }
+	public function MinimumCMSVersion()
+	{
+		return '1.9';
+	}
 
-  public function UninstallPreMessage()
-  {
-	return $this->Lang('confirm_uninstall');
-  }
+	public function MaximumCMSVersion()
+	{
+		return '1.11.99';
+	}
 
-  public function UninstallPostMessage()
-  {
-	return $this->Lang('postuninstall');
-  }
+	public function InstallPostMessage()
+	{
+		return $this->Lang('postinstall');
+	}
 
-  //setup for pre-1.10
-  function SetParameters()
-  {
-	$this->InitializeAdmin();
-	$this->InitializeFrontend();
-  }
+	public function UninstallPreMessage()
+	{
+		return $this->Lang('confirm_uninstall');
+	}
 
-  //partial setup for pre-1.10, backend setup for 1.10+
-  function InitializeFrontend()
-  {
-	$this->RestrictUnknownParams();
-	$this->SetParameterType('action',CLEAN_STRING);
-	$this->SetParameterType('destpage',CLEAN_STRING);
-	$this->SetParameterType('enternumbertemplate',CLEAN_STRING);
-	$this->SetParameterType('entertexttemplate',CLEAN_STRING);
-	$this->SetParameterType('inline',CLEAN_INT);
-	$this->SetParameterType('linktext',CLEAN_STRING);
-	$this->SetParameterType('smskey',CLEAN_STRING); //hash of cached data, for internal use only
-	$this->SetParameterType('smsnum',CLEAN_INT);
-	$this->SetParameterType('smstext',CLEAN_STRING);
-	$this->SetParameterType('urlonly',CLEAN_INT);
-	$this->SetParameterType(CLEAN_REGEXP.'/smsg_.*/',CLEAN_NONE);
+	public function UninstallPostMessage()
+	{
+		return $this->Lang('postuninstall');
+	}
 
-	$this->RegisterRoute('/SMSG\/devreport$/',array('action'=>'devreport'));
-  }
+	//setup for pre-1.10
+	function SetParameters()
+	{
+		$this->InitializeAdmin();
+		$this->InitializeFrontend();
+	}
 
-  //partial setup for pre-1.10, backend setup for 1.10+
-  function InitializeAdmin()
-  {
-	$this->CreateParameter('action','enternumber',$this->Lang('help_action'));
-	$this->CreateParameter('destpage','0',$this->Lang('help_destpage'));
-	$this->CreateParameter('enternumbertemplate','',$this->Lang('help_enternumbertemplate'));
-	$this->CreateParameter('entertexttemplate','',$this->Lang('help_enternumbertemplate'));
-	$this->CreateParameter('inline',0,$this->Lang('help_inline'));
-	$this->CreateParameter('linktext',$this->Lang('send_to_mobile'),$this->Lang('help_linktext'));
-	$this->CreateParameter('smsnum',0,$this->Lang('help_smsnum'));
-	$this->CreateParameter('smstext','',$this->Lang('help_smstext'));
-	$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
-  }
+	//partial setup for pre-1.10, backend setup for 1.10+
+	function InitializeFrontend()
+	{
+		$this->RestrictUnknownParams();
+		$this->SetParameterType('action',CLEAN_STRING);
+		$this->SetParameterType('destpage',CLEAN_STRING);
+		$this->SetParameterType('enternumbertemplate',CLEAN_STRING);
+		$this->SetParameterType('entertexttemplate',CLEAN_STRING);
+		$this->SetParameterType('inline',CLEAN_INT);
+		$this->SetParameterType('linktext',CLEAN_STRING);
+		$this->SetParameterType('smskey',CLEAN_STRING); //hash of cached data, for internal use only
+		$this->SetParameterType('smsnum',CLEAN_INT);
+		$this->SetParameterType('smstext',CLEAN_STRING);
+		$this->SetParameterType('urlonly',CLEAN_INT);
+		$this->SetParameterType(CLEAN_REGEXP.'/smsg_.*/',CLEAN_NONE);
 
-  function GetEventDescription($eventname)
-  {
-	switch($eventname)
-	  {
-		case 'SMSDeliveryReported':
-		 return $this->Lang('event_desc_delivery');
-		default:
-		 return '';
-	  }
-  }
+		$this->RegisterRoute('/SMSG\/devreport$/',array('action'=>'devreport'));
+	}
 
-  function GetEventHelp($eventname) 
-  {
-	switch($eventname)
-	  {
-		case 'SMSDeliveryReported':
-		 return $this->Lang('event_help_delivery');
-		default:
-		 return '';
-	  }
-  }
-  
+	//partial setup for pre-1.10, backend setup for 1.10+
+	function InitializeAdmin()
+	{
+		$this->CreateParameter('action','enternumber',$this->Lang('help_action'));
+		$this->CreateParameter('destpage','0',$this->Lang('help_destpage'));
+		$this->CreateParameter('enternumbertemplate','',$this->Lang('help_enternumbertemplate'));
+		$this->CreateParameter('entertexttemplate','',$this->Lang('help_enternumbertemplate'));
+		$this->CreateParameter('inline',0,$this->Lang('help_inline'));
+		$this->CreateParameter('linktext',$this->Lang('send_to_mobile'),$this->Lang('help_linktext'));
+		$this->CreateParameter('smsnum',0,$this->Lang('help_smsnum'));
+		$this->CreateParameter('smstext','',$this->Lang('help_smstext'));
+		$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
+	}
+
+	function GetEventDescription($eventname)
+	{
+		switch($eventname)
+		{
+			case 'SMSDeliveryReported':
+			 return $this->Lang('event_desc_delivery');
+			default:
+			 return '';
+		}
+	}
+
+	function GetEventHelp($eventname) 
+	{
+		switch($eventname)
+		{
+			case 'SMSDeliveryReported':
+			 return $this->Lang('event_help_delivery');
+			default:
+			 return '';
+		}
+	}
+
 } // end of class
 
 ?>

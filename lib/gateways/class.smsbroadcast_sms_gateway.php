@@ -106,7 +106,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($this->_module,$gid);
 		if($parms['username']['value'] == FALSE ||
-		 $parms['password']['value'] == FALSE)
+		   $parms['password']['value'] == FALSE)
 		{
 			$this->_status = parent::STAT_ERROR_AUTH;
 			return FALSE;
@@ -152,7 +152,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		$result = curl_exec($ch);
 		curl_close($ch);
 		return $result;
-    }
+	}
 
 	protected function parse_result($str)
 	{
@@ -191,6 +191,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 	{
 		return $this->_rawstatus;
 	}
-} // end of class
+
+}
 
 ?>
