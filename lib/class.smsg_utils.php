@@ -8,7 +8,7 @@
 
 class smsg_utils
 {
-  public static function get_gateways_full(&$module=NULL)
+  public static function get_gateways_full(&$module = NULL)
   {
 	$db = cmsms()->GetDb();
 	$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled>0');
@@ -16,7 +16,7 @@ class smsg_utils
 		return FALSE;
 	$dir = cms_join_path(dirname(__FILE__),'gateways','');
  	if( $module === NULL )
-		$module = cge_utils::get_module(SMSG::MODNAME);
+		$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
 	$objs = array();
 	foreach( $aliases as $thisone )
 	  {
@@ -32,7 +32,7 @@ class smsg_utils
 	return $objs;
   }
 
-  public static function get_gateway(&$module=NULL)
+  public static function get_gateway(&$module = NULL)
   {
 	$db = cmsms()->GetDb();
 	$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active>0 AND enabled>0');
@@ -45,7 +45,7 @@ class smsg_utils
 		require_once($fn);
 	  }
  	if( $module === NULL )
-		$module = cge_utils::get_module(SMSG::MODNAME);
+		$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
 	$obj = new $classname($module);
 
 	if( $obj ) return $obj;
@@ -234,10 +234,15 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	$ip = getenv('REMOTE_ADDR');
 	if( func_num_args() > 1 )
 	  {
+		$tmp = $module->Lang('_'); //ensure relevant lang is loaded
 		$parms = array_slice(func_get_args(),1);
-		if( array_key_exists($parms[0],array(0)) ) //TODO current-lang[]
+		$key = $parms[0];
+		$langdata = ( $module->curlang ) ?
+			$module->langhash[$module->curlang]:
+			reset($module->langhash);
+		if( isset($langdata[$key]) || array_key_exists($key,$langdata) )
 		  {
-			$txt = $module->Lang($parms[0],array_slice($parms,1));
+			$txt = $module->Lang($key,array_slice($parms,1));
 			if( $ip )
 				$txt .= ','.$ip;
 		  }
@@ -258,11 +263,16 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	$ip = getenv('REMOTE_ADDR');
 	if( func_num_args() > 1 )
 	  {
+		$tmp = $module->Lang('_'); //ensure relevant lang is loaded
 		$parms = array_slice(func_get_args(),1);
-		if( array_key_exists($parms[0],array(0)) ) //TODO current-lang[]
-			$txt = $module->Lang($parms[0],array_slice($parms,1));
+		$key = $parms[0];
+		$langdata = ( $module->curlang ) ?
+			$module->langhash[$module->curlang]:
+			reset($module->langhash);
+		if( isset($langdata[$key]) || array_key_exists($key,$langdata) )
+			$txt = $module->Lang($key,array_slice($parms,1));
 		else
-			$txt = implode(','$parms);
+			$txt = implode(',',$parms);
 		if( $ip )
 			$txt .= ','.$ip;
 		return $txt;
@@ -313,6 +323,20 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	$db->Execute($query,array($mobile,$ip_address,$msg));
   }
 
+  public static function clean_log(&$module = NULL)
+  {
+	if( $module === NULL )
+		$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
+	if( $module->GetPreference('logsends') )
+	  {
+		$days = $module->GetPreference('logdays');
+		if( !$days ) $days = 1;
+		$db = cmsms()->GetDb();
+		$limit = $db->DbTimeStamp(time()-$days*24*3600);
+		$db->Execute('DELETE FROM '.cms_db_prefix().'module_smsg_sent WHERE sdate<'.$limit);
+	  }
+  }
+
   public static function ip_can_send(&$module,$ip_address)
   {
 	$db = cmsms()->GetDb();
@@ -345,6 +369,194 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	  '~[^\w\s@£$¥èéùìòÇ\fØø\nÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./\:;<=>\?¡ÄÖÑÜ§¿äöñüà\^\{\}\[\]\~\|€]~',
 	  $text) ) return FALSE;
 	return TRUE;
+  }
+
+  //CGExtensions-module over-rides
+  public static function ShowTemplateList(&$module,$id,$returnid,
+	$prefix,
+//	$defaulttemplatepref,
+	$active_tab,
+	$prefallnames,
+	$prefdefaultname,
+	$title,
+	$info = '',
+	$destaction = 'defaultadmin'
+	)
+  {
+	$cge = cmsms()->GetModuleInstance('CGExtensions');
+	$theme = cms_utils::get_theme_object();
+	$falseicon = $theme->DisplayImage('icons/system/false.gif','make default','','','systemicon');
+	$trueicon = $theme->DisplayImage('icons/system/true.gif','default','','','systemicon');
+
+	if( $prefdefaultname )
+		$defaultname = $module->GetPreference($prefdefaultname);
+	else
+		$defaultname = '';
+
+	$mytemplates = $module->GetPreference($prefallnames);
+	$alltemplates = explode(';',$mytemplates);
+	$rowarray = array();
+
+	foreach( $alltemplates as $onetemplate )
+	  {
+		$row = new StdClass();
+		$row->name = $cge->CreateLink($id,'edittemplate',$returnid,
+				$onetemplate,
+				array('template'=>$onetemplate,
+					 'destaction'=>$destaction,
+					 'activetab'=>$active_tab,
+					 'title'=>$title,
+					 'info'=>$info,
+					 'prefix'=>$prefix,
+					 'modname'=>$module->GetName(),
+					 'moddesc'=>$module->GetFriendlyName(),
+					 'mode'=>'edit'));
+		$row->default = NULL;
+		if( $prefdefaultname )
+		  {
+			  $default = ($onetemplate == $defaultname);
+			  if( $default )
+				{
+					$row->default = $trueicon;
+				}
+			  else
+				{
+					$row->default = $cge->CreateLink($id,'makedefaulttemplate',$returnid,
+							$falseicon,
+							array('template'=>$onetemplate,
+								  'destaction'=>$destaction,
+								  'prefdefaultname'=>$prefdefaultname,
+								  'modname'=>$module->GetName(),
+								  'activetab'=>$active_tab));
+				}
+		  }
+		$row->editlink = $cge->CreateImageLink($id,'edittemplate',$returnid,
+						$cge->Lang('prompt_edittemplate'),
+						'icons/system/edit.gif',
+						array ('template'=>$onetemplate,
+								'destaction'=>$destaction,
+								'activetab'=>$active_tab,
+								'prefix'=>$prefix,
+								'title'=>$title,
+								'info'=>$info,
+								'modname'=>$module->GetName(),
+								'moddesc'=>$module->GetFriendlyName(),
+								'mode'=>'edit'));
+
+		if( $prefdefaultname && $default )
+		  {
+			$row->deletelink = '';
+		  }
+		else
+		  {
+			$row->deletelink = $cge->CreateImageLink($id,'deletetemplate',$returnid,
+							  $cge->Lang('prompt_deletetemplate'),
+							  'icons/system/delete.gif',
+							  array ('template'=>$onetemplate,
+  									 'destaction'=>$destaction,
+									 'activetab'=>$active_tab,
+									 'prefix'=>$prefix,
+									 'modname'=>$module->GetName()),
+							  '',
+							  $cge->Lang('areyousure'));
+		  }
+
+		$rowarray[] = $row;
+	  }
+
+	$smarty = cmsms()->GetSmarty();
+	$smarty->assign('parent_module_name',$module->GetFriendlyName());
+	$smarty->assign('items',$rowarray);
+	$smarty->assign('nameprompt',$cge->Lang('prompt_name'));
+	$smarty->assign('defaultprompt',$cge->Lang('prompt_default'));
+	$smarty->assign('newtemplatelink',
+		$cge->CreateImageLink($id,'edittemplate',$returnid,
+		 $cge->Lang('prompt_newtemplate'),
+		 'icons/system/newobject.gif',
+		 array('prefix'=>$prefix,
+			'destaction'=>$destaction,
+			'activetab'=>$active_tab,
+			'modname'=>$module->GetName(),
+			'moddesc'=>$module->GetFriendlyName(),
+			'title'=>$title,
+			'info'=>$info,
+			'mode'=>'add'//,
+//			'defaulttemplatepref'=>$defaulttemplatepref
+			),
+		 '','',FALSE));
+
+	return $module->ProcessTemplate('listtemplates.tpl');
+  }
+
+  /**
+  * Construct XHTML for a form to display a 'start' template. A start template
+  * is read from a file, stored in the database, and is used when creating
+  * a new template of that type.
+  *
+  * @module: The module that the template is for
+  * @id: The instance id of @module
+  * @returnid: The returnid (usually empty)
+  * @prefname: The identifier of the template
+  * @title: The title for the constructed form, usually indicates what template is being edited
+  * @filename: The file name (relative to @module 's templates directory) of
+  *    the system-default version of the template
+  * @info: The info string for the form
+  * @simple: A flag indicating a simple form
+  *
+  * Returns: The XHTML string
+  */
+  public static function GetDefaultTemplateForm(&$module,$id,$returnid,
+	$prefname,
+	$title,
+	$filename,
+	$info = '',
+	$simple = FALSE,
+	$last = FALSE
+	)
+  {
+	$smarty = cmsms()->GetSmarty();
+	$smarty->assign('simple',$simple);
+	$smarty->assign('form_title',$title);
+	$smarty->assign('info_title',$info);
+	$smarty->assign('prefname',$prefname);
+
+	$smarty->assign('startform',
+		$module->CreateFormStart($id,'setdefaulttemplate',$returnid,'post','',FALSE,'',
+		   array('prefname'=>$prefname,
+				 'filename'=>$filename)));
+	$smarty->assign('endform',$module->CreateFormEnd());
+
+	$cge = cmsms()->GetModuleInstance('CGExtensions');
+	$smarty->assign('prompt_template',$cge->Lang('template'));
+	$the_template = $module->GetTemplate($prefname);
+	$smarty->assign('input_template',$module->CreateTextArea(FALSE,$id,$the_template,'input_template'));
+
+	$smarty->assign('submit',$module->CreateInputSubmit($id,'submit',$cge->Lang('submit')));
+	$smarty->assign('reset',$module->CreateInputSubmit($id,'reset',$cge->Lang('resettofactory')));
+
+	if( !$simple && $last )
+	  {
+		$js = <<<EOS
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+ $('.dflt_template').hide().first().show();
+ $('h4.dflt_template_hdr').click(function() {
+  $('.dflt_template').hide();
+  $(this).next('.dflt_template').show();
+  $('html,body').animate({
+   scrollTop: $(this).offset().top 
+  });
+ });
+});
+//]]>
+</script>
+
+EOS;
+		$smarty->assign('js',$js);
+	  }
+
+	return $module->ProcessTemplate('editdefaulttemplate.tpl');
   }
 
 } // end of class
