@@ -6,6 +6,46 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
+/**
+ @module: the module that is displaying the template
+ @id: instance id of @module
+ @returnid: returnid (usually empty)
+ @activetab: identifier of tab to be re-focussed after form is submitted
+ @prefname: identifier of the template
+ @filename: file name (relative to @module 's templates-directory) of
+   the system-default version of the template
+ @title: title for the constructed form, usually indicates which template
+   is being edited
+ @info: info string for the form
+ 
+ Returns: XHTML string
+ */
+function SetupDefaultTemplate(&$module,$id,$returnid,$activetab,
+	$prefname,$filename,$title,$info)
+{
+	$smarty = cmsms()->GetSmarty();
+	$smarty->assign('form_title',$title);
+	$smarty->assign('info_title',$info);
+	$smarty->assign('prefname',$prefname);
+
+	$smarty->assign('startform',
+		$module->CreateFormStart($id,'settemplate',$returnid,'post','',FALSE,'',
+		   array('prefname'=>$prefname,
+				 'filename'=>$filename,
+				 'activetab'=>$activetab)));
+	$smarty->assign('endform',$module->CreateFormEnd());
+
+	$cge = cmsms()->GetModuleInstance('CGExtensions');
+	$smarty->assign('prompt_template',
+	 /*$module->ParentMethod('Lang',TRUE,'template')/*/$cge->Lang('template'));
+	$the_template = $module->GetTemplate($prefname);
+	$smarty->assign('input_template',$module->CreateTextArea(FALSE,$id,$the_template,'input_template'));
+
+	$smarty->assign('submit',$module->CreateInputSubmit($id,'submit',$module->Lang('submit')));
+	$smarty->assign('reset',$module->CreateInputSubmit($id,'reset',$module->Lang('reset'),
+		'title="'.$module->Lang('reset_tip').'"'));
+}
+
 smsg_utils::refresh_gateways($this);
 $objs = smsg_utils::get_gateways_full($this);
 if( !$objs )
@@ -88,47 +128,50 @@ if( $pmod )
 	$smarty->assign('tabstart_test',$this->StartTab('test',$params));
 	$smarty->assign('formstart_test',$this->CGCreateFormStart($id,'smstest'));
 }
-//in the following, we don't use CGExtensions::funcs cuz' they have an unsuitable API
 if( $ptpl )
 {
 	$smarty->assign('tabstart_enternumber',$this->StartTab('enternumber',$params));
-	$smarty->assign('enternumber',
-		smsg_utils::ShowTemplateList($this,$id,$returnid,
+/*	smsg_utils::SetupTemplateList($this,$id,$returnid,
 		'enternumber_', //'prefix' of template preference name
 //		SMSG::PREF_NEWENTERNUMBER_TPL,
 		'enternumber', //active tab
 		SMSG::PREF_ENTERNUMBER_TPLS, //'base' names of all templates (suffix)
 		SMSG::PREF_ENTERNUMBER_TPLDFLT, //'base' name of default template
 		$this->Lang('title_enternumber_templates'),
-		$this->Lang('info_enternumber_templates')));
+		$this->Lang('info_enternumber_templates'));
+	$smarty->assign('enternumber',$this->ProcessTemplate('listtemplates.tpl'));
+*/
+	$smarty->assign('enternumber','');
 
 	$smarty->assign('tabstart_entertext',$this->StartTab('entertext',$params));
-	$smarty->assign('entertext',
-		smsg_utils::ShowTemplateList($this,$id,$returnid,
+/*	smsg_utils::SetupTemplateList($this,$id,$returnid,
 		'entertext_',
 //		SMSG::PREF_NEWENTERTEXT_TPL,
 		'entertext',
 		SMSG::PREF_ENTERTEXT_TPLS,
 		SMSG::PREF_ENTERTEXT_TPLDFLT,
 		$this->Lang('title_entertext_templates'),
-		$this->Lang('info_entertext_templates')));
+		$this->Lang('info_entertext_templates'));
+	$smarty->assign('entertext',$this->ProcessTemplate('listtemplates.tpl'));
+*/
+	$smarty->assign('entertext','');
 }
-if( $padm)
+if( $padm )
 {
 	$smarty->assign('tabstart_defaults',$this->StartTab('dflt_templates',$params));
-	$smarty->assign('defaultnumber',
-		smsg_utils::GetDefaultTemplateForm($this,$id,$returnid,
+	SetupDefaultTemplate($this,$id,$returnid,'dflt_templates',
 		'enternumber_'.$this->GetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT),
-		$this->Lang('dflt_enternumber_template'),
 		'enternumber_template.tpl',
-		$this->Lang('info_sysdflt_enternumber_template')));
-	$smarty->assign('defaulttext',
-		smsg_utils::GetDefaultTemplateForm($this,$id,$returnid,
+		$this->Lang('dflt_enternumber_template'),
+		$this->Lang('info_sysdflt_enternumber_template'));
+	$smarty->assign('defaultnumber',$this->ProcessTemplate('editdefaulttemplate.tpl'));
+	SetupDefaultTemplate($this,$id,$returnid,'dflt_templates',
 		'entertext_'.$this->GetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT),
-		$this->Lang('dflt_entertext_template'),
 		'entertext_template.tpl',
-		$this->Lang('info_sysdflt_entertext_template'),
-		FALSE,TRUE));
+		$this->Lang('dflt_entertext_template'),
+		$this->Lang('info_sysdflt_entertext_template'));
+	$smarty->assign('defaulttext',$this->ProcessTemplate('editdefaulttemplate.tpl'));
+
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
 	$smarty->assign('formstart_security',$this->CGCreateFormStart($id,'savesecurity'));
 	$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
