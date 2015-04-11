@@ -13,15 +13,8 @@ if( !$objs )
 	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
 	return;
   }
-$pref = cms_db_prefix();
 //while we're here, do a cleanup
-if( $this->GetPreference('logsends') )
-  {
-	$days = $this->GetPreference('logdays');
-	if( !$days ) $days = 1;
-	$limit = $db->DbTimeStamp(time()-$days*24*3600);
-	$db->Execute('DELETE FROM '.$pref.'module_smsg_sent WHERE sdate<'.$limit);
-  }
+smsg_utils::clean_log($this);
 
 $padm = $this->CheckPermission('AdministerSMSGateways');
 $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
@@ -57,7 +50,7 @@ if( $pmod )
   {
 	$smarty->assign('tabstart_mobiles',$this->StartTab('mobiles',$params));
 	// get list of mobiles
-	$query = 'SELECT * FROM  '.cms_db_prefix().'module_smsg ORDER BY id';
+	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
 	$data = $db->GetAll($query);
 	if( $data )
 	  {
@@ -83,7 +76,8 @@ if( $pmod )
 		$rec = $rec['obj']->get_setup_form();
 	  }
 	unset($rec);
-	$current = $db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE enabled=1 AND active=1');
+	$current = $db->GetOne('SELECT alias FROM '.cms_db_prefix().
+		'module_smsg_gates WHERE enabled=1 AND active=1');
 	if( $current == FALSE )
 		$current = '-1';
 
@@ -94,21 +88,28 @@ if( $pmod )
 	$smarty->assign('tabstart_test',$this->StartTab('test',$params));
 	$smarty->assign('formstart_test',$this->CGCreateFormStart($id,'smstest'));
   }
+//in the following, we don't use CGExtensions::funcs cuz' they have an unsuitable API
 if( $ptpl )
   {
 	$smarty->assign('tabstart_enternumber',$this->StartTab('enternumber',$params));
 	$smarty->assign('enternumber',
-		$this->ShowTemplateList($id,$returnid,'enternumber_',
-		SMSG::PREF_NEWENTERNUMBER_TPL,'enternumber',
-		SMSG::PREF_DFLTENTERNUMBER_TPL,
+		smsg_utils::ShowTemplateList($this,$id,$returnid,
+		'enternumber_', //'prefix' of template preference name
+//		SMSG::PREF_NEWENTERNUMBER_TPL,
+		'enternumber', //active tab
+		SMSG::PREF_ENTERNUMBER_TPLS, //'base' names of all templates (suffix)
+		SMSG::PREF_ENTERNUMBER_TPLDFLT, //'base' name of default template
 		$this->Lang('title_enternumber_templates'),
 		$this->Lang('info_enternumber_templates')));
 
 	$smarty->assign('tabstart_entertext',$this->StartTab('entertext',$params));
 	$smarty->assign('entertext',
-		$this->ShowTemplateList($id,$returnid,'entertext_',
-		SMSG::PREF_NEWENTERTEXT_TPL,'entertext',
-		SMSG::PREF_DFLTENTERTEXT_TPL,
+		smsg_utils::ShowTemplateList($this,$id,$returnid,
+		'entertext_',
+//		SMSG::PREF_NEWENTERTEXT_TPL,
+		'entertext',
+		SMSG::PREF_ENTERTEXT_TPLS,
+		SMSG::PREF_ENTERTEXT_TPLDFLT,
 		$this->Lang('title_entertext_templates'),
 		$this->Lang('info_entertext_templates')));
   }
@@ -116,24 +117,25 @@ if( $padm)
   {
 	$smarty->assign('tabstart_defaults',$this->StartTab('dflt_templates',$params));
 	$smarty->assign('defaultnumber',
-		$this->GetDefaultTemplateForm($this,$id,$returnid,
-		SMSG::PREF_NEWENTERNUMBER_TPL,'defaultadmin','dflt_templates',
+		smsg_utils::GetDefaultTemplateForm($this,$id,$returnid,
+		'enternumber_'.$this->GetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT),
 		$this->Lang('dflt_enternumber_template'),
 		'enternumber_template.tpl',
 		$this->Lang('info_sysdflt_enternumber_template')));
 	$smarty->assign('defaulttext',
-		$this->GetDefaultTemplateForm($this,$id,$returnid,
-		SMSG::PREF_NEWENTERTEXT_TPL,'defaultadmin','dflt_templates',
+		smsg_utils::GetDefaultTemplateForm($this,$id,$returnid,
+		'entertext_'.$this->GetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT),
 		$this->Lang('dflt_entertext_template'),
 		'entertext_template.tpl',
-		$this->Lang('info_sysdflt_entertext_template')));
-
+		$this->Lang('info_sysdflt_entertext_template'),
+		FALSE,TRUE));
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
 	$smarty->assign('formstart_security',$this->CGCreateFormStart($id,'savesecurity'));
 	$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
 	$smarty->assign('daylimit',$this->GetPreference('daylimit'));
 	$smarty->assign('logsends',$this->GetPreference('logsends'));
 	$smarty->assign('logdays',$this->GetPreference('logdays'));
+	$smarty->assign('logdeliveries',$this->GetPreference('logdeliveries'));
 	$pw = $this->GetPreference('masterpass');
 	if( $pw )
 	  {
