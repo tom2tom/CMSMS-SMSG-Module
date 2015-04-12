@@ -166,7 +166,7 @@ class SMSG extends CGExtensions
 
 	public function GetDependencies()
 	{
-		return array('CGExtensions'=>'1.17.7');
+		return array('CGExtensions'=>'1.20');
 	}
 
 	//for 1.11+
