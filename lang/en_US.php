@@ -143,6 +143,7 @@ Choose values for module settings such as the SMS sending-limits (to reduce spam
 </ul>
 <h3>Extra gateways</h3>
 <p>A PHP-class must be created for each gateway. Refer to the README document in the module folder .../lib/gateways.</p>
+<p>If you ask <strong>really nicely</strong>, and you can offer some sort of service in return, the author might perhaps be persuaded to add support for some other gateway.</p>
 <h3>API</h3>
 <p>This module contains a rich API for sending SMS messages from other modules or from UDTs.
 The API for each gateway is set out in file .../lib/class.sms_gateway_base.php. It comprises</p>
