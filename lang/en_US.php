@@ -93,15 +93,16 @@ $lang['help_destpage'] = 'This parameter indicates that the resulting form shoul
 $lang['help_dnd'] = 'You can change the order by dragging row(s)';
 $lang['help_enternumbertemplate'] = 'Applicable only to the enternumber action, this parameter allows specifying a non default enternumber template to create the form with';
 $lang['help_entertexttemplate'] = 'Applicable only to the entertext action, this parameter allows specifying a non default entertext template to create the form with';
+$lang['help_gatename'] = 'This parameter allows overriding the default gateway';
 $lang['help_inline'] = 'This parameter indicates that the form should replace the link (instead of the default content area of the page).  It is not useful with the destpage parameter';
-$lang['help_linktext'] = 'This parameter allows overriding the text that is displayed in the link.  This parameter has no effect when the urlonly parameter is used.';
+$lang['help_linktext'] = 'This parameter allows overriding the text that is displayed in the link. This parameter has no effect when the urlonly parameter is used.';
 $lang['help_smsnum'] = 'Applicable only to the entertext action, this parameter defines the numeric ID of a pre-defined mobile phone number';
 $lang['help_smstext'] = 'Applicable only to the enternumber action, this parameter defines the text that will be sent in the sms message. The text is never displayed in the HTML output of the page for security reasons.';
 $lang['help_sure'] = 'Be <strong>very sure</strong> about what you\'re doing, before modifying anything except title(s) and/or value(s)!';
 $lang['help_urlcheck'] = 'Refer to the <a href="%s">%s</a> for details';
 $lang['help_urlonly'] = 'This parameter indicates that instead of a full link only the URL should be echoed, allowing you to build your own link.';
-$lang['help'] = <<<EOS
-<h3>What does this do?</h3>
+$lang['help_module'] = <<<EOS
+<h3>What does it do?</h3>
 <p>This module allows website visitors to either send a pre-determined (and encrypted) text
  message to any text capable phone, or to allow sending a user specified text message to a pre-determined
  (and hidden) mobile phone number.  It is useful for such things as sending addresses from a directory to a mobile phone number...
@@ -250,6 +251,7 @@ $lang['password'] = 'Password';
 $lang['perm_admin'] = 'Administer SMS Gateways';
 $lang['perm_modify'] = 'Modify SMS Gateway Settings';
 $lang['perm_templates'] = 'Modify SMS Gateway Templates';
+$lang['perm_use'] = 'Use SMS Gateways';
 $lang['postinstall'] = $lang['friendlyname'].' module successfully installed, now please ensure that it is configured properly for use, and apply related permissions';
 $lang['postuninstall'] = $lang['friendlyname']. ' module successfully removed';
 $lang['prompt_daily_limit'] = 'Number of messages that can be sent by one IP address per day';

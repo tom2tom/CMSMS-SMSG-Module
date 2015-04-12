@@ -16,8 +16,8 @@ if( isset($params['submit']) )
 
 	if( smsg_utils::is_valid_phone($number) )
 	{
-		// ready to test
-		$gateway = smsg_utils::get_gateway($this);
+		// ready to test (default gateway)
+		$gateway = smsg_utils::get_gateway(FALSE,$this);
 		if( $gateway )
 		{
 			$gateway->set_num($number);

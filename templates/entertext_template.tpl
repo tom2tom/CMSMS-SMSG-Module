@@ -3,6 +3,7 @@
 {if !empty($error)}<p class="errormsg">{$error}</p>{/if}
 {if !empty($message)}<p class="infomsg">{$message}</p>{/if}
 {$formstart}
+{if !empty($gatename)}<input type="hidden" name="{$actionid}gatename" value="{$gatename}" />{/if}
  <textarea name="{$actionid}smsg_smstext" id="smsg_entertext" rows="4" cols="40" onkeypress="smsg_entertext_onchange();">{$smstext}</textarea>
  <br /><br />
  <input type="submit" id="smsg_entertext_submit" name="{$actionid}smsg_submit" value="{$mod->Lang('submit')}" />

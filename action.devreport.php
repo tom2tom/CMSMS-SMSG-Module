@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-$gateway = smsg_utils::get_gateway($this);
+$gateway = smsg_utils::get_gateway(FALSE,$this); //only for the default gateway!?
 // downstream must parse $_REQUEST directly
 $msg = $gateway->process_delivery_report();
 if( $msg && $this->GetPreference('logdeliveries') )

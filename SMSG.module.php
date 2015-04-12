@@ -80,7 +80,7 @@ class SMSG extends CGExtensions
 
 	public function GetHelp()
 	{
-		return $this->Lang('help');
+		return $this->Lang('help_module');
 	}
 
 	public function GetAuthor()
@@ -220,6 +220,7 @@ class SMSG extends CGExtensions
 		$this->SetParameterType('destpage',CLEAN_STRING);
 		$this->SetParameterType('enternumbertemplate',CLEAN_STRING);
 		$this->SetParameterType('entertexttemplate',CLEAN_STRING);
+		$this->SetParameterType('gatename',CLEAN_STRING);
 		$this->SetParameterType('inline',CLEAN_INT);
 		$this->SetParameterType('linktext',CLEAN_STRING);
 		$this->SetParameterType('smskey',CLEAN_STRING); //hash of cached data, for internal use only
@@ -238,6 +239,7 @@ class SMSG extends CGExtensions
 		$this->CreateParameter('destpage','0',$this->Lang('help_destpage'));
 		$this->CreateParameter('enternumbertemplate','',$this->Lang('help_enternumbertemplate'));
 		$this->CreateParameter('entertexttemplate','',$this->Lang('help_enternumbertemplate'));
+		$this->CreateParameter('gatename','',$this->Lang('help_gatename'));
 		$this->CreateParameter('inline',0,$this->Lang('help_inline'));
 		$this->CreateParameter('linktext',$this->Lang('send_to_mobile'),$this->Lang('help_linktext'));
 		$this->CreateParameter('smsnum',0,$this->Lang('help_smsnum'));

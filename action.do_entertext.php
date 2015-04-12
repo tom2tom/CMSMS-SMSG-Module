@@ -25,7 +25,8 @@ if( !$error && isset($params['smsg_submit']) )
 	if( smsg_utils::text_is_valid($smstext) )
 	{
 		// now we're ready to send
-		$gateway = smsg_utils::get_gateway($this);
+		$title = ( empty($params['gatename']) ) ? FALSE : $params['gatename'];
+		$gateway = smsg_utils::get_gateway($title,$this);
 		if( $gateway )
 		{
 			$gateway->set_msg($smstext);
@@ -50,6 +51,8 @@ if( !$error && isset($params['smsg_submit']) )
 // now display the form
 $smarty->assign('message',$message);
 $smarty->assign('error',$error);
+if( !empty($params['gatename']) )
+	$smarty->assign('gatename',$params['gatename']);
 $smarty->assign('maxsmschars',160);
 $smarty->assign('smstext',$smstext);
 $smarty->assign('formstart',$this->CGCreateFormStart($id,'do_entertext',

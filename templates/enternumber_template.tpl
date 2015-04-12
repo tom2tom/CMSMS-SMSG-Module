@@ -3,6 +3,7 @@
 {if !empty($error)}<p class="errormsg">{$error}</p>{/if}
 {if !empty($message)}<p class="infomsg">{$message}</p>{/if}
 {$formstart}
+{if !empty($gatename)}<input type="hidden" name="{$actionid}gatename" value="{$gatename}" />{/if}
  <div class="row">
   <p class="leftcol">{$mod->Lang('enter_mobile_number')}:</p>
   <p class="rightcol">

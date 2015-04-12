@@ -32,23 +32,27 @@ class smsg_utils
 		return $objs;
 	}
 
-	public static function get_gateway(&$module = NULL)
+	public static function get_gateway($title = FALSE, &$module = NULL)
 	{
 		$db = cmsms()->GetDb();
-		$alias = $db->GetOne('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE active>0 AND enabled>0');
-		if( !$alias ) return FALSE;
-
-		$classname = $alias.'_sms_gateway';
-		if( !class_exists($classname) )
+		$pref = cms_db_prefix();
+		$alias = ( $title ) ?
+			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE title=? AND enabled>0',array($title)):
+			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE active>0 AND enabled>0');
+		if( $alias )
 		{
-			$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
-			require_once($fn);
+			$classname = $alias.'_sms_gateway';
+			if( !class_exists($classname) )
+			{
+				$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
+				require_once($fn);
+			}
+			if( $module === NULL )
+				$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
+			$obj = new $classname($module);
+			if( $obj )
+				return $obj;
 		}
-		if( $module === NULL )
-			$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
-		$obj = new $classname($module);
-
-		if( $obj ) return $obj;
 		return FALSE;
 	}
 

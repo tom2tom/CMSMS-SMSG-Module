@@ -30,7 +30,8 @@ if( isset($params['smsg_submit']) )
 		if( smsg_utils::is_valid_phone($mobile) )
 		{
 			// now we're ready to send
-			$gateway = smsg_utils::get_gateway($this);
+			$title = ( empty($params['gatename']) ) ? FALSE : $params['gatename'];
+			$gateway = smsg_utils::get_gateway($title,$this);
 			if( $gateway )
 			{
 				$gateway->set_msg($smstext);
@@ -56,6 +57,8 @@ if( isset($params['smsg_submit']) )
 // now display the form
 $smarty->assign('message',$message);
 $smarty->assign('error',$error);
+if( !empty($params['gatename']) )
+	$smarty->assign('gatename',$params['gatename']);
 $smarty->assign('formstart',$this->CGCreateFormStart($id,'do_enternumber',
 	$returnid,$params));
 $smarty->assign('formend',$this->CreateFormEnd());
