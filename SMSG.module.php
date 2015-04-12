@@ -36,10 +36,11 @@ require_once($cgextensions);
 class SMSG extends CGExtensions
 {
 	const MODNAME = 'SMSG';
-	const PREF_ENTERNUMBER_TPLS = 'enternumber_templates';
+	//these are all like prefix.base
 	const PREF_ENTERNUMBER_TPLDFLT = 'enternumber_dflttpl';
-	const PREF_ENTERTEXT_TPLS = 'entertext_templates';
+	const PREF_ENTERNUMBER_CONTENTDFLT = 'enternumber_defaultcontent';
 	const PREF_ENTERTEXT_TPLDFLT = 'entertext_dflttpl';
+	const PREF_ENTERTEXT_CONTENTDFLT = 'entertext_defaultcontent';
 
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
@@ -248,10 +249,10 @@ class SMSG extends CGExtensions
 	{
 		switch($eventname)
 		{
-			case 'SMSDeliveryReported':
-			 return $this->Lang('event_desc_delivery');
-			default:
-			 return '';
+		 case 'SMSDeliveryReported':
+			return $this->Lang('event_desc_delivery');
+		 default:
+			return '';
 		}
 	}
 
@@ -259,13 +260,13 @@ class SMSG extends CGExtensions
 	{
 		switch($eventname)
 		{
-			case 'SMSDeliveryReported':
-			 return $this->Lang('event_help_delivery');
-			default:
-			 return '';
+		 case 'SMSDeliveryReported':
+			return $this->Lang('event_help_delivery');
+		 default:
+			return '';
 		}
 	}
 
-} // end of class
+}
 
 ?>

@@ -37,13 +37,17 @@ $lang['confirm_uninstall']='You\'re sure you want to uninstall the SMS Utility m
 $lang['custom'] = 'Custom';
 
 #D
-$lang['default_templates'] = 'Default Templates';
+$lang['default_template_title'] = 'Prototype for new templates';
+$lang['default_tip'] = 'default';
+$lang['defaultset_tip'] = 'make default';
 $lang['delete'] = 'Delete';
 $lang['delete_tip'] = 'delete selected parameter(s)';
+$lang['deleteone_tip'] = 'delete';
 $lang['dflt_enternumber_template'] = 'Default &quot;Enter Your Number&quot; template';
 $lang['dflt_entertext_template'] = 'Default &quot;Enter Your Message Text&quot; template';
 
 #E
+$lang['edit_tip'] = 'edit';
 $lang['enabled'] = 'Enabled';
 $lang['encrypt'] = 'Encrypt';
 $lang['enter_mobile_number'] = 'Enter Mobile Phone Number';
@@ -208,8 +212,8 @@ $lang['helptitle'] = 'Help';
 
 #I
 $lang['id'] = 'Id';
-$lang['info_enternumber_templates'] = 'This template allows website visitors to enter a mobile phone number to receive a predefined text message';
-$lang['info_entertext_templates'] = 'This template allows website visitors to enter a message that will be sent to a predefined mobile phone number';
+$lang['info_enternumber_templates'] = 'This template allows website visitors to enter a mobile phone number to receive a predefined text message.';
+$lang['info_entertext_templates'] = 'This template allows website visitors to enter a message that will be sent to a predefined mobile phone number.';
 $lang['info_smstest'] = <<<EOS
 To test whether the settings for the selected SMS gateway are correct, you can send a message to the specified mobile phone number.
 Please be aware that it may take several minutes before the phone receives the message.

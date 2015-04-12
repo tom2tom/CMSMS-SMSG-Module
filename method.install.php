@@ -68,25 +68,26 @@ $sample = $this->Lang('sample');
 $fn = cms_join_path(dirname(__FILE__),'templates','enternumber_template.tpl');
 if(is_file($fn))
 {
-	$this->SetTemplate('enternumber_'.$sample,@file_get_contents($fn));
+	$text = ''.@file_get_contents($fn);
+	$this->SetTemplate('enternumber_'.$sample,$text);
+	$this->SetTemplate(SMSG::PREF_ENTERNUMBER_CONTENTDFLT,$text);
 	$name = $sample;
 }
 else
 	$name = '';
 $this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$name);
-$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLS,$name);
-
 //enter-text template
 $fn = cms_join_path(dirname(__FILE__),'templates','entertext_template.tpl');
 if(is_file($fn))
 {
-	$this->SetTemplate('entertext_'.$sample,@file_get_contents($fn));
+	$text = ''.@file_get_contents($fn);
+	$this->SetTemplate('entertext_'.$sample,$text);
+	$this->SetTemplate(SMSG::PREF_ENTERTEXT_CONTENTDFLT,$text);
 	$name = $sample;
 }
 else
 	$name = '';
 $this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$name);
-$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLS,$name);
 
 $this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));
 $this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modify'));

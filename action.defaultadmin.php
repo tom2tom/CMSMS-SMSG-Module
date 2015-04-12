@@ -8,42 +8,97 @@
 
 /**
  @module: the module that is displaying the template
+ @cge: @module 's parent (CGExtensions) module 
+ @smarty: the current smarty object
+ @padm: boolean, whether the current user has admin authority
  @id: instance id of @module
- @returnid: returnid (usually empty)
- @activetab: identifier of tab to be re-focussed after form is submitted
- @prefname: identifier of the template
- @filename: file name (relative to @module 's templates-directory) of
-   the system-default version of the template
- @title: title for the constructed form, usually indicates which template
-   is being edited
- @info: info string for the form
- 
- Returns: XHTML string
+ @returnid: page id to use on subsequent forms and links
+ @activetab: tab to return to
+ @prefix: template full-name prefix ('enternumber_' or 'entertext_')
+ @prefdefname: name of preference that contains the base-name of the current
+  default template for @prefix
  */
-function SetupDefaultTemplate(&$module,$id,$returnid,$activetab,
-	$prefname,$filename,$title,$info)
+function SetupTemplateList(&$module,&$cge,&$smarty,$padm,
+	$id,$returnid,$activetab,
+	$prefix,$prefdefname
+	)
 {
-	$smarty = cmsms()->GetSmarty();
-	$smarty->assign('form_title',$title);
-	$smarty->assign('info_title',$info);
-	$smarty->assign('prefname',$prefname);
+	$theme = cmsms()->variables['admintheme'];
+	$trueicon = $theme->DisplayImage('icons/system/true.gif',$module->Lang('default_tip'),'','','systemicon');
+	$falseicon = $theme->DisplayImage('icons/system/false.gif',$module->Lang('defaultset_tip'),'','','systemicon');
+	$editicon = $theme->DisplayImage('icons/system/edit.gif',$module->Lang('edit_tip'),'','','systemicon');
+	$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$module->Lang('deleteone_tip'),'','','systemicon');
 
-	$smarty->assign('startform',
-		$module->CreateFormStart($id,'settemplate',$returnid,'post','',FALSE,'',
-		   array('prefname'=>$prefname,
-				 'filename'=>$filename,
-				 'activetab'=>$activetab)));
-	$smarty->assign('endform',$module->CreateFormEnd());
+	$defaultname = $module->GetPreference($prefdefname);
+	$args = array('prefix'=>$prefix,'activetab'=>$activetab);
+	$rowarray = array();
 
-	$cge = cmsms()->GetModuleInstance('CGExtensions');
-	$smarty->assign('prompt_template',
-	 /*$module->ParentMethod('Lang',TRUE,'template')/*/$cge->Lang('template'));
-	$the_template = $module->GetTemplate($prefname);
-	$smarty->assign('input_template',$module->CreateTextArea(FALSE,$id,$the_template,'input_template'));
+	$mytemplates = $module->ListTemplates(SMSG::MODNAME);
+	array_walk($mytemplates,
+		function(&$n,$k,$p){$l=strlen($p);
+$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALSE;
+},$prefix);
+	$mytemplates = array_filter($mytemplates);
+	sort($mytemplates,SORT_LOCALE_STRING);
 
-	$smarty->assign('submit',$module->CreateInputSubmit($id,'submit',$module->Lang('submit')));
-	$smarty->assign('reset',$module->CreateInputSubmit($id,'reset',$module->Lang('reset'),
-		'title="'.$module->Lang('reset_tip').'"'));
+	foreach( $mytemplates as $one )
+	{
+		$default = ($one == $defaultname);
+		$row = new StdClass();
+		$args['template'] = $one;
+		$args['mode'] = 'edit';
+		$row->name = $module->CreateLink($id,'settemplate',$returnid,$one,$args);
+		$row->editlink = $module->CreateLink($id,'settemplate',$returnid,$editicon,$args);
+
+		$args['mode'] = 'default';
+		$row->default = ( $default ) ?
+			$trueicon:
+			$module->CreateLink($id,'settemplate',$returnid,$falseicon,$args);
+
+		$args['mode'] = 'delete';
+		$row->deletelink = ( $default ) ?
+			'':
+			$module->CreateImageLink($id,'settemplate',$returnid,
+				$module->Lang('deleteone_tip'),
+				'icons/system/delete.gif',
+				$args,
+				'',
+				$cge->Lang('areyousure')
+				);
+		$rowarray[] = $row;
+	}
+	if( $padm )
+	{
+		$row = new StdClass();
+		$args['template'] = 'defaultcontent';
+		$args['mode'] = 'edit';
+		$row->name = $module->CreateLink($id,'settemplate',$returnid,
+			'<em>'.$module->Lang('default_template_title').'</em>',$args);
+		$row->editlink = $module->CreateLink($id,'settemplate',$returnid,$editicon,$args);
+
+		$row->default = '';
+
+		$reverticon = '<img src="'.$module->GetModuleURLPath().'/images/revert.gif" alt="'.
+		 $module->Lang('reset').'" title="'.$module->Lang('reset_tip').
+		 '" class="systemicon" onclick="return confirm(\''.$cge->Lang('areyousure').'\');" />';
+		$args['mode'] = 'revert';
+		$row->deletelink = $module->CreateLink($id,'settemplate',$returnid,$reverticon,$args);
+		$rowarray[] = $row;
+	}
+
+	$smarty->assign($prefix.'items',$rowarray);
+	$smarty->assign('parent_module_name',$module->GetFriendlyName());
+	$smarty->assign('nameprompt',$cge->Lang('prompt_name'));
+	$smarty->assign('defaultprompt',$cge->Lang('prompt_default'));
+	if( $padm )
+	{
+		$args['mode'] = 'add';
+		$add = $module->CreateImageLink($id,'settemplate',$returnid,
+		 $cge->Lang('prompt_newtemplate'),
+		 'icons/system/newobject.gif',
+		 $args,'','',FALSE);
+		$smarty->assign('add_'.$prefix.'template',$add);
+	}
 }
 
 smsg_utils::refresh_gateways($this);
@@ -76,7 +131,6 @@ if( $ptpl )
  $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
 if( $padm )
 	$headers .=
- $this->SetTabHeader('dflt_templates',$this->Lang('default_templates')).
  $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
 $headers .=
  $this->EndTabHeaders().
@@ -130,48 +184,20 @@ if( $pmod )
 }
 if( $ptpl )
 {
-	$smarty->assign('tabstart_enternumber',$this->StartTab('enternumber',$params));
-/*	smsg_utils::SetupTemplateList($this,$id,$returnid,
-		'enternumber_', //'prefix' of template preference name
-//		SMSG::PREF_NEWENTERNUMBER_TPL,
-		'enternumber', //active tab
-		SMSG::PREF_ENTERNUMBER_TPLS, //'base' names of all templates (suffix)
-		SMSG::PREF_ENTERNUMBER_TPLDFLT, //'base' name of default template
-		$this->Lang('title_enternumber_templates'),
-		$this->Lang('info_enternumber_templates'));
-	$smarty->assign('enternumber',$this->ProcessTemplate('listtemplates.tpl'));
-*/
-	$smarty->assign('enternumber','');
-
-	$smarty->assign('tabstart_entertext',$this->StartTab('entertext',$params));
-/*	smsg_utils::SetupTemplateList($this,$id,$returnid,
-		'entertext_',
-//		SMSG::PREF_NEWENTERTEXT_TPL,
-		'entertext',
-		SMSG::PREF_ENTERTEXT_TPLS,
-		SMSG::PREF_ENTERTEXT_TPLDFLT,
-		$this->Lang('title_entertext_templates'),
-		$this->Lang('info_entertext_templates'));
-	$smarty->assign('entertext',$this->ProcessTemplate('listtemplates.tpl'));
-*/
-	$smarty->assign('entertext','');
+	$cge = $this->GetModuleInstance('CGExtensions');
+	$tid = 'enternumber';
+	$smarty->assign('tabstart_enternumber',$this->StartTab($tid,$params));
+	SetupTemplateList($this,$cge,$smarty,$padm,
+		$id,$returnid,$tid, //tab to come back to
+		'enternumber_', //'prefix' of templates' full-name
+		SMSG::PREF_ENTERNUMBER_TPLDFLT); //preference holding name of default template
+	$tid = 'entertext';
+	$smarty->assign('tabstart_entertext',$this->StartTab($tid,$params));
+	SetupTemplateList($this,$cge,$smarty,$padm,
+		$id,$returnid,$tid,'entertext_',SMSG::PREF_ENTERTEXT_TPLDFLT);
 }
 if( $padm )
 {
-	$smarty->assign('tabstart_defaults',$this->StartTab('dflt_templates',$params));
-	SetupDefaultTemplate($this,$id,$returnid,'dflt_templates',
-		'enternumber_'.$this->GetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT),
-		'enternumber_template.tpl',
-		$this->Lang('dflt_enternumber_template'),
-		$this->Lang('info_sysdflt_enternumber_template'));
-	$smarty->assign('defaultnumber',$this->ProcessTemplate('editdefaulttemplate.tpl'));
-	SetupDefaultTemplate($this,$id,$returnid,'dflt_templates',
-		'entertext_'.$this->GetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT),
-		'entertext_template.tpl',
-		$this->Lang('dflt_entertext_template'),
-		$this->Lang('info_sysdflt_entertext_template'));
-	$smarty->assign('defaulttext',$this->ProcessTemplate('editdefaulttemplate.tpl'));
-
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
 	$smarty->assign('formstart_security',$this->CGCreateFormStart($id,'savesecurity'));
 	$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));

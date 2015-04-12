@@ -8,8 +8,8 @@
   <th>{$mod->Lang('id')}</th>
   <th>{$mod->Lang('name')}</th>
   <th>{$mod->Lang('number')}</th>
-  <th class="pageicon"></th>
-  <th class="pageicon"></th>
+  <th class="pageicon">&nbsp;</th>
+  <th class="pageicon">&nbsp;</th>
  </tr></thead>
  <tbody>
 {foreach from=$mobiles item=one}
@@ -74,15 +74,54 @@
 
 {if $ptpl}
 {$tabstart_enternumber}
-{$enternumber}
+<div class="pageoverflow">
+<table class="pagetable">
+ <thead><tr>
+  <th>{$nameprompt}</th>
+  <th>{$defaultprompt}</th>
+  <th class="pageicon">&nbsp;</th>
+  <th class="pageicon">&nbsp;</th>
+ </tr></thead>
+ <tbody>
+{foreach from=$enternumber_items item=one}
+{cycle values="row1,row2" assign='rowclass'}
+  <tr class="{$rowclass}" onmouseover="this.className='{$rowclass}hover';" onmouseout="this.className='{$rowclass}';">
+   <td>{$one->name}</td>
+   <td>{$one->default}</td>
+   <td>{$one->editlink}</td>
+   <td>{$one->deletelink}</td>
+  </tr>
+{/foreach}
+ </tbody>
+</table>
+{if $padm}<br />
+<p class="pageoptions">{$add_enternumber_template}</p>{/if}{*$padm*}
+</div>
 {$endtab}
 {$tabstart_entertext}
-{$entertext}
-{$endtab}
-{$tabstart_defaults}
-{$defaultnumber}
-<br /><hr />
-{$defaulttext}
+<div class="pageoverflow">
+<table class="pagetable">
+ <thead><tr>
+  <th>{$nameprompt}</th>
+  <th>{$defaultprompt}</th>
+  <th class="pageicon">&nbsp;</th>
+  <th class="pageicon">&nbsp;</th>
+ </tr></thead>
+ <tbody>
+{foreach from=$entertext_items item=one}
+{cycle values="row1,row2" assign='rowclass'}
+  <tr class="{$rowclass}" onmouseover="this.className='{$rowclass}hover';" onmouseout="this.className='{$rowclass}';">
+   <td>{$one->name}</td>
+   <td>{$one->default}</td>
+   <td>{$one->editlink}</td>
+   <td>{$one->deletelink}</td>
+  </tr>
+{/foreach}
+ </tbody>
+</table>
+{if $padm}<br />
+<p class="pageoptions">{$add_entertext_template}</p>{/if}{*$padm*}
+</div>
 {$endtab}
 {/if}{*$ptpl*}
 
@@ -123,20 +162,3 @@
 {$endtab}
 {/if}{*$padm*}
 {$endtabcontent}
-
-{if $padm}
-<script type="text/javascript">
-//<![CDATA[{literal}
- $(document).ready(function() {
-  $('.dflt_template').hide().first().show();
-  $('h4.dflt_template_hdr').click(function() {
-  $('.dflt_template').hide();
-  $(this).next('.dflt_template').show();
-  $('html,body').animate({
-   scrollTop: $(this).offset().top 
-  });
- });
-});
-//]]>{/literal}
-</script>
-{/if}
