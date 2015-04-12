@@ -92,6 +92,7 @@ $this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$name);
 $this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));
 $this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modify'));
 $this->CreatePermission('ModifySMSGateTemplates',$this->Lang('perm_templates'));
+$this->CreatePermission('UseSMSGateways',$this->Lang('perm_use'));
 
 $this->CreateEvent('SMSDeliveryReported');
 

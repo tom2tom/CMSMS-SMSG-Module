@@ -142,7 +142,8 @@ class SMSG extends CGExtensions
 		return
 		 $this->CheckPermission('AdministerSMSGateways') ||
 		 $this->CheckPermission('ModifySMSGateways') ||
-		 $this->CheckPermission('ModifySMSGateTemplates');
+		 $this->CheckPermission('ModifySMSGateTemplates') ||
+		 $this->CheckPermission('UseSMSGateways');
 	}
 
 	function AdminStyle()
