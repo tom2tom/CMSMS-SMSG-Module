@@ -317,7 +317,7 @@ $lang['value'] = 'Value';
 
 
 #Y
-
+$lang['yes'] = 'Yes';
 
 #Z
 

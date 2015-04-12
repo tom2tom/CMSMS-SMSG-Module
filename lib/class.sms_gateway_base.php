@@ -230,12 +230,13 @@ abstract class sms_gateway_base
 
 	/**
 	get_setup_form:
-	Returns string,xhtml for echo into admin display
+	Returns string, xhtml for echo into admin display
 	*/
 	public function get_setup_form()
 	{
 		$module = $this->_module;
 		$padm = $module->CheckPermission('AdministerSMSGateways');
+		$pmod = $padm || $module->CheckPermission('ModifySMSGateways');
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$query = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
@@ -247,6 +248,13 @@ abstract class sms_gateway_base
 			return '';
 
 		$smarty = cmsms()->GetSmarty();
+		if(!($padm || $pmod))
+		{
+			$smarty->assign('gatetitle',$gdata['title']);
+			$smarty->assign('default',($gdata['active'])?$module->Lang('yes'):'');
+			return $module->ProcessTemplate('gatedata_use.tpl');
+		}
+		
 		$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
 		$parms = array();
 		$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
@@ -305,7 +313,6 @@ abstract class sms_gateway_base
 		}
 		// anything else to set up for the template
 		$this->custom_setup($smarty,$padm); //e.g. each $ob->size
-
 		$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata.tpl';
 		return $module->ProcessTemplate($tpl);
 	}
