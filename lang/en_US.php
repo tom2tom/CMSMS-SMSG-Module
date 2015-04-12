@@ -145,8 +145,8 @@ Choose values for module settings such as the SMS sending-limits (to reduce spam
 <p>A PHP-class must be created for each gateway. Refer to the README document in the module folder .../lib/gateways.</p>
 <p>If you ask <strong>really nicely</strong>, and you can offer some sort of service in return, the author might perhaps be persuaded to add support for some other gateway.</p>
 <h3>API</h3>
-<p>This module contains a rich API for sending SMS messages from other modules or from UDTs.
-The API for each gateway is set out in file .../lib/class.sms_gateway_base.php. It comprises</p>
+<p>This module contains a simple API for sending SMS messages from other modules or from UDTs.
+The API is set out in file .../lib/class.sms_gateway_base.php. In summary, it comprises</p>
 <ul>
 <li>get_alias()</li>
 <li>get_description()</li>
@@ -183,9 +183,9 @@ This is accomplished in a variety of ways:</p>
 </ol>
 <h3>Requirements:</h3>
 <ul>
-<li>CMS Made Simple 1.8 or greater</li>
-<li>PHP Version 5.2+ (5.2.11 or better is recommended)</li>
-<li>A subscription or access to at least one suported gateway</li>
+<li>CMS Made Simple 1.9+</li>
+<li>PHP 5.2+ (5.2.11+ is recommended)</li>
+<li>Authority to use at least one suported gateway</li>
 <li>The website host must allow outgoing HTTP connections</li>
 </ul>
 <h3>Support</h3>
