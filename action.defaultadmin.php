@@ -137,11 +137,11 @@ $smarty->assign('pmod',$pmod);
 $smarty->assign('ptpl',$ptpl);
 $smarty->assign('puse',$puse);
 
-$headers = $this->StartTabHeaders().
- $this->SetTabHeader('gates',$this->Lang('gateways')).
- $this->SetTabHeader('test',$this->Lang('test'));
+$headers = $this->StartTabHeaders();
 if( $pmod || $puse)
 	$headers .=
+ $this->SetTabHeader('gates',$this->Lang('gateways')).
+ $this->SetTabHeader('test',$this->Lang('test'));
  $this->SetTabHeader('mobiles',$this->Lang('phone_numbers'));
 if( $ptpl || $puse )
 	$headers .=

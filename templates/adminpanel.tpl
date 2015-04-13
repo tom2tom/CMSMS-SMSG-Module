@@ -1,6 +1,7 @@
 {if !empty($message)}<p>{$message}</p>{/if}
 
 {$starttabcontent}
+{if ($pmod || $puse)}
 {$tabstart_gates}
 {if $pmod}
 {$formstart_gates}
@@ -60,7 +61,6 @@
 {$formend}
 {$endtab}
 
-{if ($pmod || $puse)}
 {$tabstart_mobiles}
 {if !empty($numbers)}<table class="pagetable" style="border:0;">
  <thead><tr>
