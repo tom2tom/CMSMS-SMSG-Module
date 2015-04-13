@@ -24,6 +24,7 @@ $lang['token'] = 'Token';
 $lang['account'] = 'Account';
 $lang['add_mobile'] = 'Add number';
 $lang['add_parameter'] = 'add parameter';
+$lang['add_template'] = 'Add template';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
 $lang['apiname'] = 'API name';
 $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
