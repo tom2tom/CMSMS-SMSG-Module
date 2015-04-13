@@ -236,7 +236,6 @@ abstract class sms_gateway_base
 	{
 		$module = $this->_module;
 		$padm = $module->CheckPermission('AdministerSMSGateways');
-		$pmod = $padm || $module->CheckPermission('ModifySMSGateways');
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$query = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
@@ -248,6 +247,7 @@ abstract class sms_gateway_base
 			return '';
 
 		$smarty = cmsms()->GetSmarty();
+		$pmod = $padm || $module->CheckPermission('ModifySMSGateways');
 		if(!($padm || $pmod))
 		{
 			$smarty->assign('gatetitle',$gdata['title']);
@@ -313,7 +313,7 @@ abstract class sms_gateway_base
 		}
 		// anything else to set up for the template
 		$this->custom_setup($smarty,$padm); //e.g. each $ob->size
-		$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata.tpl';
+		$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata_mod.tpl';
 		return $module->ProcessTemplate($tpl);
 	}
 

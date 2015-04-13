@@ -1,4 +1,2 @@
-<tr>
-<td>{$title}</td>
+<td>{$gatetitle}</td>
 <td>{$default}</td>
-</tr>

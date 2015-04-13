@@ -8,7 +8,7 @@
 </div>
 
 <div class="pageoverflow">
-  <p class="pagetext">{$mod->Lang('mobile_number')}</p> 
+  <p class="pagetext">{$mod->Lang('phone_number')}</p> 
   <p class="pageinput">
     <input type="text" name="{$actionid}mobile" value="{$mobile}" size="25" maxlength="25" />
   </p>

@@ -22,7 +22,7 @@ $lang['token'] = 'Token';
 
 #A
 $lang['account'] = 'Account';
-$lang['add_mobile'] = 'Add Mobile';
+$lang['add_mobile'] = 'Add number';
 $lang['add_parameter'] = 'add parameter';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
 $lang['apiname'] = 'API name';
@@ -37,6 +37,8 @@ $lang['confirm_uninstall']='You\'re sure you want to uninstall the SMS Utility m
 $lang['custom'] = 'Custom';
 
 #D
+$lang['default'] = 'Default';
+$lang['default_gateway'] = 'Default Gateway';
 $lang['default_template_title'] = 'Prototype for new templates';
 $lang['default_tip'] = 'default';
 $lang['defaultset_tip'] = 'make default';
@@ -217,7 +219,7 @@ $lang['id'] = 'Id';
 $lang['info_enternumber_templates'] = 'This template allows website visitors to enter a mobile phone number to receive a predefined text message.';
 $lang['info_entertext_templates'] = 'This template allows website visitors to enter a message that will be sent to a predefined mobile phone number.';
 $lang['info_smstest'] = <<<EOS
-To test whether the settings for the selected SMS gateway are correct, you can send a message to the specified mobile phone number.
+To test whether the settings for the default SMS gateway are correct, you can send a message to the specified mobile phone number.
 Please be aware that it may take several minutes before the phone receives the message.
 EOS;
 $lang['info_sysdflt_enternumber_template'] = 'This is the starting point for creating new \'enter number\' templates. Altering this template will have no immediate effect on anything displayed on the website.';
@@ -233,14 +235,13 @@ $lang['info_sysdflt_entertext_template'] = 'This is the starting point for creat
 $lang['login'] = 'Login';
 
 #M
-$lang['mobile_number'] = 'Mobile Number';
-$lang['mobile_numbers'] = 'Mobile Numbers';
 $lang['module_description'] = 'A module to allow sending of SMS messages from within a CMS Made Simple Website';
 $lang['msg_rec_deleted'] = 'Mobile Number Deleted';
 
 #N
 $lang['name'] = 'Name';
 $lang['none'] = 'None';
+$lang['nonumbers'] = 'No number is recorded';
 $lang['number'] = 'Number';
 
 #O
@@ -252,6 +253,8 @@ $lang['perm_admin'] = 'Administer SMS Gateways';
 $lang['perm_modify'] = 'Modify SMS Gateway Settings';
 $lang['perm_templates'] = 'Modify SMS Gateway Templates';
 $lang['perm_use'] = 'Use SMS Gateways';
+$lang['phone_number'] = 'Phone number';
+$lang['phone_numbers'] = 'Phones';
 $lang['postinstall'] = $lang['friendlyname'].' module successfully installed, now please ensure that it is configured properly for use, and apply related permissions';
 $lang['postuninstall'] = $lang['friendlyname']. ' module successfully removed';
 $lang['prompt_daily_limit'] = 'Number of messages that can be sent by one IP address per day';
@@ -274,11 +277,9 @@ $lang['reset_tip'] = 'revert to factory default';
 $lang['sample'] = 'Sample';
 $lang['security_tab_lbl'] = 'Security / Anti-Spam';
 $lang['select'] = 'Select';
-$lang['selected_gateway'] = 'Selected Gateway';
 $lang['send'] = 'Send';
 $lang['send_me_message'] = 'Send me an SMS';
 $lang['send_to_mobile'] = 'Send to mobile';
-$lang['settings'] = 'Settings';
 $lang['sms_message_sent'] = 'Your message has been sent... Actual delivery time may vary';
 $lang['sms_sent'] = 'SMS Message "%s" sent to %s from IP:%s SMSID=%s';
 $lang['sms_delivery_ok'] = 'SMS Message ID:%s delivered to %s IP:%s';
