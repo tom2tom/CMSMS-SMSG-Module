@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-$this->SetCurrentTab('settings');
+$this->SetCurrentTab('gates');
 
 $gateway = $params['sms_gateway']; //e.g. 'smsbroadcast' or -1
 if( !(isset($params['submit']) || isset($params[$gateway.'~delete'])) )
