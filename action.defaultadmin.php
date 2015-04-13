@@ -8,7 +8,6 @@
 
 /**
  @module: the module that is displaying the template
- @cge: @module 's parent (CGExtensions) module 
  @smarty: the current smarty object
  @modify: boolean, whether to setup for full editing
  @dflttpl: boolean, whether to setup for editing default template
@@ -19,7 +18,7 @@
  @prefdefname: name of preference that contains the base-name of the current
   default template for @prefix
  */
-function SetupTemplateList(&$module,&$cge,&$smarty,$modify,$dflttpl,
+function SetupTemplateList(&$module,&$smarty,$modify,$dflttpl,
 	$id,$returnid,$activetab,
 	$prefix,$prefdefname
 	)
@@ -31,6 +30,7 @@ function SetupTemplateList(&$module,&$cge,&$smarty,$modify,$dflttpl,
 		$falseicon = $theme->DisplayImage('icons/system/false.gif',$module->Lang('defaultset_tip'),'','','systemicon');
 		$editicon = $theme->DisplayImage('icons/system/edit.gif',$module->Lang('edit_tip'),'','','systemicon');
 		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$module->Lang('deleteone_tip'),'','','systemicon');
+		$prompt = $module->Lang('sure_ask');
 		$args = array('prefix'=>$prefix,'activetab'=>$activetab);
 	}
 	else
@@ -69,10 +69,7 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 				$module->CreateImageLink($id,'settemplate',$returnid,
 					$module->Lang('deleteone_tip'),
 					'icons/system/delete.gif',
-					$args,
-					'',
-					$cge->Lang('areyousure')
-					);
+					$args,'',$prompt);
 		}
 		else
 		{
@@ -96,7 +93,7 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 
 		$reverticon = '<img src="'.$module->GetModuleURLPath().'/images/revert.gif" alt="'.
 		 $module->Lang('reset').'" title="'.$module->Lang('reset_tip').
-		 '" class="systemicon" onclick="return confirm(\''.$cge->Lang('areyousure').'\');" />';
+		 '" class="systemicon" onclick="return confirm(\''.$prompt.'\');" />';
 		$args['mode'] = 'revert';
 		$row->deletelink = $module->CreateLink($id,'settemplate',$returnid,$reverticon,$args);
 		$rowarray[] = $row;
@@ -110,7 +107,7 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 	{
 		$args['mode'] = 'add';
 		$add = $module->CreateImageLink($id,'settemplate',$returnid,
-		 $cge->Lang('prompt_newtemplate'),
+		 $module->Lang('add_template'),
 		 'icons/system/newobject.gif',
 		 $args,'','',FALSE);
 	}
@@ -229,15 +226,14 @@ if( $ptpl || $puse )
 {
 	$tid = 'enternumber';
 	$smarty->assign('tabstart_enternumber',$this->StartTab($tid,$params));
-	$cge = $this->GetModuleInstance('CGExtensions');
-	SetupTemplateList($this,$cge,$smarty,$ptpl,$padm,
+	SetupTemplateList($this,$smarty,$ptpl,$padm,
 		$id,$returnid,$tid, //tab to come back to
 		'enternumber_', //'prefix' of templates' full-name
 		SMSG::PREF_ENTERNUMBER_TPLDFLT); //preference holding name of default template
 
 	$tid = 'entertext';
 	$smarty->assign('tabstart_entertext',$this->StartTab($tid,$params));
-	SetupTemplateList($this,$cge,$smarty,$ptpl,$padm,
+	SetupTemplateList($this,$smarty,$ptpl,$padm,
 		$id,$returnid,$tid,'entertext_',SMSG::PREF_ENTERTEXT_TPLDFLT);
 }
 if( $padm )
