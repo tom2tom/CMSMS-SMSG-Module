@@ -304,7 +304,7 @@ abstract class sms_gateway_base
 			 $module->Lang('help_dnd').'<br />'.$module->Lang('help_sure'));
 			$id = $smarty->tpl_vars['actionid']->value;
 			$text = $module->Lang('add_parameter');
-			$smarty->assign('additem',$module->CreateImageLink($id,'addsetting',
+			$smarty->assign('additem',$module->CreateImageLink($id,'addgate',
 			 '',$text,'icons/system/newobject.gif',array('gate_id'=>$gid),'systemicon','',FALSE));
 			if( $dcount > 0 )
 				$smarty->assign('btndelete',$module->CreateInputSubmit($id,$alias.'~delete',
