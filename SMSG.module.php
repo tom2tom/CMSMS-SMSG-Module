@@ -122,7 +122,7 @@ class SMSG extends CGExtensions
 		return TRUE;
 	}
 
-	function LazyLoadAdmin()
+	public function LazyLoadAdmin()
 	{
 		return FALSE;
 	}
@@ -146,11 +146,11 @@ class SMSG extends CGExtensions
 		 $this->CheckPermission('UseSMSGateways');
 	}
 
-	function AdminStyle()
+	public function AdminStyle()
 	{
 	}
 
-	function GetHeaderHTML()
+	public function GetHeaderHTML()
 	{
 		$fp = cms_join_path(dirname(__FILE__),'include','module.js');
 		$js = ''.@file_get_contents($fp);
@@ -207,14 +207,14 @@ class SMSG extends CGExtensions
 	}
 
 	//setup for pre-1.10
-	function SetParameters()
+	public function SetParameters()
 	{
 		$this->InitializeAdmin();
 		$this->InitializeFrontend();
 	}
 
 	//partial setup for pre-1.10, backend setup for 1.10+
-	function InitializeFrontend()
+	public function InitializeFrontend()
 	{
 		$this->RestrictUnknownParams();
 		$this->SetParameterType('action',CLEAN_STRING);
@@ -234,7 +234,7 @@ class SMSG extends CGExtensions
 	}
 
 	//partial setup for pre-1.10, backend setup for 1.10+
-	function InitializeAdmin()
+	public function InitializeAdmin()
 	{
 		$this->CreateParameter('action','enternumber',$this->Lang('help_action'));
 		$this->CreateParameter('destpage','0',$this->Lang('help_destpage'));
@@ -248,7 +248,7 @@ class SMSG extends CGExtensions
 		$this->CreateParameter('urlonly',0,$this->Lang('help_urlonly'));
 	}
 
-	function GetEventDescription($eventname)
+	public function GetEventDescription($eventname)
 	{
 		switch($eventname)
 		{
@@ -259,7 +259,7 @@ class SMSG extends CGExtensions
 		}
 	}
 
-	function GetEventHelp($eventname) 
+	public function GetEventHelp($eventname) 
 	{
 		switch($eventname)
 		{
