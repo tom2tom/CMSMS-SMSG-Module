@@ -121,7 +121,7 @@ $lang['help_module'] = <<<EOS
 about how the module is to work.
 Choose one of the available gateways and enter the corresponding interface parameters.
 Choose values for module settings such as the SMS sending-limits (to reduce spam).</p>
-<p>Then perform at least one test (there\'s a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
+<p>Then perform at least one test (there's a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
 <br />
 <p>There are two primary ways to use this module in the website front end:</p>
 <ol>
@@ -181,7 +181,7 @@ This is accomplished in a variety of ways:</p>
 <ol>
 <li>All text messages are checked for length limits and valid characters, before sending.</li>
 <li>All text messages are recorded in the database, including the IP address of the sender.</li>
-<li>Before any text message is sent, there\'s a check that the allowed maximum (daily, hourly) counts of messages from that IP address have not been exceeded.</li>
+<li>Before any text message is sent, there's a check that the allowed maximum (daily, hourly) counts of messages from that IP address have not been exceeded.</li>
 <li>When sending to a pre-defined phone, the destination number is hidden from the initiator, to prevent spamming.</li>
 <li>When sending a message, the message text is stored in the database and cannot be altered.</li>
 </ol>
