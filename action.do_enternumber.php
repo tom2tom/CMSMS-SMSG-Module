@@ -46,7 +46,7 @@ if( isset($params['smsg_submit']) )
 			else
 			{
 				$error = $this->Lang('error_nogatewayfound');
-				$this->Audit('',$this->Lang('error_nogatewayfound'),'enternumber');
+				$this->Audit(SMSG::AUDIT_ERR,SMSG::MODNAME,'enternumber:'.$error);
 			}
 		}
 		else

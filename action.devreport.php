@@ -10,7 +10,7 @@ $gateway = smsg_utils::get_gateway(FALSE,$this); //only for the default gateway!
 // downstream must parse $_REQUEST directly
 $msg = $gateway->process_delivery_report();
 if( $msg && $this->GetPreference('logdeliveries') )
-	$this->Audit('',$this->GetName(),$msg);
+	$this->Audit(SMSG::AUDIT_DELIV,SMSG::MODNAME,$msg);
 
 $this->SendEvent('SMSDeliveryReported',array(
 	'gateway'=>$gateway->get_name(),

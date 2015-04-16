@@ -164,7 +164,7 @@ abstract class sms_gateway_base
 		{
 			if( $this->_module->GetPreference('logsends') )
 				smsg_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
-			$this->_module->Audit('',$this->_module->GetName(),$this->_statusmsg);
+			$this->_module->Audit(SMSG::AUDIT_SEND,SMSG::MODNAME,$this->_statusmsg);
 		}
 		return $success;
 	}
