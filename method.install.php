@@ -62,6 +62,7 @@ $this->SetPreference('daylimit',20);
 $this->SetPreference('logsends',TRUE);
 $this->SetPreference('logdays',7);
 $this->SetPreference('logdeliveries',TRUE);
+$this->SetPreference('lastcleared',time());
 
 $sample = $this->Lang('sample');
 //enter-number template
