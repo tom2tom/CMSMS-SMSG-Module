@@ -298,6 +298,7 @@ $lang['submit'] = 'Submit';
 $lang['sure_ask'] = 'Are you sure ?';
 
 #T
+$lang['taskdescription_clearlog'] = 'Remove old log data';
 $lang['template_saved'] = 'Template saved';
 $lang['test'] = 'Test';
 $lang['test_message'] = 'Test message from %s';
