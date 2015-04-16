@@ -38,7 +38,7 @@ switch( $params['mode'] )
 		$params['info'] = '';
 	 	break;
 	}
-	$cge = $this->GetModuleInstance('CGExtensions');
+	$cge = cms_utils::get_module('CGExtensions');
 	$cge->DoAction('edittemplate',$id,$params,$returnid);
 	return;
  case 'delete':
