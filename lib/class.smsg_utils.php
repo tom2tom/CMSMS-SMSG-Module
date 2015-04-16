@@ -16,7 +16,7 @@ class smsg_utils
 			return FALSE;
 		$dir = cms_join_path(dirname(__FILE__),'gateways','');
 		if( $module === NULL )
-			$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
+			$module = cms_utils::get_module(SMSG::MODNAME);
 		$objs = array();
 		foreach( $aliases as $thisone )
 		{
@@ -48,7 +48,7 @@ class smsg_utils
 				require_once($fn);
 			}
 			if( $module === NULL )
-				$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
+				$module = cms_utils::get_module(SMSG::MODNAME);
 			$obj = new $classname($module);
 			if( $obj )
 				return $obj;
@@ -327,18 +327,23 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$db->Execute($query,array($mobile,$ip_address,$msg));
 	}
 
-	public static function clean_log(&$module = NULL)
+	public static function clean_log(&$module = NULL,$time = 0)
 	{
+		if( !$time ) $time = time();
 		if( $module === NULL )
-			$module = cmsms()->GetModuleInstance(SMSG::MODNAME);
+			$module = cms_utils::get_module(SMSG::MODNAME);
+		$days = $module->GetPreference('logdays');
+		if( !$days ) $days = 1;
+		$time -= $days*86400;
+		$db = cmsms()->GetDb();
+		$pref = cms_db_prefix();
 		if( $module->GetPreference('logsends') )
 		{
-			$days = $module->GetPreference('logdays');
-			if( !$days ) $days = 1;
-			$db = cmsms()->GetDb();
-			$limit = $db->DbTimeStamp(time()-$days*24*3600);
-			$db->Execute('DELETE FROM '.cms_db_prefix().'module_smsg_sent WHERE sdate<'.$limit);
+			$limit = $db->DbTimeStamp($time);
+			$db->Execute('DELETE FROM '.$pref.'module_smsg_sent WHERE sdate<'.$limit);
 		}
+		$db->Execute('DELETE FROM '.$pref.'adminlog WHERE timestamp<? AND (item_id='.SMSG::AUDIT_SEND.
+		' OR item_id = '.SMSG::AUDIT_DELIV.') AND item_name='.SMSG::MODNAME,array($time));
 	}
 
 	public static function ip_can_send(&$module,$ip_address)
