@@ -124,8 +124,6 @@ if( !$objs )
 	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
 	return;
 }
-//while we're here, do a cleanup
-smsg_utils::clean_log($this);
 
 $padm = $this->CheckPermission('AdministerSMSGateways');
 $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
