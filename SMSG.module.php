@@ -36,6 +36,9 @@ require_once($cgextensions);
 class SMSG extends CGExtensions
 {
 	const MODNAME = 'SMSG';
+	const AUDIT_SEND = 1;
+	const AUDIT_DELIV = 2;
+	const AUDIT_ERR = 3;
 	//these are all like prefix.base
 	const PREF_ENTERNUMBER_TPLDFLT = 'enternumber_dflttpl';
 	const PREF_ENTERNUMBER_CONTENTDFLT = 'enternumber_defaultcontent';
@@ -268,6 +271,11 @@ class SMSG extends CGExtensions
 		 default:
 			return '';
 		}
+	}
+	
+	public function get_tasks()
+	{
+		return new smsg_clearlog_task();
 	}
 
 }
