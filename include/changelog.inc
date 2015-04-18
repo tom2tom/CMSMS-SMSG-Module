@@ -4,7 +4,7 @@
        <li>Initial release with Interlinked and experimental Google Voice gateways.</li>
     </ul>
   </li>
-  <li>SMSG Version 1.0 - April 2015
+  <li>SMSG Version 0.9 - April 2015
     <ul>
        <li>Work-alike replacement for CGSMS</li>
        <li>Gateways: add Clickatell, Twilio, Smsbroadcast, remove defunct Interlinked</li>
