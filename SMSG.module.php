@@ -78,7 +78,7 @@ class SMSG extends CGExtensions
 
 	public function GetVersion()
 	{
-		return '1.0';
+		return '0.9';
 	}
 
 	public function GetHelp()
