@@ -191,7 +191,7 @@ class SMSG extends CGExtensions
 
 	public function MaximumCMSVersion()
 	{
-		return '1.11.99';
+		return '1.19.99';
 	}
 
 	public function InstallPostMessage()
