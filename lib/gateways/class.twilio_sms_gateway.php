@@ -33,7 +33,7 @@ class twilio_sms_gateway extends sms_gateway_base
 	
 	public function support_mms()
 	{
-		return FALSE; //TODO
+		return TRUE;
 	}
 
 	public function require_country_prefix()
@@ -206,13 +206,32 @@ class twilio_sms_gateway extends sms_gateway_base
 		}
 	}
 
+	/*
+	Must parse $_REQUEST directly
+	Gateway returns: 
+	Sample request:
+	http://www.yoururl.com?
+	*/
 	public function process_delivery_report()
 	{
-		//TODO must parse $_REQUEST directly
-		$smsto = '';
-		$smsid = '';
-		$status = parent::DELIVERY_UNKNOWN; //or whatever
+/*		switch ($REQUEST[''])
+		{
+		 case '':
+			$status = parent::DELIVERY_OK;
+			break;
+		 case '':
+		 case '':
+			$status = parent::DELIVERY_INVALID;
+			break;
+		 default:
+			$status = parent::DELIVERY_UNKNOWN;
+			break;
+		}
+		$smsid = $REQUEST[''];
+		$smsto = $REQUEST['to'];
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
+*/
+		return ''; //TODO
 	}
 
 	public function get_raw_status()
