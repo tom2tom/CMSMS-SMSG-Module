@@ -33,12 +33,12 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 
 	public function support_mms()
 	{
-		return FALSE; //TODO
+		return TRUE; //TODO send parameter maxsplit (up to 5)
 	}
 
 	public function require_country_prefix()
 	{
-		return FALSE;
+		return TRUE; //actually, preferred but not mandatory
 	}
 
 	public function require_plus_prefix()
@@ -178,12 +178,37 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		}
 	}
 
+	/*
+	Must parse $_REQUEST directly
+	Gateway returns: to, ref, smsref, status
+	 to: mobile number the message was sent to, in international format (614xxxxxxxx)
+	 ref: sender's reference number, if provided when message was sent
+	 smsref: SMS Broadcast reference number as returned by the API when the message was sent
+	 status: current status of the message. One of
+	  Delivered – The message was successfully delivered
+	  Expired – The message could not be delivered within the required time
+	  Failed – There was a problem with the message (e.g. incorrect mobile number, or mobile service disconnected)
+
+	Sample request:
+	http://www.yoururl.com?to=61400111222&ref=112233&smsref=1122334455&status=Delivered
+	*/
 	public function process_delivery_report()
 	{
-		//TODO must parse $_REQUEST directly
-		$smsto = '';
-		$smsid = '';
-		$status = parent::DELIVERY_UNKNOWN; //or whatever
+		switch ($REQUEST['status'])
+		{
+		 case 'Delivered':
+			$status = parent::DELIVERY_OK;
+			break;
+		 case 'Failed':
+		 case 'Expired':
+			$status = parent::DELIVERY_INVALID;
+			break;
+		 default:
+			$status = parent::DELIVERY_UNKNOWN;
+			break;
+		}
+		$smsid = $REQUEST['smsref'];
+		$smsto = $REQUEST['to'];
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 
