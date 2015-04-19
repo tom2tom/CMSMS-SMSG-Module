@@ -135,20 +135,7 @@ Choose values for module settings such as the SMS sending-limits (to reduce spam
  that is then sent to a predetermined mobile number (in the example, the one with id=5)
 </li>
 </ol>
-<h3>SMS Gateways</h3>
-<p>This module depends on selecting a supported SMS gateway and recording the corresponding authentication and other parameters. You will need to sign up to at least one of the supported gateways.  This will typically involve paying money to the service provider.</p>
-<p>SMS gateways will have their own requirements and limitations on the amount, size, source, and destination messages that can be sent. It is your responsibility to understand these limitations.</p>
-<p>Currently, these gateways are implemented:</p>
-<ul>
-<li>{$lang['advice_clickatell']}</li>
-<li>{$lang['advice_googlevoice']}</li>
-<li>{$lang['advice_smsbroadcast']}</li>
-<li>{$lang['advice_twilio']}</li>
-</ul>
-<h3>Extra gateways</h3>
-<p>A PHP-class must be created for each gateway. Refer to the README document in the module folder .../lib/gateways.</p>
-<p>If you ask <strong>really nicely</strong>, and you can offer some sort of service in return, the author might perhaps be persuaded to add support for some other gateway.</p>
-<h3>API</h3>
+<br />
 <p>This module contains a simple API for sending SMS messages from other modules or from UDTs.
 The API is set out in file .../lib/class.sms_gateway_base.php. In summary, it comprises</p>
 <ul>
@@ -169,12 +156,25 @@ The API is set out in file .../lib/class.sms_gateway_base.php. In summary, it co
 <li>support_mms()</li>
 </ul>
 <p>A brief example of how to use it is:
-<pre style="margin-left: 2em;"><code>
+<pre style="margin-left: 2em;">
 \$gateway = smsg_utils::get_gateway();
 \$gateway->set_msg('hello world');
 \$gateway->set_num('12225551212');
 \$gateway->send();
-</code></pre></p>
+</pre></p>
+<h3>SMS Gateways</h3>
+<p>This module depends on selecting a supported SMS gateway and recording the corresponding authentication and other parameters. You will need to sign up to at least one of the supported gateways.  This will typically involve paying money to the service provider.</p>
+<p>SMS gateways will have their own requirements and limitations on the amount, size, source, and destination messages that can be sent. It is your responsibility to understand these limitations.</p>
+<p>Currently, these gateways are implemented:</p>
+<ul>
+<li>{$lang['advice_clickatell']}</li>
+<li>{$lang['advice_googlevoice']}</li>
+<li>{$lang['advice_smsbroadcast']}</li>
+<li>{$lang['advice_twilio']}</li>
+</ul>
+<h3>Extra gateways</h3>
+<p>A PHP-class must be created for each gateway. Refer to the README document in the module folder .../lib/gateways.</p>
+<p>If you ask <strong>really nicely</strong>, and you can offer some sort of service in return, the author might perhaps be persuaded to add support for some other gateway.</p>
 <h3>Security</h3>
 <p>Attempts have been made to ensure a reasonable level of security at all times.
 This is accomplished in a variety of ways:</p>
