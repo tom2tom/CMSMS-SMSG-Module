@@ -284,17 +284,6 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		return $ip;
 	}
 
-	public static function get_reporting_url(&$module)
-	{
-		// get the default page id
-		$contentops = cmsms()->GetContentOperations();
-		$returnid = $contentops->GetDefaultContent();
-
-		$prettyurl = 'SMSG/devreport';
-		$url = $module->CreateURL('cntnt01','devreport',$returnid,array(),false,$prettyurl);
-		return $url;
-	}
-
 	public static function is_valid_phone($number)
 	{
 		if( $number )
