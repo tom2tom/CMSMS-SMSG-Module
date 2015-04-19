@@ -78,7 +78,7 @@ class SMSG extends CGExtensions
 
 	public function GetVersion()
 	{
-		return '0.9';
+		return '0.9.9';
 	}
 
 	public function GetHelp()
@@ -110,13 +110,13 @@ class SMSG extends CGExtensions
 	{
 		switch($capability)
 		{
-			case 'SMSgateway':
-			case 'SMSmessaging':
-			case 'SMSG':
-			case 'CGSMS':
-				return TRUE;
-			default:
-				return FALSE;
+		 case 'SMSgateway':
+		 case 'SMSmessaging':
+		 case 'SMSG':
+		 case 'CGSMS':
+			return TRUE;
+		 default:
+			return FALSE;
 		}
 	}
 
@@ -166,7 +166,7 @@ class SMSG extends CGExtensions
 			 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
 		}
 		return '';
-	}	
+	}
 
 	public function GetDependencies()
 	{
@@ -181,7 +181,8 @@ class SMSG extends CGExtensions
 
 	public function LazyLoadFrontend()
 	{
-		return TRUE;
+		//support delivery-report processing at any time
+		return FALSE;
 	}
 
 	public function MinimumCMSVersion()
@@ -235,9 +236,9 @@ class SMSG extends CGExtensions
 
 		$returnid = cmsms()->GetContentOperations()->GetDefaultPageID(); //any valid id will do ?
 		$this->RegisterRoute('/SMSG\/devreport$/',
-		  array('action'=>'devreport'
+		  array('action'=>'devreport',
 				'showtemplate'=>'false', //not FALSE, or any of its equivalents !
-		 		'returnid'=>$returnid));
+				'returnid'=>$returnid));
 	}
 
 	//partial setup for pre-1.10, backend setup for 1.10+
