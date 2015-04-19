@@ -233,7 +233,11 @@ class SMSG extends CGExtensions
 		$this->SetParameterType('urlonly',CLEAN_INT);
 		$this->SetParameterType(CLEAN_REGEXP.'/smsg_.*/',CLEAN_NONE);
 
-		$this->RegisterRoute('/SMSG\/devreport$/',array('action'=>'devreport'));
+		$returnid = cmsms()->GetContentOperations()->GetDefaultPageID(); //any valid id will do ?
+		$this->RegisterRoute('/SMSG\/devreport$/',
+		  array('action'=>'devreport'
+				'showtemplate'=>'false', //not FALSE, or any of its equivalents !
+		 		'returnid'=>$returnid));
 	}
 
 	//partial setup for pre-1.10, backend setup for 1.10+
