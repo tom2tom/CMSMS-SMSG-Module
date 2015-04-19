@@ -155,14 +155,14 @@ The API is set out in file .../lib/class.sms_gateway_base.php. In summary, it co
 <li>support_custom_sender()</li>
 <li>support_mms()</li>
 </ul>
-<p>A brief example of how to use it is:
-<pre style="margin-left: 2em;">
-\$gateway = smsg_utils::get_gateway();
-\$gateway->set_msg('hello world');
-\$gateway->set_num('12225551212');
-\$gateway->send();
-</pre></p>
-<h3>SMS Gateways</h3>
+<p>A brief example of how to use it is:<br /><br />
+<code>
+\$gateway = smsg_utils::get_gateway();<br />
+\$gateway->set_msg('hello world');<br />
+\$gateway->set_num('12225551212');<br />
+\$gateway->send();<br />
+</code></p>
+<h3>SMS gateways</h3>
 <p>This module depends on selecting a supported SMS gateway and recording the corresponding authentication and other parameters. You will need to sign up to at least one of the supported gateways.  This will typically involve paying money to the service provider.</p>
 <p>SMS gateways will have their own requirements and limitations on the amount, size, source, and destination messages that can be sent. It is your responsibility to understand these limitations.</p>
 <p>Currently, these gateways are implemented:</p>
@@ -200,7 +200,7 @@ This is accomplished in a variety of ways:</p>
 <li>you may have some success emailing the author directly.</li>
 </ul>
 <p>For the latest version of the module, or to report a bug, visit the module's <a href="http://dev.cmsmadesimple.org/projects/smsg">forge-page</a>.</p>
-<h3>Copyright and License</h3>
+<h3>Copyright and license</h3>
 <p>Portions copyright &copy; 2015 Tom Phane &lt;tpgww@onepost.net&gt;.<br />
 Portions copyright &copy; 2010 Robert Campbell &lt;calguy1000@cmsmadesimple.org&gt;.<br />
 All rights reserved.</p>
