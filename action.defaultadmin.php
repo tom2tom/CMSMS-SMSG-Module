@@ -160,7 +160,9 @@ if( $pmod || $puse )
 {
 	$smarty->assign('tabstart_gates',$this->StartTab('gates',$params));
 	$smarty->assign('formstart_gates',$this->CGCreateFormStart($id,'savegates'));
-	$smarty->assign('reporturl',smsg_utils::get_reporting_url($this));
+	//construct URL (pretty or not)
+	$returnid = cmsms()->GetContentOperations()->GetDefaultContent();
+	$smarty->assign('reporturl',$this->CreateLink($id,'devreport',$returnid,'',array(),'',TRUE,FALSE,'',FALSE,'SMSG/devreport'));
 
 	if( $pmod )
 	{
