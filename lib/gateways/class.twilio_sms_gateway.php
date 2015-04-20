@@ -113,12 +113,18 @@ class twilio_sms_gateway extends sms_gateway_base
 			return FALSE;
 		}
 
-		$from = 'TODO';
+/*		$from = ''; //TODO
 		if(!$from)
 		{
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
+*/
+		//NOTE these array keys must be capitalised
+		$args = array(/*'From' => $from,*/'To' => $to,'Body' => $body);
+
+		if(1) //want delivery reports TODO interface parameter
+			$args['StatusCallback'] = $this->_module->get_reporturl();
 
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($this->_module,$gid);
@@ -129,9 +135,7 @@ class twilio_sms_gateway extends sms_gateway_base
 
 		try
 		{
-			//send it NOTE these array keys must be capitalised
-			return $ob->account->messages->create(array(
-			 'From' => $from,'To' => $to,'Body' => $body));
+			return $ob->account->messages->create($args); //send it
 		}
 		catch (Services_Twilio_RestException $e)
 		{
@@ -208,36 +212,77 @@ class twilio_sms_gateway extends sms_gateway_base
 
 	/*
 	Must parse $_REQUEST directly
-	Gateway returns: 
+	Gateway returns:
+	
+	MessageSid	34 character unique identifier for the message.
+	SmsSid	    Same value as MessageSid. Deprecated.
+	AccountSid	34 character id of the account this message is associated with.
+	From	    Phone number that sent this message.
+	To	        Phone number of the recipient.
+	Body	    Text body of the message.
+	NumMedia	Number of sms messages used to deliver the body specified.
+	MessageStatus	The status of the message. Possible values are
+		queued	The message is queued to be sent out.
+		sending	The messaage is being dispatched to the nearest upstream carrier in the network.
+		sent	The message was successfully accepted by the nearest upstream carrier.
+		delivered	Twilio has received confirmation of message delivery from the upstream carrier, and, where available, the destination handset.
+		undelivered	Twilio has received a delivery receipt indicating that the message was not delivered.
+		failed	The message could not be sent.
+	ErrorCode	The error code (if any) associated with your message. If your message status is failed or undelivered,
+		the ErrorCode can give you more information about the failure. If the message was delivered successfully, no ErrorCode will be present.
+		Possible values are
+		30001	Queue overflow	You tried to send too many messages too quickly and your message queue overflowed.
+		30002	Account suspended	Your account was suspended between the time of message send and delivery.
+		30003	Unreachable destination handset	The destination handset you are trying to reach is switched off or otherwise unavailable.
+		30004	Message blocked	The destination number you are trying to reach is blocked from receiving this message (e.g. due to blacklisting).
+		30005	Unknown destination handset
+		30006	Landline or unreachable carrier	The destination number is unable to receive this message.
+		30007	Carrier violation	The message content was flagged as going against carrier guidelines.
+		30008	Unknown error	The error does not fit into any of the above categories.
+
 	Sample request:
 	http://www.yoururl.com?
 	*/
 	public function process_delivery_report()
 	{
-/*		switch ($REQUEST[''])
+		switch ($_REQUEST['MessageStatus'])
 		{
-		 case '':
+		 case 'queued':
+		 case 'sending':
+			$status = parent::DELIVERY_PENDING;
+			break;
+		 case 'sent':
+		 case 'delivered':
 			$status = parent::DELIVERY_OK;
 			break;
-		 case '':
-		 case '':
-			$status = parent::DELIVERY_INVALID;
-			break;
+		 case 'failed':
+		 case 'undelivered':
+			switch ($_REQUEST['ErrorCode'])
+			{
+			 case 30002:
+				$status = parent::DELIVERY_BILLING;
+				break 2;
+			 case 30008:
+				$status = parent::DELIVERY_UNKNOWN;
+				break 2;
+			 default:
+				$status = parent::DELIVERY_INVALID;
+				break 2;
+			}
 		 default:
 			$status = parent::DELIVERY_UNKNOWN;
 			break;
 		}
-		$smsid = $REQUEST[''];
-		$smsto = $REQUEST['to'];
+		$smsid = $_REQUEST['MessageSid'];
+		$smsto = $_REQUEST['To'];
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
-*/
-		return ''; //TODO
 	}
 
 	public function get_raw_status()
 	{
 		return $this->_rawstatus;
 	}
-} // end of class
+
+}
 
 ?>
