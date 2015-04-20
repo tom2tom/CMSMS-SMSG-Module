@@ -289,7 +289,7 @@ class SMSG extends CGExtensions
 		$returnid = cmsms()->GetContentOperations()->GetDefaultContent();
 		//CMSMS 1.10+ has ->create_url();
 		return $this->CreateLink('','devreport',$returnid,'',array(),'',
-			TRUE,FALSE,'',FALSE,'SMSG/devreport'));
+			TRUE,FALSE,'',FALSE,'SMSG/devreport');
 	}
 
 }
