@@ -283,6 +283,15 @@ class SMSG extends CGExtensions
 		return new smsg_clearlog_task();
 	}
 
+	//construct delivery-reports URL (pretty or not)
+	public function get_reporturl()
+	{
+		$returnid = cmsms()->GetContentOperations()->GetDefaultContent();
+		//CMSMS 1.10+ has ->create_url();
+		return $this->CreateLink('','devreport',$returnid,'',array(),'',
+			TRUE,FALSE,'',FALSE,'SMSG/devreport'));
+	}
+
 }
 
 ?>
