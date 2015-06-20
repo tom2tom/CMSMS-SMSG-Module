@@ -277,7 +277,7 @@ class SMSG extends CGExtensions
 			return '';
 		}
 	}
-	
+
 	public function get_tasks()
 	{
 		return new smsg_clearlog_task();
@@ -288,7 +288,7 @@ class SMSG extends CGExtensions
 	{
 		$returnid = cmsms()->GetContentOperations()->GetDefaultContent();
 		//CMSMS 1.10+ has ->create_url();
-		return $this->CreateLink('','devreport',$returnid,'',array(),'',
+		return $this->CreateLink('m1_','devreport',$returnid,'',array(),'',
 			TRUE,FALSE,'',FALSE,'SMSG/devreport');
 	}
 
