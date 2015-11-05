@@ -8,19 +8,21 @@
  *  operations.  
  *
  * Security Benefits:
- *
- * - Uses Key stretching
- * - Hides the Initialization Vector
- * - Does HMAC verification of source data
+ *  Uses Key stretching
+ *  Hides the Initialization Vector
+ *  Does HMAC verification of source data
  *
  * See http://stackoverflow.com/questions/5089841/two-way-encryption-i-need-to-store-passwords-that-can-be-retrieved
  *
- * Usage:
+ * Usage example:
  * $e = new Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
  * $encryptedData = $e->encrypt($data,$key);
  * Then, to decrypt:
  * $e = new Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
- * $data = $e2->decrypt($encryptedData,$key);
+ * $data = $e->decrypt($encryptedData,$key);
+ *
+ * Requires:
+ * mcrypt extension 
  */
 class Encryption {
 
@@ -57,7 +59,7 @@ class Encryption {
      *
      * @param string $data The encrypted datat to decrypt
      * @param string $key  The key to use for decryption
-     * 
+     *
      * @returns string|false The returned string if decryption is successful
      *                           false if it is not
      */
@@ -85,7 +87,7 @@ class Encryption {
      * @param string $data The data to encrypt
      * @param string $key  The key to encrypt with
      *
-     * @returns string The encrypted data
+     * @returns string, the encrypted data
      */
     public function encrypt($data, $key) {
         $salt = mcrypt_create_iv(128, MCRYPT_DEV_URANDOM);
@@ -105,7 +107,7 @@ class Encryption {
      * @param string $salt A random string to change the keys each encryption
      * @param string $key  The supplied key to encrypt with
      *
-     * @returns array An array of keys (a cipher key, a mac key, and a IV)
+     * @returns array of keys (a cipher key, a mac key, and a IV)
      */
     protected function getKeys($salt, $key) {
         $ivSize = mcrypt_get_iv_size($this->cipher, $this->mode);
@@ -131,7 +133,7 @@ class Encryption {
      * @param int    $rounds The number of rounds to derive
      * @param int    $length The length of the output key
      *
-     * @returns string The derived key.
+     * @returns string, the derived key.
      */
     protected function pbkdf2($algo, $key, $salt, $rounds, $length) {
         $size   = strlen(hash($algo, '', true));
