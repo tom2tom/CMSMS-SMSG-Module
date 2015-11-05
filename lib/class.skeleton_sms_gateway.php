@@ -85,7 +85,7 @@ class skeleton_sms_gateway extends sms_gateway_base
 		{
 			//set stuff e.g. $ob->size, $ob->help
 		}
-		unset($ob)
+		unset($ob);
 		if($padm)
 		{
 			$help = $smarty->tpl_vars['help']->value.'<br />'.
