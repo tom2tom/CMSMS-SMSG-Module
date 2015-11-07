@@ -21,7 +21,7 @@ if( isset($params['submit']) )
 		if( $gateway )
 		{
 			$gateway->set_num($number);
-			$gateway->set_msg($this->Lang('test_message',SMSG::MODNAME.' @ '.strftime('%X %Z'));
+			$gateway->set_msg($this->Lang('test_message',SMSG::MODNAME.' @ '.strftime('%X %Z')));
 			$gateway->send();
 			$status = $gateway->get_status();
 			$msg = $gateway->get_statusmsg();
