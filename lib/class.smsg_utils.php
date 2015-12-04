@@ -12,16 +12,16 @@ class smsg_utils
 	{
 		$db = cmsms()->GetDb();
 		$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled>0');
-		if( !$aliases )
+		if(!$aliases)
 			return FALSE;
 		$dir = cms_join_path(dirname(__FILE__),'gateways','');
-		if( $module === NULL )
+		if($module === NULL)
 			$module = cms_utils::get_module(SMSG::MODNAME);
 		$objs = array();
-		foreach( $aliases as $thisone )
+		foreach($aliases as $thisone)
 		{
 			$classname = $thisone.'_sms_gateway';
-			if( !class_exists($classname) )
+			if(!class_exists($classname))
 				include($dir.'class.'.$classname.'.php');
 
 			$obj = new $classname($module);
@@ -36,21 +36,21 @@ class smsg_utils
 	{
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
-		$alias = ( $title ) ?
+		$alias = ($title) ?
 			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE title=? AND enabled>0',array($title)):
 			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE active>0 AND enabled>0');
-		if( $alias )
+		if($alias)
 		{
 			$classname = $alias.'_sms_gateway';
-			if( !class_exists($classname) )
+			if(!class_exists($classname))
 			{
 				$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
 				require_once($fn);
 			}
-			if( $module === NULL )
+			if($module === NULL)
 				$module = cms_utils::get_module(SMSG::MODNAME);
 			$obj = new $classname($module);
-			if( $obj )
+			if($obj)
 				return $obj;
 		}
 		return FALSE;
@@ -59,11 +59,11 @@ class smsg_utils
 	public static function setgate_full(&$module,$classname)
 	{
 		$fn = cms_join_path($module->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
-		if( is_file($fn) )
+		if(is_file($fn))
 		{
 			include_once($fn);
 			$obj = new $classname($module);
-			if( $obj )
+			if($obj)
 			  return self::setgate($obj);
 		}
 		return FALSE;
@@ -72,18 +72,18 @@ class smsg_utils
 	public static function setgate(&$obj)
 	{
 		$alias = $obj->get_alias();
-		if( !$alias ) return FALSE;
+		if(!$alias) return FALSE;
 		$title = $obj->get_name();
-		if( !$title ) return FALSE;
+		if(!$title) return FALSE;
 		$desc = $obj->get_description();
-		if( !$desc ) $desc = NULL;
+		if(!$desc) $desc = NULL;
 
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		//upsert, sort-of
 		$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
 		$gid = $db->GetOne($sql,array($alias));
-		if( !$gid )
+		if(!$gid)
 		{
 		  $gid = $db->GenID($pref.'module_smsg_gates_seq');
 		  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description) VALUES (?,?,?,?)';
@@ -103,31 +103,31 @@ class smsg_utils
 	{
 		$dir = cms_join_path(dirname(__FILE__),'gateways','');
 		$files = glob($dir.'class.*sms_gateway.php');
-		if( !$files )
+		if(!$files)
 			 return;
 
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
-		$query = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
+		$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
 		$found = array();
-		foreach( $files as &$thisfile )
+		foreach($files as &$thisfile)
 		{
 			include($thisfile);
 			$classname = str_replace(array($dir,'class.','.php'),array('','',''),$thisfile);
 			$obj = new $classname($module);
 			$alias = $obj->get_alias();
-			$res = $db->GetOne($query,array($alias));
-			if( !$res )
+			$res = $db->GetOne($sql,array($alias));
+			if(!$res)
 				$res = $obj->upsert_tables();
 			$found[] = $res;
 		}
 		unset($thisfile);
 
 		$fillers = implode(',',$found);
-		$query = 'DELETE FROM '.$pref.'module_smsg_gates WHERE gate_id NOT IN ('.$fillers.')';
-		$db->Execute($query);
-		$query = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id NOT IN ('.$fillers.')';
-		$db->Execute($query);
+		$sql = 'DELETE FROM '.$pref.'module_smsg_gates WHERE gate_id NOT IN ('.$fillers.')';
+		$db->Execute($sql);
+		$sql = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id NOT IN ('.$fillers.')';
+		$db->Execute($sql);
 	}
 
 	//$props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
@@ -189,18 +189,18 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
 	public static function encrypt_value(&$module,$value,$passwd = FALSE)
 	{
-		if( $value )
+		if($value)
 		{
-			if( !$passwd )
+			if(!$passwd)
 			{
 				$passwd = $module->GetPreference('masterpass');
-				if( $passwd )
+				if($passwd)
 				{
 					$s = base64_decode(substr($passwd,5));
 					$passwd = substr($s,5);
 				}
 			}
-			if( $passwd && $module->havemcrypt )
+			if($passwd && $module->havemcrypt)
 			{
 				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
 				$value = $e->encrypt($value,$passwd);
@@ -211,18 +211,18 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
 	public static function decrypt_value(&$module,$value,$passwd = FALSE)
 	{
-		if( $value )
+		if($value)
 		{
-			if( !$passwd )
+			if(!$passwd)
 			{
 				$passwd = $module->GetPreference('masterpass');
-				if( $passwd )
+				if($passwd)
 				{
 					$s = base64_decode(substr($passwd,5));
 					$passwd = substr($s,5);
 				}
 			}
-			if( $passwd && $module->havemcrypt )
+			if($passwd && $module->havemcrypt)
 			{
 				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
 				$value = $e->decrypt($value,$passwd);
@@ -236,24 +236,24 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	public static function get_msg(&$module)
 	{
 		$ip = getenv('REMOTE_ADDR');
-		if( func_num_args() > 1 )
+		if(func_num_args() > 1)
 		{
 			$tmp = $module->Lang('_'); //ensure relevant lang is loaded
 			$parms = array_slice(func_get_args(),1);
 			$key = $parms[0];
-			$langdata = ( $module->curlang ) ?
+			$langdata = ($module->curlang) ?
 				$module->langhash[$module->curlang]:
 				reset($module->langhash);
-			if( isset($langdata[$key]) || array_key_exists($key,$langdata) )
+			if(isset($langdata[$key]) || array_key_exists($key,$langdata))
 			{
 				$txt = $module->Lang($key,array_slice($parms,1));
-				if( $ip )
+				if($ip)
 					$txt .= ','.$ip;
 			}
 			else
 			{
 				$txt = implode(',',$parms);
-				if( $ip && $parms[0] != sms_gateway_base::STAT_NOTSENT )
+				if($ip && $parms[0] != sms_gateway_base::STAT_NOTSENT)
 					$txt .= ','.$ip;
 			}
 			return $txt;
@@ -265,19 +265,19 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	public static function get_delivery_msg(&$module)
 	{
 		$ip = getenv('REMOTE_ADDR');
-		if( func_num_args() > 1 )
+		if(func_num_args() > 1)
 		{
 			$tmp = $module->Lang('_'); //ensure relevant lang is loaded
 			$parms = array_slice(func_get_args(),1);
 			$key = $parms[0];
-			$langdata = ( $module->curlang ) ?
+			$langdata = ($module->curlang) ?
 				$module->langhash[$module->curlang]:
 				reset($module->langhash);
-			if( isset($langdata[$key]) || array_key_exists($key,$langdata) )
+			if(isset($langdata[$key]) || array_key_exists($key,$langdata))
 				$txt = $module->Lang($key,array_slice($parms,1));
 			else
 				$txt = implode(',',$parms);
-			if( $ip )
+			if($ip)
 				$txt .= ','.$ip;
 			return $txt;
 		}
@@ -286,7 +286,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
 	public static function is_valid_phone($number)
 	{
-		if( $number )
+		if($number)
 		{
 			$formats = array(
 			 '+##########',
@@ -303,7 +303,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			 '###########');
 
 			$str = ereg_replace('[0-9]','#',$number);
-			if( in_array($str,$formats) ) return TRUE;
+			if(in_array($str,$formats)) return TRUE;
 		}
 		return FALSE;
 	}
@@ -311,22 +311,23 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	public static function log_send($ip_address,$mobile,$msg,$statusmsg = '')
 	{
 		$db = cmsms()->GetDb();
-		$query = 'INSERT INTO '.cms_db_prefix().
+		$sql = 'INSERT INTO '.cms_db_prefix().
 		 'module_smsg_sent (mobile,ip,msg,sdate) VALUES (?,?,?,NOW())';
-		$db->Execute($query,array($mobile,$ip_address,$msg));
+		$db->Execute($sql,array($mobile,$ip_address,$msg));
 	}
 
 	public static function clean_log(&$module = NULL,$time = 0)
 	{
-		if( !$time ) $time = time();
-		if( $module === NULL )
+		if(!$time) $time = time();
+		if($module === NULL)
 			$module = cms_utils::get_module(SMSG::MODNAME);
-		$days = $module->GetPreference('logdays');
-		if( !$days ) $days = 1;
+		$days = $module->GetPreference('logdays',1);
+		if($days < 1)
+			$days = 1;
 		$time -= $days*86400;
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
-		if( $module->GetPreference('logsends') )
+		if($module->GetPreference('logsends'))
 		{
 			$limit = $db->DbTimeStamp($time);
 			$db->Execute('DELETE FROM '.$pref.'module_smsg_sent WHERE sdate<'.$limit);
@@ -341,31 +342,37 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$pref = cms_db_prefix();
 		$t = time();
 		$now = $db->DbTimeStamp($t);
-		$date1 = $db->DbTimeStamp($t-3600);
-		$date2 = $db->DbTimeStamp($t-24*3600);
-		$query = 'SELECT COUNT(mobile) AS num FROM '.$pref.
-		 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date1 and $now)";
-		$num = $db->GetOne($query,array($ip_address));
-
-		$hourly = $module->GetPreference('hourlimit');
-		if( $num > $hourly ) return FALSE;
-
-		$query = 'SELECT COUNT(mobile) AS num FROM '.$pref.
-		 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date2 and $now)";
-		$num = $db->GetOne($query,array($ip_address));
-		$daily = $module->GetPreference('daylimit');
-		if( $num > $daily ) return FALSE;
-
+		
+		$limit = $module->GetPreference('hourlimit',0);
+		if($limit > 0)
+		{
+			$date = $db->DbTimeStamp($t-3600);
+			$sql = 'SELECT COUNT(mobile) AS num FROM '.$pref.
+			 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date and $now)";
+			$num = $db->GetOne($sql,array($ip_address));
+			if($num > $limit)
+				return FALSE;
+		}
+		$limit = $module->GetPreference('daylimit',0);
+		if($limit > 0)
+		{
+			$date = $db->DbTimeStamp($t-24*3600);
+			$sql = 'SELECT COUNT(mobile) AS num FROM '.$pref.
+			 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date and $now)";
+			$num = $db->GetOne($sql,array($ip_address));
+			if($num > $limit)
+				return FALSE;
+		}
 		return TRUE;
 	}
 
 	public static function text_is_valid($text,$len = 160)
 	{
-		if( $text == '' ) return FALSE;
-		if( $len  > 0 && strlen($text) > $len ) return FALSE;
-		if( preg_match(
+		if($text == '') return FALSE;
+		if($len  > 0 && strlen($text) > $len) return FALSE;
+		if(preg_match(
 		  '~[^\w\s@£$¥èéùìòÇ\fØø\nÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./\:;<=>\?¡ÄÖÑÜ§¿äöñüà\^\{\}\[\]\~\|€]~',
-		  $text) ) return FALSE;
+		  $text)) return FALSE;
 		return TRUE;
 	}
 
