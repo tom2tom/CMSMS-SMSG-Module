@@ -112,12 +112,12 @@ class googlevoice_sms_gateway extends sms_gateway_base
 			$parms['_password']['value']);
 
 			$num = $this->_num;
-			if( !$num )
+			if(!$num)
 				return FALSE;
 			$msg = strip_tags($this->_msg);
-			if( !self::support_mms() )
+			if(!self::support_mms())
 				$msg = substr($msg,0,160);
-			if( !smsg_utils::text_is_valid($msg,0) )
+			if(!smsg_utils::text_is_valid($msg,0))
 				return FALSE;
 			$gv->sms($num,$msg); //result ignored
 			// need to return a status
@@ -132,9 +132,9 @@ class googlevoice_sms_gateway extends sms_gateway_base
 	protected function parse_result($str)
 	{
 		$this->_rawstatus = $str;
-		if( $str == 'good' )
+		if($str == 'good')
 			$this->_status = parent::STAT_OK;
-		elseif( $str === FALSE )
+		elseif($str === FALSE)
 			$this->_status = parent::STAT_ERROR_INVALID_DATA;
 		else
 			$this->_status = parent::STAT_ERROR_OTHER;

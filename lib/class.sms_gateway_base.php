@@ -73,7 +73,7 @@ abstract class sms_gateway_base
 
 	public function use_curl($flag = TRUE)
 	{
-		$this->_use_curl = ( $flag ) ? 1 : 0;
+		$this->_use_curl = ($flag) ? 1 : 0;
 	}
 
 	/**
@@ -102,7 +102,7 @@ abstract class sms_gateway_base
 	*/
 	public function set_from($from)
 	{
-		$this->_fromnum = ( $from ) ? $from : FALSE;
+		$this->_fromnum = ($from) ? $from : FALSE;
 	}
 
 	/**
@@ -133,13 +133,13 @@ abstract class sms_gateway_base
 
 		// check to make sure we have necessary data
 		$this->setup();
-		if( $this->_num == '' || $this->_msg == '' )
+		if($this->_num == '' || $this->_msg == '')
 		{
 			$this->_status = self::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
-		if( !smsg_utils::ip_can_send($this->_module,getenv('REMOTE_ADDR')) )
+		if(!smsg_utils::ip_can_send($this->_module,getenv('REMOTE_ADDR')))
 		{
 			$this->_status = self::STAT_ERROR_LIMIT;
 			return FALSE;
@@ -147,7 +147,7 @@ abstract class sms_gateway_base
 
 		// next prepare the output
 		$cmd = $this->prep_command();
-		if( $cmd === FALSE || $cmd == '' )
+		if($cmd === FALSE || $cmd == '')
 		{
 			$this->_status = self::STAT_ERROR_INVALID_DATA;
 			return FALSE;
@@ -159,10 +159,10 @@ abstract class sms_gateway_base
 		// interpret result
 		$this->parse_result($res);
 		$this->_statusmsg = smsg_utils::get_msg($this->_module,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
-		$success = ( $this->_status == self::STAT_OK );
-		if( $success )
+		$success = ($this->_status == self::STAT_OK);
+		if($success)
 		{
-			if( $this->_module->GetPreference('logsends') )
+			if($this->_module->GetPreference('logsends'))
 				smsg_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
 			$this->_module->Audit(SMSG::AUDIT_SEND,SMSG::MODNAME,$this->_statusmsg);
 		}
@@ -182,7 +182,7 @@ abstract class sms_gateway_base
 	{
 		$this->_check_curl();
 		$res = '';
-		$res = ( $this->_use_curl == 0 ) ?
+		$res = ($this->_use_curl == 0) ?
 			$this->_send_fopen($cmd):
 			$this->_send_curl($cmd);
 		return $res;
@@ -192,9 +192,9 @@ abstract class sms_gateway_base
 	{
 		$res = '';
 		$fh = @fopen($cmd,'r');
-		if( $fh )
+		if($fh)
 		{
-			while( $line = @fgets($fh,1024) ) $res .= $line;
+			while($line = @fgets($fh,1024)) $res .= $line;
 			fclose($fh);
 			return $res;
 		}
@@ -208,7 +208,7 @@ abstract class sms_gateway_base
 		curl_setopt($ch,CURLOPT_HEADER,0);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
 		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,0);
-/*		if( $this->curl_use_proxy )
+/*		if($this->curl_use_proxy)
 		{
 			curl_setopt($ch,CURLOPT_PROXY,$this->curl_proxy);
 			curl_setopt($ch,CURLOPT_PROXYUSERPWD,$this->curl_proxyuserpwd);
@@ -221,9 +221,9 @@ abstract class sms_gateway_base
 
 	private function _check_curl()
 	{
-		if( !$this->_use_curl )
+		if(!$this->_use_curl)
 		{
-			if( extension_loaded('curl') )
+			if(extension_loaded('curl'))
 				$this->_use_curl = 1;
 		}
 	}
@@ -239,11 +239,11 @@ abstract class sms_gateway_base
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$query = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
-		if( !$padm )
+		if(!$padm)
 			$query .= ' AND enabled=1';
 		$alias = $this->get_alias();
 		$gdata = $db->GetRow($query,array($alias));
-		if( !$gdata )
+		if(!$gdata)
 			return '';
 
 		$smarty = cmsms()->GetSmarty();
@@ -258,14 +258,14 @@ abstract class sms_gateway_base
 		$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
 		$parms = array();
 		$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
-		if( !$padm )
+		if(!$padm)
 			$query .= ' AND enabled=1';
 		$query .= ' ORDER BY apiorder';
 		$gid = (int)$gdata['gate_id'];
 		$res = $db->GetAll($query,array($gid));
-		if( $res )
+		if($res)
 		{
-			foreach( $res as &$row )
+			foreach($res as &$row)
 			{
 				$ob = (object)$row;
 				//adjustments
@@ -291,7 +291,7 @@ abstract class sms_gateway_base
 		$smarty->assign('dcount',$dcount);
 		$smarty->assign('space',$alias); //for gateway-data 'namespace'
 		$smarty->assign('gateid',$gid);
-		if( $padm )
+		if($padm)
 		{
 			$smarty->assign('title_title',$module->Lang('title'));
 			$smarty->assign('title_value',$module->Lang('value'));
@@ -306,7 +306,7 @@ abstract class sms_gateway_base
 			$text = $module->Lang('add_parameter');
 			$smarty->assign('additem',$module->CreateImageLink($id,'addgate',
 			 '',$text,'icons/system/newobject.gif',array('gate_id'=>$gid),'systemicon','',FALSE));
-			if( $dcount > 0 )
+			if($dcount > 0)
 				$smarty->assign('btndelete',$module->CreateInputSubmit($id,$alias.'~delete',
 				 $module->Lang('delete'),'title="'.$module->Lang('delete_tip').
 				 '" onclick="if(row_selected(event,this)) {return confirm(\''.$module->Lang('sure_ask').'\');} else {return false;}"'));
@@ -335,31 +335,31 @@ abstract class sms_gateway_base
 		$delete = isset($params[$alias.'~delete']);
 
 		$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
-		$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'' );
+		$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'');
 		$conds = array();
 
-		if( $delete )
+		if($delete)
 		{
 			unset($params[$alias.'~delete']);
 			$sql12 = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id=? AND apiname=?';
 		}
 		//accumulate data (in any order) into easily-usable format
-		foreach( $params as $key=>$val )
+		foreach($params as $key=>$val)
 		{
 			//$key is like 'clickatell~user~title'
-			if( strpos($key,$alias) === 0 )
+			if(strpos($key,$alias) === 0)
 			{
 				$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
-				if( $parts[2] && $parts[2] != 'sel' && !$delete )
+				if($parts[2] && $parts[2] != 'sel' && !$delete)
 				{
 					//foil injection-attempts
 					$parts[2] = str_replace($srch,$repl,$parts[2]);
-					if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[2]) )
+					if(preg_match('/[^\w~@#\$%&?+-:|]/',$parts[2]))
 						continue;
 					if($parts[1])
 					{
 						$parts[1] = str_replace($srch,$repl,$parts[1]);
-						if( preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]) )
+						if(preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]))
 							continue;
 					}
 					else
@@ -368,35 +368,35 @@ abstract class sms_gateway_base
 						$conds[$parts[1]] = array();
 					$conds[$parts[1]][$parts[2]] = $val;
 				}
-				elseif( $delete && $parts[2] == 'sel' )
+				elseif($delete && $parts[2] == 'sel')
 				{
 					$db->Execute($sql12,array($gid,$parts[1]));
 				}
 			}
 		}
-		if( $delete )
+		if($delete)
 			return;
 
 		$padm = $this->_module->CheckPermission('AdministerSMSGateways');
 		$o = 1;
 		foreach($conds as $apiname=>&$data)
 		{
-			$enc = ( isset($data['encrypt']) ) ? 1:0;
+			$enc = (isset($data['encrypt'])) ? 1:0;
 			$data['encrypt'] = $enc;
-			if( $enc )
+			if($enc)
 			{
 				$data['encvalue'] = smsg_utils::encrypt_value($this->_module,$data['value']);
 				$data['value'] = NULL;
 			}
 			else
 				$data['encvalue'] = NULL;
-			if( $padm )
+			if($padm)
 				$data['enabled'] = (isset($data['enabled'])) ? 1:0;
 			$sql = 'UPDATE '.$pref.'module_smsg_props SET '
 				.implode('=?,',array_keys($data)).
 				'=?,signature=CASE WHEN signature IS NULL THEN ? ELSE signature END,apiorder=? WHERE gate_id=? AND apiname=?';
 			//NOTE any record for a new parameter includes apiname='todo' & signature=NULL
-			$sig = ( $apiname != 'todo' ) ? $apiname : $data['apiname'];
+			$sig = ($apiname != 'todo') ? $apiname : $data['apiname'];
 			$args = array_merge(array_values($data),array($sig,$o,$gid,$apiname));
 			$ares = $db->Execute($sql,$args);
 			$o++;

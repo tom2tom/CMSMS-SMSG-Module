@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-if( !isset($params['smsnum']) ) return;  // no number id
+if(!isset($params['smsnum'])) return;  // no number id
 
 $smstext = '';
 $message = '';
@@ -15,25 +15,25 @@ $message = '';
 $smsnum = (int)$params['smsnum'];
 $query = 'SELECT mobile FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
 $mobile = $db->GetOne($query,array($smsnum));
-$error = ( $mobile ) ? '' : $this->Lang('error_notfound');
+$error = ($mobile) ? '' : $this->Lang('error_notfound');
 
-if( !$error && isset($params['smsg_submit']) )
+if(!$error && isset($params['smsg_submit']))
 {
-	if( isset($params['smsg_smstext']) )
+	if(isset($params['smsg_smstext']))
 		$smstext = trim($params['smsg_smstext']);
 
-	if( smsg_utils::text_is_valid($smstext) )
+	if(smsg_utils::text_is_valid($smstext))
 	{
 		// now we're ready to send
-		$title = ( empty($params['gatename']) ) ? FALSE : $params['gatename'];
+		$title = (empty($params['gatename'])) ? FALSE : $params['gatename'];
 		$gateway = smsg_utils::get_gateway($title,$this);
-		if( $gateway )
+		if($gateway)
 		{
 			$gateway->set_msg($smstext);
 			$gateway->set_num($mobile);
 			$gateway->send();
 
-			if( $gateway->get_status() == sms_gateway_base::STAT_OK )
+			if($gateway->get_status() == sms_gateway_base::STAT_OK)
 				$message = $this->Lang('sms_message_sent',$mobile);
 			else
 				$error = $gateway->get_statusmsg();
@@ -51,14 +51,14 @@ if( !$error && isset($params['smsg_submit']) )
 // now display the form
 $smarty->assign('message',$message);
 $smarty->assign('error',$error);
-if( !empty($params['gatename']) )
+if(!empty($params['gatename']))
 	$smarty->assign('gatename',$params['gatename']);
 $smarty->assign('maxsmschars',160);
 $smarty->assign('smstext',$smstext);
 $smarty->assign('formstart',$this->CGCreateFormStart($id,'do_entertext',
 	$returnid,$params));
 $smarty->assign('formend',$this->CreateFormEnd());
-if( !isset($params['enternumbertemplate']) )
+if(!isset($params['enternumbertemplate']))
 	$thetemplate = $this->GetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT);
 else
 	$thetemplate = trim($params['enternumbertemplate']);

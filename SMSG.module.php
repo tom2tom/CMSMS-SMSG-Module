@@ -25,7 +25,7 @@
 $config = cmsms()->GetConfig();
 $cgextensions = cms_join_path($config['root_path'],'modules','CGExtensions',
 	'CGExtensions.module.php');
-if( !is_readable($cgextensions) )
+if(!is_readable($cgextensions))
 {
 	echo '<h1 style="color:red;">ERROR: '.$this->Lang('error_noparentclass').'</h1>';
 	return;
@@ -157,7 +157,7 @@ class SMSG extends CGExtensions
 	{
 		$fp = cms_join_path(dirname(__FILE__),'include','module.js');
 		$js = ''.@file_get_contents($fp);
-		if( $js )
+		if($js)
 		{
 			$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
 			$js = str_replace('|PADM|',$p,$js);

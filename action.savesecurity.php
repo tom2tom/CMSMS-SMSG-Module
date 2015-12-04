@@ -12,26 +12,26 @@ $this->SetPreference('daylimit',(int)$params['daylimit']);
 $this->SetPreference('logsends',!empty($params['logsends']));
 $this->SetPreference('logdays',(int)$params['logdays']);
 $this->SetPreference('logdeliveries',!empty($params['logdeliveries']));
-if( isset($params['masterpass']) )
+if(isset($params['masterpass']))
 {
 	$oldpw = $this->GetPreference('masterpass');
-	if( $oldpw )
+	if($oldpw)
 	{
 		$s = base64_decode(substr($oldpw,5));
 		$oldpw = substr($s,5);
 	}
 	$newpw = trim($params['masterpass']);
-	if( $oldpw != $newpw )
+	if($oldpw != $newpw)
 	{
 		//update current passwords
 		$pref = cms_db_prefix();
 		$sql = 'SELECT gate_id,title,value,encvalue FROM '.$pref.'module_smsg_props WHERE encrypt>0';
 		$rows = $db->GetAll($sql);
-		if( $rows )
+		if($rows)
 		{
-			$e = ( $this->havemcrypt ) ?
+			$e = ($this->havemcrypt) ?
 			 new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS) : FALSE;
-			if( $e && $newpw )
+			if($e && $newpw)
 			{
 				$tofield = 'encvalue';
 				$notfield = 'value';
@@ -44,23 +44,23 @@ if( isset($params['masterpass']) )
 				$encval = 0;
 			}
 			$sql = 'UPDATE '.$pref.'module_smsg_props SET '.$tofield.'=?,'.$notfield.'=NULL,encrypt=? WHERE gate_id=? AND title=?';
-			foreach( $rows as &$onerow )
+			foreach($rows as &$onerow)
 			{
-				if( $oldpw )
+				if($oldpw)
 					$raw = ($e && $onerow['encvalue']) ? $e->decrypt($onerow['encvalue'],$oldpw) : $onerow['encvalue'];
 				else
 					$raw = $onerow['value'];
-				if( $newpw )
+				if($newpw)
 					$revised = ($raw && $e) ? $e->encrypt($raw,$newpw) : $raw;
 				else
 					$revised = $raw;
-				if( !$revised )
+				if(!$revised)
 					$revised = NULL;
 				$db->Execute($sql,array($revised,$encval,$onerow['gate_id'],$onerow['title']));
 			}
-			unset( $onerow );
+			unset($onerow);
 		}
-		if( $newpw )
+		if($newpw)
 		{
 			$s = substr(base64_encode(md5(microtime())),0,5); //obfuscate
 			$newpw= $s.base64_encode($s.$newpw);

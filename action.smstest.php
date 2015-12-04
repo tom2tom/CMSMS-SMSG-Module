@@ -8,24 +8,24 @@
 
 $this->SetCurrentTab('test');
 
-if( isset($params['submit']) )
+if(isset($params['submit']))
 {
 	$number = '';
-	if( isset($params['mobile']) )
+	if(isset($params['mobile']))
 		$number = trim($params['mobile']);
 
-	if( smsg_utils::is_valid_phone($number) )
+	if(smsg_utils::is_valid_phone($number))
 	{
 		// ready to test (default gateway)
 		$gateway = smsg_utils::get_gateway(FALSE,$this);
-		if( $gateway )
+		if($gateway)
 		{
 			$gateway->set_num($number);
 			$gateway->set_msg($this->Lang('test_message',SMSG::MODNAME.' @ '.strftime('%X %Z')));
 			$gateway->send();
 			$status = $gateway->get_status();
 			$msg = $gateway->get_statusmsg();
-			if( $status == sms_gateway_base::STAT_OK )
+			if($status == sms_gateway_base::STAT_OK)
 				$this->SetMessage($msg);
 			else
 				$this->SetError($msg);

@@ -11,7 +11,7 @@ if(empty($params['mode'])) //we're back from CGExtensions::edittemplate action
 
 $name = $params['template'];
 $pref = $params['prefix'];
-switch( $params['mode'] )
+switch($params['mode'])
 {
  case 'add':
 	//setup for handover to CGExtensions::edittemplate action
@@ -21,7 +21,7 @@ switch( $params['mode'] )
 	$params['modname'] = $this->GetName();
 	$params['destaction'] = 'settemplate'; //come back here when done
 	$params['cg_activetab'] = $params['activetab'];
-	switch( $pref )
+	switch($pref)
 	{
 	 case 'entertext_':
 		//title displayed in add/edit template form
@@ -50,7 +50,7 @@ switch( $params['mode'] )
 	break;
  case 'revert':
 	$fn = cms_join_path(dirname(__FILE__),'templates',$pref.'template.tpl');
-	if( is_file($fn) )
+	if(is_file($fn))
 	{
 		$text = ''.@file_get_contents($fn);
 		$this->SetTemplate($pref.'defaultcontent',$text,SMSG::MODNAME);

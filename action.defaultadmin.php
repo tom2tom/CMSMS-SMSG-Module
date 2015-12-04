@@ -23,7 +23,7 @@ function SetupTemplateList(&$module,&$smarty,$modify,$dflttpl,
 	$prefix,$prefdefname
 	)
 {
-	if( $modify )
+	if($modify)
 	{
 		$theme = cmsms()->variables['admintheme'];
 		$trueicon = $theme->DisplayImage('icons/system/true.gif',$module->Lang('default_tip'),'','','systemicon');
@@ -47,11 +47,11 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 	$mytemplates = array_filter($mytemplates);
 	sort($mytemplates,SORT_LOCALE_STRING);
 
-	foreach( $mytemplates as $one )
+	foreach($mytemplates as $one)
 	{
 		$default = ($one == $defaultname);
 		$row = new StdClass();
-		if( $modify )
+		if($modify)
 		{
 			$args['template'] = $one;
 			$args['mode'] = 'edit';
@@ -59,12 +59,12 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 			$row->editlink = $module->CreateLink($id,'settemplate',$returnid,$editicon,$args);
 
 			$args['mode'] = 'default';
-			$row->default = ( $default ) ?
+			$row->default = ($default) ?
 				$trueicon:
 				$module->CreateLink($id,'settemplate',$returnid,$falseicon,$args);
 
 			$args['mode'] = 'delete';
-			$row->deletelink = ( $default ) ?
+			$row->deletelink = ($default) ?
 				'':
 				$module->CreateImageLink($id,'settemplate',$returnid,
 					$module->Lang('deleteone_tip'),
@@ -74,13 +74,13 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 		else
 		{
 			$row->name = $one;
-			$row->default = ( $default ) ? $yes:'';
+			$row->default = ($default) ? $yes:'';
 			$row->editlink = '';
 			$row->deletelink = '';
 		}
 		$rowarray[] = $row;
 	}
-	if( $modify && $dflttpl )
+	if($modify && $dflttpl)
 	{
 		$row = new StdClass();
 		$args['template'] = 'defaultcontent';
@@ -103,7 +103,7 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 	$smarty->assign('parent_module_name',$module->GetFriendlyName());
 	$smarty->assign('titlename',$module->Lang('name'));
 	$smarty->assign('titledefault',$module->Lang('default'));
-	if( $modify )
+	if($modify)
 	{
 		$args['mode'] = 'add';
 		$add = $module->CreateImageLink($id,'settemplate',$returnid,
@@ -119,7 +119,7 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 
 smsg_utils::refresh_gateways($this);
 $objs = smsg_utils::get_gateways_full($this);
-if( !$objs )
+if(!$objs)
 {
 	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
 	return;
@@ -136,16 +136,16 @@ $smarty->assign('ptpl',$ptpl);
 $smarty->assign('puse',$puse);
 
 $headers = $this->StartTabHeaders();
-if( $pmod || $puse)
+if($pmod || $puse)
 	$headers .=
  $this->SetTabHeader('gates',$this->Lang('gateways')).
  $this->SetTabHeader('test',$this->Lang('test'));
  $this->SetTabHeader('mobiles',$this->Lang('phone_numbers'));
-if( $ptpl || $puse )
+if($ptpl || $puse)
 	$headers .=
  $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates')).
  $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
-if( $padm )
+if($padm)
 	$headers .=
  $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
 $headers .=
@@ -156,16 +156,16 @@ $smarty->assign('endtab',$this->EndTab());
 $smarty->assign('endtabcontent',$this->EndTabContent());
 $smarty->assign('formend',$this->CreateFormEnd());
 
-if( $pmod || $puse )
+if($pmod || $puse)
 {
 	$smarty->assign('tabstart_gates',$this->StartTab('gates',$params));
 	$smarty->assign('formstart_gates',$this->CGCreateFormStart($id,'savegates'));
 	$smarty->assign('reporturl',$this->get_reporturl());
 
-	if( $pmod )
+	if($pmod)
 	{
 		$names = array(-1 => $this->Lang('none'));
-		foreach( $objs as $key=>&$rec )
+		foreach($objs as $key=>&$rec)
 		{
 			$names[$key] = $rec['obj']->get_name();
 			$rec = $rec['obj']->get_setup_form();
@@ -173,7 +173,7 @@ if( $pmod || $puse )
 		unset($rec);
 		$current = $db->GetOne('SELECT alias FROM '.cms_db_prefix().
 			'module_smsg_gates WHERE enabled=1 AND active=1');
-		if( $current == FALSE )
+		if($current == FALSE)
 			$current = '-1';
 
 		$smarty->assign('gatecurrent',$current);
@@ -181,7 +181,7 @@ if( $pmod || $puse )
 	}
 	else
 	{
-		foreach( $objs as $key=>&$rec )
+		foreach($objs as $key=>&$rec)
 			$rec = $rec['obj']->get_setup_form();
 		unset($rec);
 	}
@@ -193,15 +193,15 @@ if( $pmod || $puse )
 	$smarty->assign('tabstart_mobiles',$this->StartTab('mobiles',$params));
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
 	$data = $db->GetAll($query);
-	if( $data )
+	if($data)
 	{
 		$edtip = $this->Lang('edit_tip'); 
 		$deltip = $this->Lang('deleteone_tip');
 		$prompt = $this->Lang('ask_delete_mobile');
-		foreach( $data as &$rec )
+		foreach($data as &$rec)
 		{
 			$rec = (object)$rec;
-			if( $pmod )
+			if($pmod)
 			{
 				$rec->editlink = $this->CreateImageLink($id,'edit_mobile','','',
 					'icons/system/edit.gif',array('mid'=>$rec->id),'','',
@@ -216,11 +216,11 @@ if( $pmod || $puse )
 	}
 	else
 		$smarty->assign('nonumbers',$this->Lang('nonumbers'));
-	if( $pmod )
+	if($pmod)
 		$smarty->assign('add_mobile',$this->CreateImageLink($id,'edit_mobile','',$this->Lang('add_mobile'),
 			'icons/system/newobject.gif',array(),'','',FALSE));
 }
-if( $ptpl || $puse )
+if($ptpl || $puse)
 {
 	$tid = 'enternumber';
 	$smarty->assign('tabstart_enternumber',$this->StartTab($tid,$params));
@@ -234,7 +234,7 @@ if( $ptpl || $puse )
 	SetupTemplateList($this,$smarty,$ptpl,$padm,
 		$id,$returnid,$tid,'entertext_',SMSG::PREF_ENTERTEXT_TPLDFLT);
 }
-if( $padm )
+if($padm)
 {
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
 	$smarty->assign('formstart_security',$this->CGCreateFormStart($id,'savesecurity'));
@@ -244,7 +244,7 @@ if( $padm )
 	$smarty->assign('logdays',$this->GetPreference('logdays'));
 	$smarty->assign('logdeliveries',$this->GetPreference('logdeliveries'));
 	$pw = $this->GetPreference('masterpass');
-	if( $pw )
+	if($pw)
 	{
 		$s = base64_decode(substr($pw,5));
 		$pw = substr($s,5);

@@ -12,16 +12,16 @@ $mobile = '';
 $pref = cms_db_prefix();
 $this->SetCurrentTab('mobiles');
 
-if( isset($params['mid']) )
+if(isset($params['mid']))
 {
     $mid = (int)$params['mid'];
 }
 
-if( $mid != '' )
+if($mid != '')
 {
 	$query = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
 	$tmp = $db->GetRow($query,array($mid));
-	if( !$tmp )
+	if(!$tmp)
 	{
 		$this->SetError($this->Lang('error_notfound'));
 		$this->RedirectToTab($id);
@@ -30,44 +30,44 @@ if( $mid != '' )
 	$mobile = $tmp['mobile'];
 }
 
-if( isset($params['cancel']) )
+if(isset($params['cancel']))
 {
 	$this->RedirectToTab($id);
 }
-else if( isset($params['submit']) )
+else if(isset($params['submit']))
 {
 	$name = trim($params['name']);
 	$mobile = trim($params['mobile']);
 	$error = '';
 
 	// basic data checks
-	if( !$name || !is_numeric($mobile) )
+	if(!$name || !is_numeric($mobile))
 	{
 		$error = $this->Lang('error_invalid_info');
 	}
 
-	if( empty($error) )
+	if(empty($error))
 	{
 		// check for duplicate name
 		$query = 'SELECT id FROM '.$pref.'module_smsg_nums WHERE name=?';
 		$parms = array();
-		if( $mid != '' )
+		if($mid != '')
 		{
 			$query .= ' AND id!=?';
 			$parms[] = $mid;
 		}
 		$tmp = $db->GetOne($query,$parms);
-		if( $tmp )
+		if($tmp)
 		{
 			$error = $this->Lang('error_name_exists');
 		}
 	}
 
-	if( empty($error) )
+	if(empty($error))
 	{
 		// good to go... do add or insert
 		$res = '';
-		if( $mid == '' )
+		if($mid == '')
 		{
 			// insert
 			$query = 'INSERT INTO '.$pref.'module_smsg_nums (name,mobile) VALUES(?,?)';
@@ -80,13 +80,13 @@ else if( isset($params['submit']) )
 			$res = $db->Execute($query,array($name,$mobile,$mid));
 		}
 
-		if( !$res )
+		if(!$res)
 		{
 			$error = $this->Lang('error_db_op_failed');
 		}
 	}
 
-	if( !empty($error) )
+	if(!empty($error))
 	{
 		$this->SetError($error);
 	}
