@@ -64,6 +64,7 @@ $lang['error_name_exists'] = 'An item by that name already exists';
 $lang['error_nodatafound'] = 'No data are available';
 $lang['error_nogatewaysfound'] = 'Could not find any SMS gateway';
 $lang['error_notfound'] = 'Could not find the requested item';
+$lang['error_params'] = 'Parameter error';
 $lang['event_desc_delivery'] = 'Sent when a message-delivery-report is received from the current gateway (if such reports are enabled)';
 $lang['event_help_delivery'] = <<<EOS
 Parameters:
