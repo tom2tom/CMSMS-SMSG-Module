@@ -57,12 +57,12 @@ class googlevoice_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = $this->_module;
+			$mod = $this->_module;
 			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//none of the apiname's is actually used (indicated by '_' prefix)
 			smsg_utils::setprops($gid,array(
-			 array($module->Lang('email'),'_email',NULL,0),
-			 array($module->Lang('password'),'_password',NULL,1)
+			 array($mod->Lang('email'),'_email',NULL,0),
+			 array($mod->Lang('password'),'_password',NULL,1)
 			));
 		}
 		return $gid;

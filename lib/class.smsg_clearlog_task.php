@@ -15,22 +15,22 @@ class smsg_clearlog_task implements CmsRegularTask
 
 	public function get_description()
 	{
-		$module = cms_utils::get_module(SMSG::MODNAME);
-		return $module->Lang('taskdescription_clearlog');
+		$mod = cms_utils::get_module(SMSG::MODNAME);
+		return $mod->Lang('taskdescription_clearlog');
 	}
 
 	public function test($time = '')
 	{
-		$module = cms_utils::get_module(SMSG::MODNAME);
-		if(!($module->GetPreference('logsends')
-		  || $module->GetPreference('logdeliveries')))
+		$mod = cms_utils::get_module(SMSG::MODNAME);
+		if(!($mod->GetPreference('logsends')
+		  || $mod->GetPreference('logdeliveries')))
 			return FALSE;
-		$days = (int)$module->GetPreference('logdays');
+		$days = (int)$mod->GetPreference('logdays');
 		if($days <= 0)
 			return FALSE;
 		if(!$time)
 			$time = time();
-		$last_cleared = $module->GetPreference('lastcleared');
+		$last_cleared = $mod->GetPreference('lastcleared');
 		return ($time >= $last_cleared + $days*86400);
 	}
 
@@ -46,8 +46,8 @@ class smsg_clearlog_task implements CmsRegularTask
 	{
 		if(!$time)
 			$time = time();
-		$module = cms_utils::get_module(SMSG::MODNAME);
-		$module->SetPreference('lastcleared',$time);
+		$mod = cms_utils::get_module(SMSG::MODNAME);
+		$mod->SetPreference('lastcleared',$time);
 	}
 
 	public function on_failure($time = '')

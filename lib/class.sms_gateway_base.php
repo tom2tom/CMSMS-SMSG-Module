@@ -33,9 +33,9 @@ abstract class sms_gateway_base
 	protected $_status;
 	protected $_smsid;
 
-	function __construct(&$module)
+	function __construct(&$mod)
 	{
-		$this->_module = $module;
+		$this->_module = $mod;
 	  	$this->_gate_id = 0;
 		self::reset();
 	}
@@ -234,8 +234,8 @@ abstract class sms_gateway_base
 	*/
 	public function get_setup_form()
 	{
-		$module = $this->_module;
-		$padm = $module->CheckPermission('AdministerSMSGateways');
+		$mod = $this->_module;
+		$padm = $mod->CheckPermission('AdministerSMSGateways');
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$query = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
@@ -247,15 +247,15 @@ abstract class sms_gateway_base
 			return '';
 
 		$smarty = cmsms()->GetSmarty();
-		$pmod = $padm || $module->CheckPermission('ModifySMSGateways');
+		$pmod = $padm || $mod->CheckPermission('ModifySMSGateways');
 		if(!($padm || $pmod))
 		{
 			$smarty->assign('gatetitle',$gdata['title']);
-			$smarty->assign('default',($gdata['active'])?$module->Lang('yes'):'');
-			return $module->ProcessTemplate('gatedata_use.tpl');
+			$smarty->assign('default',($gdata['active'])?$mod->Lang('yes'):'');
+			return $mod->ProcessTemplate('gatedata_use.tpl');
 		}
 		
-		$smarty->assign('gatetitle',$module->Lang('frame_title',$gdata['title']));
+		$smarty->assign('gatetitle',$mod->Lang('frame_title',$gdata['title']));
 		$parms = array();
 		$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 		if(!$padm)
@@ -270,7 +270,7 @@ abstract class sms_gateway_base
 				$ob = (object)$row;
 				//adjustments
 				if($ob->encrypt)
-					$ob->value = smsg_utils::decrypt_value($module,$ob->encvalue);
+					$ob->value = smsg_utils::decrypt_value($mod,$ob->encvalue);
 				unset($ob->encvalue);
 				$ob->space = $alias.'~'.$ob->apiname.'~'; //for gateway-data 'namespace'
 				$parms[] = $ob;
@@ -281,7 +281,7 @@ abstract class sms_gateway_base
 		if($dcount == 0)
 		{
 			$ob = new stdClass();
-			$ob->title = $module->Lang('error_nodatafound');
+			$ob->title = $mod->Lang('error_nodatafound');
 			$ob->value = '';
 			$ob->apiname = FALSE; //prevent input-object creation
 			$ob->space = '';
@@ -293,28 +293,28 @@ abstract class sms_gateway_base
 		$smarty->assign('gateid',$gid);
 		if($padm)
 		{
-			$smarty->assign('title_title',$module->Lang('title'));
-			$smarty->assign('title_value',$module->Lang('value'));
-			$smarty->assign('title_encrypt',$module->Lang('encrypt'));
-			$smarty->assign('title_apiname',$module->Lang('apiname'));
-			$smarty->assign('title_enabled',$module->Lang('enabled'));
-			$smarty->assign('title_help',$module->Lang('helptitle'));
-			$smarty->assign('title_select',$module->Lang('select'));
+			$smarty->assign('title_title',$mod->Lang('title'));
+			$smarty->assign('title_value',$mod->Lang('value'));
+			$smarty->assign('title_encrypt',$mod->Lang('encrypt'));
+			$smarty->assign('title_apiname',$mod->Lang('apiname'));
+			$smarty->assign('title_enabled',$mod->Lang('enabled'));
+			$smarty->assign('title_help',$mod->Lang('helptitle'));
+			$smarty->assign('title_select',$mod->Lang('select'));
 			$smarty->assign('help',
-			 $module->Lang('help_dnd').'<br />'.$module->Lang('help_sure'));
+			 $mod->Lang('help_dnd').'<br />'.$mod->Lang('help_sure'));
 			$id = $smarty->tpl_vars['actionid']->value;
-			$text = $module->Lang('add_parameter');
-			$smarty->assign('additem',$module->CreateImageLink($id,'addgate',
+			$text = $mod->Lang('add_parameter');
+			$smarty->assign('additem',$mod->CreateImageLink($id,'addgate',
 			 '',$text,'icons/system/newobject.gif',array('gate_id'=>$gid),'systemicon','',FALSE));
 			if($dcount > 0)
-				$smarty->assign('btndelete',$module->CreateInputSubmit($id,$alias.'~delete',
-				 $module->Lang('delete'),'title="'.$module->Lang('delete_tip').
-				 '" onclick="if(row_selected(event,this)) {return confirm(\''.$module->Lang('sure_ask').'\');} else {return false;}"'));
+				$smarty->assign('btndelete',$mod->CreateInputSubmit($id,$alias.'~delete',
+				 $mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').
+				 '" onclick="if(row_selected(event,this)) {return confirm(\''.$mod->Lang('sure_ask').'\');} else {return false;}"'));
 		}
 		// anything else to set up for the template
 		$this->custom_setup($smarty,$padm); //e.g. each $ob->size
 		$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata_mod.tpl';
-		return $module->ProcessTemplate($tpl);
+		return $mod->ProcessTemplate($tpl);
 	}
 
 	/**
