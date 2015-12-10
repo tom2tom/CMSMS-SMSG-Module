@@ -4,21 +4,20 @@
 # Copyright(C) 2015 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
+# action - edittemplate redirected here from action settemplate, add/edit
 #----------------------------------------------------------------------
 
 // check if we have a template name
 if(!(isset($params['template']) || isset($params['prefix'])))
 {
-	$params['errors'] = $this->Lang('error_insufficientparams');
+	$params['errors'] = $this->Lang('error_params');
 	$this->Redirect($id,'defaultadmin','',$params);
-	return;
 }
 
 if(!isset($params['mode']) || !isset($params['title']))
 {
-	$params['errors'] = $this->Lang('error_insufficientparams');
+	$params['errors'] = $this->Lang('error_params');
 	$this->Redirect($id,'defaultadmin','',$params);
-	return;
 }
 
 // handle errors
@@ -33,7 +32,7 @@ if($params['mode'] == 'add')
 	$smarty->assign('templatename',$this->CreateInputText($id,'template','',40,200));
 	$smarty->assign('hidden',
 		$this->CreateInputHidden($id,'prefix',$params['prefix']).
-		$this->CreateInputHidden($id,'activetab',$this->_current_tab)); //TODO CG
+		$this->CreateInputHidden($id,'activetab',$params['activetab']));
 	if(!empty($params['defaulttemplatepref']))
 	{
 		if(endswith($params['defaulttemplatepref'],'.tpl'))
@@ -51,21 +50,16 @@ if($params['mode'] == 'add')
 }
 else
 {
-	$smarty->assign('formstart',$this->CreateFormStart($id,'do_edittemplate',$returnid,'POST','','','',$params));
+	$smarty->assign('formstart',$this->CreateFormStart($id,'edittemplate',$returnid,'POST','','','',$params));
 	$smarty->assign('templatename',$params['template']);
 	$smarty->assign('hidden',
 		$this->CreateInputHidden($id,'template',$params['template']).
-		$this->CreateInputHidden($id,'activetab',$this->_current_tab)); //TODO CG
+		$this->CreateInputHidden($id,'activetab',$params['activetab']));
 	$contents = $this->GetTemplate($params['prefix'].$params['template']);
 	$smarty->assign('apply',$this->CreateInputSubmit($id,'applybutton',$this->Lang('apply')));
 }
 
-if(method_exists($this,'GetEditTemplateMessage')) //TODO CG
-{
-	$txt = $this->GetEditTemplateMessage($params['prefix']);
-	$smarty->assign('template_info',$txt);
-}
-else if(!empty($params['info']))
+if(!empty($params['info']))
 {
 	$txt = trim($params['info']);
 	for($i = 0; $i < 5; $i++)
@@ -98,5 +92,5 @@ $smarty->assign('submit',$this->CreateInputSubmit($id,'submit',$this->Lang('subm
 $smarty->assign('cancel',$this->CreateInputSubmit($id,'cancel',$this->Lang('cancel')));
 $smarty->assign('formend',$this->CreateFormEnd());
 
-echo $this->ProcessTemplate('edittemplate.tpl');
+echo $this->ProcessTemplate('edit_template.tpl');
 ?>
