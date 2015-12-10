@@ -42,8 +42,8 @@ function SetupTemplateList(&$mod,&$smarty,$modify,$dflttpl,
 
 	$mytemplates = $mod->ListTemplates(SMSG::MODNAME);
 	array_walk($mytemplates,
-		function(&$n,$k,$p){$l=strlen($p);
-$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALSE;
+		function(&$n,$k,$p){
+$l=strlen($p);$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALSE;
 },$prefix);
 	$mytemplates = array_filter($mytemplates);
 	sort($mytemplates,SORT_LOCALE_STRING);
