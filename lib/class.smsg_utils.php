@@ -8,15 +8,15 @@
 
 class smsg_utils
 {
-	public static function get_gateways_full(&$module = NULL)
+	public static function get_gateways_full(&$mod = NULL)
 	{
 		$db = cmsms()->GetDb();
 		$aliases = $db->GetCol('SELECT alias FROM '.cms_db_prefix().'module_smsg_gates WHERE enabled>0');
 		if(!$aliases)
 			return FALSE;
 		$dir = cms_join_path(dirname(__FILE__),'gateways','');
-		if($module === NULL)
-			$module = cms_utils::get_module(SMSG::MODNAME);
+		if($mod === NULL)
+			$mod = cms_utils::get_module(SMSG::MODNAME);
 		$objs = array();
 		foreach($aliases as $thisone)
 		{
@@ -24,7 +24,7 @@ class smsg_utils
 			if(!class_exists($classname))
 				include($dir.'class.'.$classname.'.php');
 
-			$obj = new $classname($module);
+			$obj = new $classname($mod);
 			//return array, so other keys may be added, upstream
 			$objs[$thisone] = array('obj' => $obj);
 		}
@@ -32,7 +32,7 @@ class smsg_utils
 		return $objs;
 	}
 
-	public static function get_gateway($title = FALSE, &$module = NULL)
+	public static function get_gateway($title = FALSE, &$mod = NULL)
 	{
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
@@ -47,22 +47,22 @@ class smsg_utils
 				$fn = cms_join_path(dirname(__FILE__),'gateways','class.'.$classname.'.php');
 				require_once($fn);
 			}
-			if($module === NULL)
-				$module = cms_utils::get_module(SMSG::MODNAME);
-			$obj = new $classname($module);
+			if($mod === NULL)
+				$mod = cms_utils::get_module(SMSG::MODNAME);
+			$obj = new $classname($mod);
 			if($obj)
 				return $obj;
 		}
 		return FALSE;
 	}
 
-	public static function setgate_full(&$module,$classname)
+	public static function setgate_full(&$mod,$classname)
 	{
-		$fn = cms_join_path($module->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
+		$fn = cms_join_path($mod->GetModulePath(),'lib','gateways','class.'.$classname.'.php');
 		if(is_file($fn))
 		{
 			include_once($fn);
-			$obj = new $classname($module);
+			$obj = new $classname($mod);
 			if($obj)
 			  return self::setgate($obj);
 		}
@@ -99,7 +99,7 @@ class smsg_utils
 		return $gid;
 	}
 
-	public static function refresh_gateways(&$module)
+	public static function refresh_gateways(&$mod)
 	{
 		$dir = cms_join_path(dirname(__FILE__),'gateways','');
 		$files = glob($dir.'class.*sms_gateway.php');
@@ -114,7 +114,7 @@ class smsg_utils
 		{
 			include($thisfile);
 			$classname = str_replace(array($dir,'class.','.php'),array('','',''),$thisfile);
-			$obj = new $classname($module);
+			$obj = new $classname($mod);
 			$alias = $obj->get_alias();
 			$res = $db->GetOne($sql,array($alias));
 			if(!$res)
@@ -169,7 +169,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	  Returns array, each key = signature-field value, each value = array
 	   with keys 'apiname' and 'value' (for which the actual value is decrypted if relevant)
 	  */
-	public static function getprops(&$module,$gid)
+	public static function getprops(&$mod,$gid)
 	{
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
@@ -179,7 +179,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		foreach($props as &$row)
 		{
 			if ($row['encrypt'])
-				$row['value'] = self::decrypt_value($module,$row['encvalue']);
+				$row['value'] = self::decrypt_value($mod,$row['encvalue']);
 			unset($row['encrypt']);
 			unset($row['encvalue']);
 		}
@@ -187,20 +187,20 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		return $props;
 	}
 
-	public static function encrypt_value(&$module,$value,$passwd = FALSE)
+	public static function encrypt_value(&$mod,$value,$passwd = FALSE)
 	{
 		if($value)
 		{
 			if(!$passwd)
 			{
-				$passwd = $module->GetPreference('masterpass');
+				$passwd = $mod->GetPreference('masterpass');
 				if($passwd)
 				{
 					$s = base64_decode(substr($passwd,5));
 					$passwd = substr($s,5);
 				}
 			}
-			if($passwd && $module->havemcrypt)
+			if($passwd && $mod->havemcrypt)
 			{
 				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
 				$value = $e->encrypt($value,$passwd);
@@ -209,20 +209,20 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		return $value;
 	}
 
-	public static function decrypt_value(&$module,$value,$passwd = FALSE)
+	public static function decrypt_value(&$mod,$value,$passwd = FALSE)
 	{
 		if($value)
 		{
 			if(!$passwd)
 			{
-				$passwd = $module->GetPreference('masterpass');
+				$passwd = $mod->GetPreference('masterpass');
 				if($passwd)
 				{
 					$s = base64_decode(substr($passwd,5));
 					$passwd = substr($s,5);
 				}
 			}
-			if($passwd && $module->havemcrypt)
+			if($passwd && $mod->havemcrypt)
 			{
 				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
 				$value = $e->decrypt($value,$passwd);
@@ -233,20 +233,20 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
 	//this is a varargs function, 2nd argument (if it exists) is either a
 	//Lang key or one of the sms_gateway_base::STAT_* constants
-	public static function get_msg(&$module)
+	public static function get_msg(&$mod)
 	{
 		$ip = getenv('REMOTE_ADDR');
 		if(func_num_args() > 1)
 		{
-			$tmp = $module->Lang('_'); //ensure relevant lang is loaded
+			$tmp = $mod->Lang('_'); //ensure relevant lang is loaded
 			$parms = array_slice(func_get_args(),1);
 			$key = $parms[0];
-			$langdata = ($module->curlang) ?
-				$module->langhash[$module->curlang]:
-				reset($module->langhash);
+			$langdata = ($mod->curlang) ?
+				$mod->langhash[$mod->curlang]:
+				reset($mod->langhash);
 			if(isset($langdata[$key]) || array_key_exists($key,$langdata))
 			{
-				$txt = $module->Lang($key,array_slice($parms,1));
+				$txt = $mod->Lang($key,array_slice($parms,1));
 				if($ip)
 					$txt .= ','.$ip;
 			}
@@ -262,19 +262,19 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	}
 
 	//this is a varargs function, 2nd argument (if it exists) may be a Lang key
-	public static function get_delivery_msg(&$module)
+	public static function get_delivery_msg(&$mod)
 	{
 		$ip = getenv('REMOTE_ADDR');
 		if(func_num_args() > 1)
 		{
-			$tmp = $module->Lang('_'); //ensure relevant lang is loaded
+			$tmp = $mod->Lang('_'); //ensure relevant lang is loaded
 			$parms = array_slice(func_get_args(),1);
 			$key = $parms[0];
-			$langdata = ($module->curlang) ?
-				$module->langhash[$module->curlang]:
-				reset($module->langhash);
+			$langdata = ($mod->curlang) ?
+				$mod->langhash[$mod->curlang]:
+				reset($mod->langhash);
 			if(isset($langdata[$key]) || array_key_exists($key,$langdata))
-				$txt = $module->Lang($key,array_slice($parms,1));
+				$txt = $mod->Lang($key,array_slice($parms,1));
 			else
 				$txt = implode(',',$parms);
 			if($ip)
@@ -316,18 +316,18 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$db->Execute($sql,array($mobile,$ip_address,$msg));
 	}
 
-	public static function clean_log(&$module = NULL,$time = 0)
+	public static function clean_log(&$mod = NULL,$time = 0)
 	{
 		if(!$time) $time = time();
-		if($module === NULL)
-			$module = cms_utils::get_module(SMSG::MODNAME);
-		$days = $module->GetPreference('logdays',1);
+		if($mod === NULL)
+			$mod = cms_utils::get_module(SMSG::MODNAME);
+		$days = $mod->GetPreference('logdays',1);
 		if($days < 1)
 			$days = 1;
 		$time -= $days*86400;
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
-		if($module->GetPreference('logsends'))
+		if($mod->GetPreference('logsends'))
 		{
 			$limit = $db->DbTimeStamp($time);
 			$db->Execute('DELETE FROM '.$pref.'module_smsg_sent WHERE sdate<'.$limit);
@@ -336,14 +336,14 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		' OR item_id = '.SMSG::AUDIT_DELIV.') AND item_name='.SMSG::MODNAME,array($time));
 	}
 
-	public static function ip_can_send(&$module,$ip_address)
+	public static function ip_can_send(&$mod,$ip_address)
 	{
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$t = time();
 		$now = $db->DbTimeStamp($t);
 		
-		$limit = $module->GetPreference('hourlimit',0);
+		$limit = $mod->GetPreference('hourlimit',0);
 		if($limit > 0)
 		{
 			$date = $db->DbTimeStamp($t-3600);
@@ -353,7 +353,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			if($num > $limit)
 				return FALSE;
 		}
-		$limit = $module->GetPreference('daylimit',0);
+		$limit = $mod->GetPreference('daylimit',0);
 		if($limit > 0)
 		{
 			$date = $db->DbTimeStamp($t-24*3600);
@@ -375,7 +375,22 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		  $text)) return FALSE;
 		return TRUE;
 	}
-
+	
+    /**
+	implode_with_key:
+    Implode @assoc into a string suitable for forming a URL string with multiple key/value pairs
+    @assoc associative array, keys = parameter name, values = corresponding parameter values
+    @inglue optional string, inner glue, default '='
+    @outglue optional string, outer glue, default '&'
+    Returns: string
+    */
+    public static function implode_with_key($assoc,$inglue='=',$outglue='&')
+    {
+        $ret = null;
+        foreach ($assoc as $tk => $tv)
+			$ret .= $outglue.$tk.$inglue.$tv;
+        return substr($ret,strlen($outglue));
+    }
 }
 
 ?>
