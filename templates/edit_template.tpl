@@ -1,4 +1,3 @@
-<h3>{if !empty($module_description)}{$module_description} - {/if}{$title}:</h3>
 {if !empty($template_info)}
 <div class="pageoverflow">{$template_info}</div>
 {/if}
