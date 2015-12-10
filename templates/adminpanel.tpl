@@ -11,7 +11,7 @@
  <br />
  <p class="pagetext">{$mod->Lang('default_gateway')}:</p>
  <p class="pageinput">
-  <select id="sms_gateway" name="{$actionid}sms_gateway"> 
+  <select id="sms_gateway" name="{$actionid}sms_gateway">
    {html_options options=$gatesnames selected=$gatecurrent}
   </select>
  </p>
@@ -182,6 +182,7 @@
 {/if}{*$padm*}
 {$endtabcontent}
 
+{if !empty($jsincs)}{$jsincs}{/if}
 <script type="text/javascript">
 //<![CDATA[
 {$jsfuncs}
