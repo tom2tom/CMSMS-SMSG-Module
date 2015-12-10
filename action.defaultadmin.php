@@ -29,6 +29,7 @@ function SetupTemplateList(&$mod,&$smarty,$modify,$dflttpl,
 			cms_utils::get_theme_object();
 		$trueicon = $theme->DisplayImage('icons/system/true.gif',$mod->Lang('default_tip'),'','','systemicon');
 		$falseicon = $theme->DisplayImage('icons/system/false.gif',$mod->Lang('defaultset_tip'),'','','systemicon');
+		$addicon = $theme->DisplayImage('icons/system/newobject.gif',$mod->Lang('add_template'),'','','systemicon');
 		$editicon = $theme->DisplayImage('icons/system/edit.gif',$mod->Lang('edit_tip'),'','','systemicon');
 		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$mod->Lang('deleteone_tip'),'','','systemicon');
 		$prompt = $mod->Lang('sure_ask');
@@ -67,10 +68,7 @@ $l=strlen($p);$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultco
 			$args['mode'] = 'delete';
 			$row->deletelink = ($default) ?
 				'':
-				$mod->CreateImageLink($id,'settemplate',$returnid,
-					$mod->Lang('deleteone_tip'),
-					'icons/system/delete.gif',
-					$args,'',$prompt);
+				$mod->CreateLink($id,'settemplate',$returnid,$deleteicon,$args,$prompt);
 		}
 		else
 		{
@@ -107,10 +105,8 @@ $l=strlen($p);$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultco
 	if($modify)
 	{
 		$args['mode'] = 'add';
-		$add = $mod->CreateImageLink($id,'settemplate',$returnid,
-		 $mod->Lang('add_template'),
-		 'icons/system/newobject.gif',
-		 $args,'','',FALSE);
+		$add = $mod->CreateLink($id,'settemplate',$returnid,$addicon,$args).' '.
+			$mod->CreateLink($id,'settemplate',$returnid,$mod->Lang('add_template'),$args);
 	}
 	else
 		$add = '';
@@ -136,6 +132,8 @@ $smarty->assign('pmod',$pmod);
 $smarty->assign('ptpl',$ptpl);
 $smarty->assign('puse',$puse);
 
+$smarty->assign('mod',$this);
+
 if(!empty($params['activetab']))
 	$showtab = $params['activetab'];
 else
@@ -145,7 +143,7 @@ $headers = $this->StartTabHeaders();
 if($pmod || $puse)
 	$headers .=
  $this->SetTabHeader('gates',$this->Lang('gateways'),($showtab=='gates')).
- $this->SetTabHeader('test',$this->Lang('test'),($showtab=='test'));
+ $this->SetTabHeader('test',$this->Lang('test'),($showtab=='test')).
  $this->SetTabHeader('mobiles',$this->Lang('phone_numbers'),($showtab=='mobiles'));
 if($ptpl || $puse)
 	$headers .=
@@ -193,6 +191,9 @@ if($pmod || $puse)
 	}
 	$smarty->assign('gatesdata',$objs);
 
+	$theme = ($this->before20) ? cmsms()->get_variable('admintheme'):
+		cms_utils::get_theme_object();
+
 	$smarty->assign('tabstart_test',$this->StartTab('test',$params));
 	$smarty->assign('formstart_test',$this->CreateFormStart($id,'smstest'));
 	
@@ -201,30 +202,31 @@ if($pmod || $puse)
 	$data = $db->GetAll($query);
 	if($data)
 	{
-		$edtip = $this->Lang('edit_tip'); 
-		$deltip = $this->Lang('deleteone_tip');
+		$editicon = $theme->DisplayImage('icons/system/edit.gif',$mod->Lang('edit_tip'),'','','systemicon');
+		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$mod->Lang('deleteone_tip'),'','','systemicon');
 		$prompt = $this->Lang('ask_delete_mobile');
-		foreach($data as &$rec)
+		foreach($data as &$row)
 		{
-			$rec = (object)$rec;
+			$row = (object)$row;
 			if($pmod)
 			{
-				$rec->editlink = $this->CreateImageLink($id,'edit_mobile','','',
-					'icons/system/edit.gif',array('mid'=>$rec->id),'','',
-					TRUE,FALSE,'title="'.$edtip.'"');
-				$rec->deletelink = $this->CreateImageLink($id,'del_mobile','','',
-					'icons/system/delete.gif',array('mid'=>$rec->id),'delitemlink',$prompt,
-					TRUE,FALSE,'title="'.$deltip.'"');
+				$args = array('mid'=>$row->id);
+				$rec->editlink = $this->CreateLink($id,'edit_mobile','',$editicon,$args);
+				$rec->deletelink = $this->CreateLink($id,'del_mobile','',$deleteicon,$args,$prompt);
 			}
 		}
-		unset($rec);
+		unset($row);
 		$smarty->assign('numbers',$data);
 	}
 	else
 		$smarty->assign('nonumbers',$this->Lang('nonumbers'));
 	if($pmod)
-		$smarty->assign('add_mobile',$this->CreateImageLink($id,'edit_mobile','',$this->Lang('add_mobile'),
-			'icons/system/newobject.gif',array(),'','',FALSE));
+	{
+		$text = $this->Lang('add_mobile');
+		$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
+		$smarty->assign('add_mobile',$this->CreateLink($id,'edit_mobile','',$addicon).' '.
+			$this->CreateLink($id,'edit_mobile','',$text)));
+	}
 }
 if($ptpl || $puse)
 {
@@ -258,8 +260,25 @@ if($padm)
 	$smarty->assign('masterpass',$pw);
 }
 
+//find checked boxes named like "m1_<alias>~<field>~sel"
 //show only the frameset for selected gateway
 $jsfuncs = <<<EOS
+function row_selected(ev,btn) {
+ var nm = btn.name,
+  alias = nm.substr(0,nm.indexOf('~')),
+  list = document.querySelectorAll('input[name^="'+alias+'"]:checked'),
+  c = list.length;
+ if(c > 0) {
+  var suffix = '~sel',
+   sl = suffix.length;
+  for (var i=0; i<c; i++) {
+   nm = list[i].name;
+   if(nm.indexOf(suffix,nm.length - sl) !== -1)
+    return true;
+  }
+ }
+ return false;
+}
 $(document).ready(function() {
  $('.sms_gateway_panel').hide();
  var \$sel = $('#sms_gateway'), 
@@ -270,9 +289,46 @@ $(document).ready(function() {
    var val = $(this).val();
    $('#'+val).show();
  });
+EOS;
+if($padm)
+{
+	$jsfuncs .= <<<EOS
+ $('.gatedata').tableDnD({
+  dragClass: 'row1hover',
+  onDrop: function(table, droprows) {
+   var odd = true;
+   var oddclass = 'row1';
+   var evenclass = 'row2';
+   var droprow = $(droprows)[0];
+   $(table).find('tbody tr').each(function() {
+    var name = odd ? oddclass : evenclass;
+    if (this === droprow) {
+     name = name+'hover';
+    }
+    $(this).removeClass().addClass(name);
+    odd = !odd;
+   });
+  }
+ }).find('tbody tr').removeAttr('onmouseover').removeAttr('onmouseout').mouseover(function() {
+  var now = $(this).attr('class');
+  $(this).attr('class', now+'hover');
+ }).mouseout(function() {
+  var now = $(this).attr('class');
+  var to = now.indexOf('hover');
+  $(this).attr('class', now.substring(0,to));
+ });
+EOS;
+}
+$jsfuncs .= <<<EOS
 });
+EOS;
+
+$baseurl = $this->GetModuleURLPath();
+$jsincs = <<<EOS
+<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
 
 EOS;
+$smarty->assign('jsincs',$jsincs);
 $smarty->assign('jsfuncs',$jsfuncs);
 
 echo $this->ProcessTemplate('adminpanel.tpl');
