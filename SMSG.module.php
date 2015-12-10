@@ -20,20 +20,7 @@
 # Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
 #-------------------------------------------------------------------------
 
-///////////////////////////////////////////////////////////////////////////
-// This module is derived from CGExtensions
-$config = cmsms()->GetConfig();
-$cgextensions = cms_join_path($config['root_path'],'modules','CGExtensions',
-	'CGExtensions.module.php');
-if(!is_readable($cgextensions))
-{
-	echo '<h1 style="color:red;">ERROR: '.$this->Lang('error_noparentclass').'</h1>';
-	return;
-}
-require_once($cgextensions);
-///////////////////////////////////////////////////////////////////////////
-
-class SMSG extends CGExtensions
+class SMSG extends CMSModule
 {
 	const MODNAME = 'SMSG';
 	const AUDIT_SEND = 1;
@@ -48,12 +35,15 @@ class SMSG extends CGExtensions
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
 	public $havemcrypt;
+	public $before20;
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->havemcrypt = (function_exists('mcrypt_encrypt'));
-		$this->RegisterModulePlugin();
+		global $CMS_VERSION;
+		$this->before20 = (version_compare($CMS_VERSION,'2.0') < 0);
+		$this->RegisterModulePlugin(TRUE);
 	}
 
 	public function AllowAutoInstall()
@@ -161,16 +151,23 @@ class SMSG extends CGExtensions
 		{
 			$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
 			$js = str_replace('|PADM|',$p,$js);
-			return
-			 '<script type="text/javascript" src="'.$this->GetModuleURLPath().
-			 '/include/jquery.tablednd.min.js"></script>'."\n".$js;
+			$baseurl = $this->GetModuleURLPath();
+			return <<<EOS
+<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$js
+//]]>
+</script>
+
+EOS;
 		}
 		return '';
 	}
 
 	public function GetDependencies()
 	{
-		return array('CGExtensions'=>'1.20');
+		return array();
 	}
 
 	//for 1.11+
