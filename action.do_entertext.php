@@ -4,9 +4,11 @@
 # Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
+# action: do_entertext - display a form for the user to enter a message
 #----------------------------------------------------------------------
 
-if(!isset($params['smsnum'])) return;  // no number id
+if(!isset($params['smsnum']))
+	return;  // no number id
 
 $smstext = '';
 $message = '';
@@ -48,7 +50,7 @@ if(!$error && isset($params['smsg_submit']))
 		$error = $this->Lang('error_invalid_text');
 }
 
-// now display the form
+// display the form
 $smarty->assign('message',$message);
 $smarty->assign('error',$error);
 if(!empty($params['gatename']))
