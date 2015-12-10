@@ -6,21 +6,20 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-if(empty($params['mode'])) //we're back from CGExtensions::edittemplate action
-	$this->RedirectToTab($id);
+if(empty($params['mode'])) //we're back from edittemplate action
+	$this->Redirect($id,'defaultadmin','',$params);
 
 $name = $params['template'];
 $pref = $params['prefix'];
 switch($params['mode'])
 {
  case 'add':
-	//setup for handover to CGExtensions::edittemplate action
+	//setup for handover to edittemplate action
 	$params['defaulttemplatepref'] = $pref.'defaultcontent';
  case 'edit':
 	$params['moddesc'] = $this->GetFriendlyName();
 	$params['modname'] = $this->GetName();
 	$params['destaction'] = 'settemplate'; //come back here when done
-	$params['cg_activetab'] = $params['activetab'];
 	switch($pref)
 	{
 	 case 'entertext_':
@@ -38,9 +37,7 @@ switch($params['mode'])
 		$params['info'] = '';
 	 	break;
 	}
-	$cge = cms_utils::get_module('CGExtensions');
-	$cge->DoAction('edittemplate',$id,$params,$returnid);
-	return;
+	$this->Redirect($id,'edittemplate','',$params);
  case 'delete':
 	$this->DeleteTemplate($pref.$name,SMSG::MODNAME);
 	break;
@@ -61,7 +58,6 @@ switch($params['mode'])
 	break;
 }
 
-$this->SetCurrentTab($params['activetab']);
-$this->RedirectToTab($id);
+$this->Redirect($id,'defaultadmin','',$params);
 
 ?>
