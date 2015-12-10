@@ -181,3 +181,9 @@
 {$endtab}
 {/if}{*$padm*}
 {$endtabcontent}
+
+<script type="text/javascript">
+//<![CDATA[
+{$jsfuncs}
+//]]>
+</script>
