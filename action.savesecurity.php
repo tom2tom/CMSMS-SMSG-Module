@@ -6,7 +6,6 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-$this->SetCurrentTab('security');
 $this->SetPreference('hourlimit',(int)$params['hourlimit']);
 $this->SetPreference('daylimit',(int)$params['daylimit']);
 $this->SetPreference('logsends',!empty($params['logsends']));
@@ -69,6 +68,7 @@ if(isset($params['masterpass']))
 	}
 }
 
-$this->RedirectToTab($id);
+$params['activetab'] = 'security';
+$this->Redirect($id,'defaultadmin','',$params);
 
 ?>

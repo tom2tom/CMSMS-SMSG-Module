@@ -57,13 +57,13 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = $this->_module;
+			$mod = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			smsg_utils::setprops($gid,array(
-			 array($module->Lang('username'),'username',NULL,0),
-			 array($module->Lang('password'),'password',NULL,1),
-			 array($module->Lang('from'),'from',NULL,0),
-			 array($module->Lang('reference'),'ref',NULL,0)
+			 array($mod->Lang('username'),'username',NULL,0),
+			 array($mod->Lang('password'),'password',NULL,1),
+			 array($mod->Lang('from'),'from',NULL,0),
+			 array($mod->Lang('reference'),'ref',NULL,0)
 			));
 		}
 		return $gid;
@@ -143,7 +143,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 		if($ref)
 			$parms['ref'] = rawurlencode($ref);
 
-		$str = cge_array::implode_with_key($parms);
+		$str = smsg_utils::implode_with_key($parms);
 		$str = str_replace('amp;','',$str);
 
 		curl_setopt($ch,CURLOPT_POST,TRUE);

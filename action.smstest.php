@@ -6,8 +6,6 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-$this->SetCurrentTab('test');
-
 if(isset($params['submit']))
 {
 	$number = '';
@@ -37,6 +35,7 @@ if(isset($params['submit']))
 		$this->SetError($this->Lang('error_invalidnumber'));
 }
 
-$this->RedirectToTab($id);
+$params['activetab'] = 'test';
+$this->Redirect($id,'defaultadmin','',$params);
 
 ?>

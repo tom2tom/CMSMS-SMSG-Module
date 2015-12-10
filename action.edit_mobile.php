@@ -10,13 +10,13 @@ $mid = '';
 $name = '';
 $mobile = '';
 $pref = cms_db_prefix();
-$this->SetCurrentTab('mobiles');
 
 if(isset($params['mid']))
 {
     $mid = (int)$params['mid'];
 }
 
+$params['activetab'] = 'mobiles';
 if($mid != '')
 {
 	$query = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
@@ -24,7 +24,7 @@ if($mid != '')
 	if(!$tmp)
 	{
 		$this->SetError($this->Lang('error_notfound'));
-		$this->RedirectToTab($id);
+		$this->Redirect($id,'defaultadmin','',$params);
 	}
 	$name = $tmp['name'];
 	$mobile = $tmp['mobile'];
@@ -32,7 +32,7 @@ if($mid != '')
 
 if(isset($params['cancel']))
 {
-	$this->RedirectToTab($id);
+	$this->Redirect($id,'defaultadmin','',$params);
 }
 else if(isset($params['submit']))
 {
@@ -90,11 +90,11 @@ else if(isset($params['submit']))
 	{
 		$this->SetError($error);
 	}
-	$this->RedirectToTab($id);
+	$this->Redirect($id,'defaultadmin','',$params);
 }
 
 // build the form
-$smarty->assign('formstart',$this->CGCreateFormStart($id,'edit_mobile',$returnid,$params));
+$smarty->assign('formstart',$this->CreateFormStart($id,'edit_mobile',$returnid,'POST','','','',$params));
 $smarty->assign('formend',$this->CreateFormEnd());
 $smarty->assign('name',$name);
 $smarty->assign('mobile',$mobile);

@@ -6,7 +6,6 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-$this->SetCurrentTab('mobiles');
 if(isset($params['mid']))
 {
 	$query = 'DELETE FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
@@ -17,6 +16,7 @@ if(isset($params['mid']))
 	else
 		$this->SetError($this->Lang('error_notfound'));
 }
-$this->RedirectToTab($id);
+$params['activetab'] = 'mobiles';
+$this->Redirect($id,'defaultadmin','',$params);
 
 ?>

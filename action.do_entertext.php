@@ -55,8 +55,7 @@ if(!empty($params['gatename']))
 	$smarty->assign('gatename',$params['gatename']);
 $smarty->assign('maxsmschars',160);
 $smarty->assign('smstext',$smstext);
-$smarty->assign('formstart',$this->CGCreateFormStart($id,'do_entertext',
-	$returnid,$params));
+$smarty->assign('formstart',$this->CreateFormStart($id,'do_entertext',$returnid,'POST','','','',$params));
 $smarty->assign('formend',$this->CreateFormEnd());
 if(!isset($params['enternumbertemplate']))
 	$thetemplate = $this->GetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT);

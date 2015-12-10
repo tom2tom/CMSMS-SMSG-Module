@@ -67,12 +67,12 @@ class skeleton_sms_gateway extends sms_gateway_base
 		if($gid)
 		{
 			parent::set_gateid($gid);
-			$module = $this->_module;
+			$mod = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//by convention, apiname's which are not actually used are indicated by a '_' prefix
 			smsg_utils::setprops($gid,array(
-			 array($module->Lang('username'),'user',NULL,0),
-			 array($module->Lang('password'),'password',NULL,1)
+			 array($mod->Lang('username'),'user',NULL,0),
+			 array($mod->Lang('password'),'password',NULL,1)
 			));
 		}
 		return $gid;
@@ -134,7 +134,7 @@ class skeleton_sms_gateway extends sms_gateway_base
 		}
 		//convert $parms data format if needed
 		//MORE $parms - to, from, body etc, format-adjusted as needed
-		$str = cge_array::implode_with_key($parms);
+		$str = smsg_utils::implode_with_key($parms);
 		$str = some_url.'?'.str_replace('amp;','',$str);
 		return $str;
 	}
