@@ -4,25 +4,25 @@
 # Copyright (C) 2015 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
+# action: do_enternumber - display a form for the user to enter a phone number
 #----------------------------------------------------------------------
 
 if(!isset($params['smskey']))
-	return;  // no key
-// verify that the text is still cached
+	return;  // no message-key
 $key = trim($params['smskey']);
-$datastore = new cge_datastore();
-$smstext = $datastore->get($this->GetName(),$key);
+$smstext = $this->GetPreference($key);
 if(!$smstext)
-	return;  // nothing to do
-// and touch the text to prevent expiry
-$datastore->erase($this->GetName(),$key);
-$datastore->store($smstext,$this->GetName(),$key);
+{
+	$this->RemovePreference($key);
+	return;  // nothing to send
+}
 
 $message = '';
 $error = '';
 
 if(isset($params['smsg_submit']))
 {
+	$this->RemovePreference($key);
 	// handle form submission
 	if(isset($params['smsg_mobile']))
 	{
@@ -54,13 +54,12 @@ if(isset($params['smsg_submit']))
 	}
 }
 
-// now display the form
+// display the form
 $smarty->assign('message',$message);
 $smarty->assign('error',$error);
 if(!empty($params['gatename']))
 	$smarty->assign('gatename',$params['gatename']);
-$smarty->assign('formstart',$this->CGCreateFormStart($id,'do_enternumber',
-	$returnid,$params));
+$smarty->assign('formstart',$this->CreateFormStart($id,'do_enternumber',$returnid,'POST','','','',$params));
 $smarty->assign('formend',$this->CreateFormEnd());
 
 if(empty($params['enternumbertemplate']))
