@@ -37,11 +37,3 @@
 <input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
 {if !empty($hidden)}{$hidden}{/if}
 </fieldset>
-{if $dcount}
-{$jsincs}
-<script type="text/javascript">
-//<![CDATA[
-{$jsfuncs}
-//]]>
-</script>
-{/if}
