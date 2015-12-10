@@ -139,32 +139,14 @@ class SMSG extends CMSModule
 		 $this->CheckPermission('UseSMSGateways');
 	}
 
-	public function AdminStyle()
+/*	public function AdminStyle()
 	{
 	}
 
 	public function GetHeaderHTML()
 	{
-		$fp = cms_join_path(dirname(__FILE__),'include','module.js');
-		$js = ''.@file_get_contents($fp);
-		if($js)
-		{
-			$p = ($this->CheckPermission('AdministerSMSGateways')) ? '1':'0';
-			$js = str_replace('|PADM|',$p,$js);
-			$baseurl = $this->GetModuleURLPath();
-			return <<<EOS
-<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
-<script type="text/javascript">
-//<![CDATA[
-$js
-//]]>
-</script>
-
-EOS;
-		}
-		return '';
 	}
-
+*/
 	public function GetDependencies()
 	{
 		return array();
