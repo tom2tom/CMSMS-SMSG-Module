@@ -7,39 +7,40 @@
 #----------------------------------------------------------------------
 
 /**
- @module: the module that is displaying the template
+ @mod: reference to current SMSG module object
  @smarty: the current smarty object
  @modify: boolean, whether to setup for full editing
  @dflttpl: boolean, whether to setup for editing default template
- @id: instance id of @module
+ @id: instance id of @mod
  @returnid: page id to use on subsequent forms and links
  @activetab: tab to return to
  @prefix: template full-name prefix ('enternumber_' or 'entertext_')
  @prefdefname: name of preference that contains the base-name of the current
   default template for @prefix
  */
-function SetupTemplateList(&$module,&$smarty,$modify,$dflttpl,
+function SetupTemplateList(&$mod,&$smarty,$modify,$dflttpl,
 	$id,$returnid,$activetab,
 	$prefix,$prefdefname
 	)
 {
 	if($modify)
 	{
-		$theme = cmsms()->variables['admintheme'];
-		$trueicon = $theme->DisplayImage('icons/system/true.gif',$module->Lang('default_tip'),'','','systemicon');
-		$falseicon = $theme->DisplayImage('icons/system/false.gif',$module->Lang('defaultset_tip'),'','','systemicon');
-		$editicon = $theme->DisplayImage('icons/system/edit.gif',$module->Lang('edit_tip'),'','','systemicon');
-		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$module->Lang('deleteone_tip'),'','','systemicon');
-		$prompt = $module->Lang('sure_ask');
+		$theme = ($mod->before20) ? cmsms()->get_variable('admintheme'):
+			cms_utils::get_theme_object();
+		$trueicon = $theme->DisplayImage('icons/system/true.gif',$mod->Lang('default_tip'),'','','systemicon');
+		$falseicon = $theme->DisplayImage('icons/system/false.gif',$mod->Lang('defaultset_tip'),'','','systemicon');
+		$editicon = $theme->DisplayImage('icons/system/edit.gif',$mod->Lang('edit_tip'),'','','systemicon');
+		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$mod->Lang('deleteone_tip'),'','','systemicon');
+		$prompt = $mod->Lang('sure_ask');
 		$args = array('prefix'=>$prefix,'activetab'=>$activetab);
 	}
 	else
-		$yes = $module->Lang('yes');
+		$yes = $mod->Lang('yes');
 
-	$defaultname = $module->GetPreference($prefdefname);
+	$defaultname = $mod->GetPreference($prefdefname);
 	$rowarray = array();
 
-	$mytemplates = $module->ListTemplates(SMSG::MODNAME);
+	$mytemplates = $mod->ListTemplates(SMSG::MODNAME);
 	array_walk($mytemplates,
 		function(&$n,$k,$p){$l=strlen($p);
 $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALSE;
@@ -55,19 +56,19 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 		{
 			$args['template'] = $one;
 			$args['mode'] = 'edit';
-			$row->name = $module->CreateLink($id,'settemplate',$returnid,$one,$args);
-			$row->editlink = $module->CreateLink($id,'settemplate',$returnid,$editicon,$args);
+			$row->name = $mod->CreateLink($id,'settemplate',$returnid,$one,$args);
+			$row->editlink = $mod->CreateLink($id,'settemplate',$returnid,$editicon,$args);
 
 			$args['mode'] = 'default';
 			$row->default = ($default) ?
 				$trueicon:
-				$module->CreateLink($id,'settemplate',$returnid,$falseicon,$args);
+				$mod->CreateLink($id,'settemplate',$returnid,$falseicon,$args);
 
 			$args['mode'] = 'delete';
 			$row->deletelink = ($default) ?
 				'':
-				$module->CreateImageLink($id,'settemplate',$returnid,
-					$module->Lang('deleteone_tip'),
+				$mod->CreateImageLink($id,'settemplate',$returnid,
+					$mod->Lang('deleteone_tip'),
 					'icons/system/delete.gif',
 					$args,'',$prompt);
 		}
@@ -85,29 +86,29 @@ $n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultcontent')$n=FALS
 		$row = new StdClass();
 		$args['template'] = 'defaultcontent';
 		$args['mode'] = 'edit';
-		$row->name = $module->CreateLink($id,'settemplate',$returnid,
-			'<em>'.$module->Lang('default_template_title').'</em>',$args);
-		$row->editlink = $module->CreateLink($id,'settemplate',$returnid,$editicon,$args);
+		$row->name = $mod->CreateLink($id,'settemplate',$returnid,
+			'<em>'.$mod->Lang('default_template_title').'</em>',$args);
+		$row->editlink = $mod->CreateLink($id,'settemplate',$returnid,$editicon,$args);
 
 		$row->default = '';
 
-		$reverticon = '<img src="'.$module->GetModuleURLPath().'/images/revert.gif" alt="'.
-		 $module->Lang('reset').'" title="'.$module->Lang('reset_tip').
+		$reverticon = '<img src="'.$mod->GetModuleURLPath().'/images/revert.gif" alt="'.
+		 $mod->Lang('reset').'" title="'.$mod->Lang('reset_tip').
 		 '" class="systemicon" onclick="return confirm(\''.$prompt.'\');" />';
 		$args['mode'] = 'revert';
-		$row->deletelink = $module->CreateLink($id,'settemplate',$returnid,$reverticon,$args);
+		$row->deletelink = $mod->CreateLink($id,'settemplate',$returnid,$reverticon,$args);
 		$rowarray[] = $row;
 	}
 
 	$smarty->assign($prefix.'items',$rowarray);
-	$smarty->assign('parent_module_name',$module->GetFriendlyName());
-	$smarty->assign('titlename',$module->Lang('name'));
-	$smarty->assign('titledefault',$module->Lang('default'));
+	$smarty->assign('parent_module_name',$mod->GetFriendlyName());
+	$smarty->assign('titlename',$mod->Lang('name'));
+	$smarty->assign('titledefault',$mod->Lang('default'));
 	if($modify)
 	{
 		$args['mode'] = 'add';
-		$add = $module->CreateImageLink($id,'settemplate',$returnid,
-		 $module->Lang('add_template'),
+		$add = $mod->CreateImageLink($id,'settemplate',$returnid,
+		 $mod->Lang('add_template'),
 		 'icons/system/newobject.gif',
 		 $args,'','',FALSE);
 	}
@@ -135,19 +136,24 @@ $smarty->assign('pmod',$pmod);
 $smarty->assign('ptpl',$ptpl);
 $smarty->assign('puse',$puse);
 
+if(!empty($params['activetab']))
+	$showtab = $params['activetab'];
+else
+	$showtab = 'gates'; //default
+
 $headers = $this->StartTabHeaders();
 if($pmod || $puse)
 	$headers .=
- $this->SetTabHeader('gates',$this->Lang('gateways')).
- $this->SetTabHeader('test',$this->Lang('test'));
- $this->SetTabHeader('mobiles',$this->Lang('phone_numbers'));
+ $this->SetTabHeader('gates',$this->Lang('gateways'),($showtab=='gates')).
+ $this->SetTabHeader('test',$this->Lang('test'),($showtab=='test'));
+ $this->SetTabHeader('mobiles',$this->Lang('phone_numbers'),($showtab=='mobiles'));
 if($ptpl || $puse)
 	$headers .=
- $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates')).
- $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'));
+ $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates'),($showtab=='enternumber')).
+ $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'),($showtab=='entertext'));
 if($padm)
 	$headers .=
- $this->SetTabHeader('security',$this->Lang('security_tab_lbl'));
+ $this->SetTabHeader('security',$this->Lang('security_tab_lbl'),($showtab=='security'));
 $headers .=
  $this->EndTabHeaders().
  $this->StartTabContent();
@@ -159,7 +165,7 @@ $smarty->assign('formend',$this->CreateFormEnd());
 if($pmod || $puse)
 {
 	$smarty->assign('tabstart_gates',$this->StartTab('gates',$params));
-	$smarty->assign('formstart_gates',$this->CGCreateFormStart($id,'savegates'));
+	$smarty->assign('formstart_gates',$this->CreateFormStart($id,'savegates'));
 	$smarty->assign('reporturl',$this->get_reporturl());
 
 	if($pmod)
@@ -188,7 +194,7 @@ if($pmod || $puse)
 	$smarty->assign('gatesdata',$objs);
 
 	$smarty->assign('tabstart_test',$this->StartTab('test',$params));
-	$smarty->assign('formstart_test',$this->CGCreateFormStart($id,'smstest'));
+	$smarty->assign('formstart_test',$this->CreateFormStart($id,'smstest'));
 	
 	$smarty->assign('tabstart_mobiles',$this->StartTab('mobiles',$params));
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
@@ -237,7 +243,7 @@ if($ptpl || $puse)
 if($padm)
 {
 	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
-	$smarty->assign('formstart_security',$this->CGCreateFormStart($id,'savesecurity'));
+	$smarty->assign('formstart_security',$this->CreateFormStart($id,'savesecurity'));
 	$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
 	$smarty->assign('daylimit',$this->GetPreference('daylimit'));
 	$smarty->assign('logsends',$this->GetPreference('logsends'));
