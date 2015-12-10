@@ -291,6 +291,9 @@ abstract class sms_gateway_base
 		$smarty->assign('dcount',$dcount);
 		$smarty->assign('space',$alias); //for gateway-data 'namespace'
 		$smarty->assign('gateid',$gid);
+		
+		$jsincs = NULL;
+		$jsfuncs = NULL;
 		if($padm)
 		{
 			$smarty->assign('title_title',$mod->Lang('title'));
@@ -307,10 +310,72 @@ abstract class sms_gateway_base
 			$smarty->assign('additem',$mod->CreateImageLink($id,'addgate',
 			 '',$text,'icons/system/newobject.gif',array('gate_id'=>$gid),'systemicon','',FALSE));
 			if($dcount > 0)
+			{
 				$smarty->assign('btndelete',$mod->CreateInputSubmit($id,$alias.'~delete',
-				 $mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').
-				 '" onclick="if(row_selected(event,this)) {return confirm(\''.$mod->Lang('sure_ask').'\');} else {return false;}"'));
+					$mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').
+					'" onclick="if(row_selected(event,this)) {return confirm(\''.$mod->Lang('sure_ask').'\');} else {return false;}"'));
+				//find checked boxes named like "m1_<alias>~<field>~sel"
+				$jsfuncs = <<<EOS
+function row_selected(ev,btn) {
+ var nm = btn.name,
+  alias = nm.substr(0,nm.indexOf('~')),
+  list = document.querySelectorAll('input[name^="'+alias+'"]:checked'),
+  c = list.length;
+ if(c > 0) {
+  var suffix = '~sel',
+   sl = suffix.length;
+  for (var i=0; i<c; i++) {
+   nm = list[i].name;
+   if(nm.indexOf(suffix,nm.length - sl) !== -1)
+    return true;
+  }
+ }
+ return false;
+}
+
+EOS;
+				if($dcount > 1)
+				{
+					$baseurl = $this->GetModuleURLPath();
+					$jsincs = <<<EOS
+<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
+
+EOS;
+					$jsfuncs .= <<<EOS
+$(document).ready(function() {
+ $('.gatedata').tableDnD({
+  dragClass: 'row1hover',
+  onDrop: function(table, droprows) {
+   var odd = true;
+   var oddclass = 'row1';
+   var evenclass = 'row2';
+   var droprow = $(droprows)[0];
+   $(table).find('tbody tr').each(function() {
+    var name = odd ? oddclass : evenclass;
+    if (this === droprow) {
+     name = name+'hover';
+    }
+    $(this).removeClass().addClass(name);
+    odd = !odd;
+   });
+  }
+ }).find('tbody tr').removeAttr('onmouseover').removeAttr('onmouseout').mouseover(function() {
+  var now = $(this).attr('class');
+  $(this).attr('class', now+'hover');
+ }).mouseout(function() {
+  var now = $(this).attr('class');
+  var to = now.indexOf('hover');
+  $(this).attr('class', now.substring(0,to));
+ });
+});
+
+EOS;
+				}
+				
+			}
 		}
+		$smarty->assign('jsfincs',$jsincs);
+		$smarty->assign('jsfuncs',$jsfuncs);
 		// anything else to set up for the template
 		$this->custom_setup($smarty,$padm); //e.g. each $ob->size
 		$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata_mod.tpl';

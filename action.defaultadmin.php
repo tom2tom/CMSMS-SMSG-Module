@@ -258,6 +258,23 @@ if($padm)
 	$smarty->assign('masterpass',$pw);
 }
 
+//show only the frameset for selected gateway
+$jsfuncs = <<<EOS
+$(document).ready(function() {
+ $('.sms_gateway_panel').hide();
+ var \$sel = $('#sms_gateway'), 
+    val = \$sel.val();
+ $('#'+val).show();
+ \$sel.change(function() {
+   $('.sms_gateway_panel').hide();
+   var val = $(this).val();
+   $('#'+val).show();
+ });
+});
+
+EOS;
+$smarty->assign('jsfuncs',$jsfuncs);
+
 echo $this->ProcessTemplate('adminpanel.tpl');
 
 ?>
