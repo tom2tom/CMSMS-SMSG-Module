@@ -1,5 +1,3 @@
-<script type="text/javascript">
-//<![CDATA[
 $(document).ready(function() {
  //show only the frameset for selected gateway
  $('.sms_gateway_panel').hide();
@@ -56,5 +54,3 @@ function row_selected(ev,btn) {
  }
  return false;
 }
-//]]>
-</script>
