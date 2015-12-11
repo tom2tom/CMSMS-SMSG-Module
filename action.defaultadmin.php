@@ -225,7 +225,7 @@ if($pmod || $puse)
 		$text = $this->Lang('add_mobile');
 		$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
 		$smarty->assign('add_mobile',$this->CreateLink($id,'edit_mobile','',$addicon).' '.
-			$this->CreateLink($id,'edit_mobile','',$text)));
+			$this->CreateLink($id,'edit_mobile','',$text));
 	}
 }
 if($ptpl || $puse)
@@ -260,39 +260,42 @@ if($padm)
 	$smarty->assign('masterpass',$pw);
 }
 
-//find checked boxes named like "m1_<alias>~<field>~sel"
+$jsfuncs = array();
+$jsloads = array();
 //show only the frameset for selected gateway
-$jsfuncs = <<<EOS
-function row_selected(ev,btn) {
- var nm = btn.name,
-  alias = nm.substr(0,nm.indexOf('~')),
-  list = document.querySelectorAll('input[name^="'+alias+'"]:checked'),
-  c = list.length;
- if(c > 0) {
-  var suffix = '~sel',
-   sl = suffix.length;
-  for (var i=0; i<c; i++) {
-   nm = list[i].name;
-   if(nm.indexOf(suffix,nm.length - sl) !== -1)
-    return true;
-  }
- }
- return false;
-}
-$(document).ready(function() {
+$jsloads[] = <<<EOS
  $('.sms_gateway_panel').hide();
  var \$sel = $('#sms_gateway'), 
     val = \$sel.val();
  $('#'+val).show();
+
+EOS;
+if($padm)
+{
+	$prompt = $this->Lang('sure_ask');
+	$jsloads[] = <<<EOS
  \$sel.change(function() {
    $('.sms_gateway_panel').hide();
    var val = $(this).val();
    $('#'+val).show();
  });
+ $('input[type="submit"][name$="~delete"]').click(function(ev) {
+  var cb = $(this).closest('fieldset').find('input[name$="~sel"]:checked');
+  if(cb.length > 0) {
+   return confirm('{$prompt}');
+  } else {
+   return false;
+  }
+ });
+
 EOS;
-if($padm)
-{
-	$jsfuncs .= <<<EOS
+	//support property reordering by table-DnD
+	$baseurl = $this->GetModuleURLPath();
+	$jsincs = <<<EOS
+<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
+
+EOS;
+	$jsloads[] = <<<EOS
  $('.gatedata').tableDnD({
   dragClass: 'row1hover',
   onDrop: function(table, droprows) {
@@ -317,17 +320,20 @@ if($padm)
   var to = now.indexOf('hover');
   $(this).attr('class', now.substring(0,to));
  });
+
 EOS;
 }
-$jsfuncs .= <<<EOS
+
+$jsfuncs[] = <<<EOS
+$(document).ready(function() {
+
+EOS;
+$jsfuncs = array_merge($jsfuncs,$jsloads);
+$jsfuncs[] = <<<EOS
 });
-EOS;
-
-$baseurl = $this->GetModuleURLPath();
-$jsincs = <<<EOS
-<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
 
 EOS;
+
 $smarty->assign('jsincs',$jsincs);
 $smarty->assign('jsfuncs',$jsfuncs);
 

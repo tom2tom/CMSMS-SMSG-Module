@@ -314,8 +314,8 @@ abstract class sms_gateway_base
 			if($dcount > 0)
 			{
 				$smarty->assign('btndelete',$mod->CreateInputSubmit($id,$alias.'~delete',
-					$mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').
-					'" onclick="if(row_selected(event,this)) {return confirm(\''.$mod->Lang('sure_ask').'\');} else {return false;}"'));
+					$mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').'"'));
+				//confirmation js applied in $(document).ready() - see action.defaultadmin.php
 			}
 		}
 		// anything else to set up for the template

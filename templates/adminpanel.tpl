@@ -183,8 +183,10 @@
 {$endtabcontent}
 
 {if !empty($jsincs)}{$jsincs}{/if}
+{if !empty($jsfuncs)}
 <script type="text/javascript">
 //<![CDATA[
-{$jsfuncs}
+{foreach from=$jsfuncs item=func}{$func}{/foreach}
 //]]>
 </script>
+{/if}
