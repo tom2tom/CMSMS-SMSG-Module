@@ -160,7 +160,6 @@ class SMSG extends CMSModule
 
 	public function LazyLoadFrontend()
 	{
-		//support delivery-report processing at any time
 		return FALSE;
 	}
 
@@ -169,10 +168,10 @@ class SMSG extends CMSModule
 		return '1.9';
 	}
 
-	public function MaximumCMSVersion()
+/*	public function MaximumCMSVersion()
 	{
-		return '1.19.99';
 	}
+*/
 
 	public function InstallPostMessage()
 	{
