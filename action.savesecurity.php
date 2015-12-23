@@ -15,10 +15,7 @@ if(isset($params['masterpass']))
 {
 	$oldpw = $this->GetPreference('masterpass');
 	if($oldpw)
-	{
-		$s = base64_decode(substr($oldpw,5));
-		$oldpw = substr($s,5);
-	}
+		$oldpw = smsg_utils::unfusc($oldpw);
 	$newpw = trim($params['masterpass']);
 	if($oldpw != $newpw)
 	{
@@ -60,10 +57,8 @@ if(isset($params['masterpass']))
 			unset($onerow);
 		}
 		if($newpw)
-		{
-			$s = substr(base64_encode(md5(microtime())),0,5); //obfuscate
-			$newpw= $s.base64_encode($s.$newpw);
-		}
+			$newpw = smsg_utils::fusc($newpw);
+
 		$this->SetPreference('masterpass',$newpw);
 	}
 }
