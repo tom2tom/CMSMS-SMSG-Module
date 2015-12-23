@@ -195,10 +195,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			{
 				$passwd = $mod->GetPreference('masterpass');
 				if($passwd)
-				{
-					$s = base64_decode(substr($passwd,5));
-					$passwd = substr($s,5);
-				}
+					$passwd = self::unfusc($passwd);
 			}
 			if($passwd && $mod->havemcrypt)
 			{
@@ -217,10 +214,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			{
 				$passwd = $mod->GetPreference('masterpass');
 				if($passwd)
-				{
-					$s = base64_decode(substr($passwd,5));
-					$passwd = substr($s,5);
-				}
+					$passwd = self::unfusc($passwd);
 			}
 			if($passwd && $mod->havemcrypt)
 			{
@@ -229,6 +223,36 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 		}
 		return $value;
+	}
+
+	/**
+	fusc:
+	@str: string or FALSE
+	obfuscate @str
+	*/
+	public static function fusc($str)
+	{
+		if($str)
+		{
+			$s = substr(base64_encode(md5(microtime())),0,5);
+			return $s.base64_encode($s.$str);
+		}
+		return '';
+	}
+
+	/**
+	unfusc:
+	@str: string or FALSE
+	de-obfuscate @str
+	*/
+	public static function unfusc($str)
+	{
+		if($str)
+		{
+			$s = base64_decode(substr($str,5));
+			return substr($s,5);
+		}
+		return '';
 	}
 
 	//this is a varargs function, 2nd argument (if it exists) is either a
