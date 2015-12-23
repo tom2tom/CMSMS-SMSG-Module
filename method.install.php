@@ -63,6 +63,7 @@ $this->SetPreference('logsends',TRUE);
 $this->SetPreference('logdays',7);
 $this->SetPreference('logdeliveries',TRUE);
 $this->SetPreference('lastcleared',time());
+$this->SetPreference('masterpass','');
 
 $sample = $this->Lang('sample');
 //enter-number template
