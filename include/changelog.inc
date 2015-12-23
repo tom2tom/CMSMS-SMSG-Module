@@ -22,6 +22,7 @@
  </li>
  <li>Version 1.0 - December 2015
   <ul>
+   <li>Support CMSMS versions 2+</li>
    <li>Remove CGExtensions dependency</li>
   </ul>
  </li>
