@@ -1,6 +1,6 @@
 {if !empty($message)}<p>{$message}</p>{/if}
 
-{$starttabcontent}
+{$tabsheader}
 {if ($pmod || $puse)}
 {$tabstart_gates}
 {if $pmod}
@@ -180,7 +180,7 @@
 {$formend}
 {$endtab}
 {/if}{*$padm*}
-{$endtabcontent}
+{$tabsfooter}
 
 {if !empty($jsincs)}{$jsincs}{/if}
 {if !empty($jsfuncs)}
