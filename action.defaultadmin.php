@@ -155,9 +155,9 @@ if($padm)
 $headers .=
  $this->EndTabHeaders().
  $this->StartTabContent();
-$smarty->assign('starttabcontent',$headers);
+$smarty->assign('tabsheader',$headers);
+$smarty->assign('tabsfooter',$this->EndTabContent()); //for CMSMS 2+, must be before EndTab() !!
 $smarty->assign('endtab',$this->EndTab());
-$smarty->assign('endtabcontent',$this->EndTabContent());
 $smarty->assign('formend',$this->CreateFormEnd());
 
 if($pmod || $puse)
@@ -253,10 +253,7 @@ if($padm)
 	$smarty->assign('logdeliveries',$this->GetPreference('logdeliveries'));
 	$pw = $this->GetPreference('masterpass');
 	if($pw)
-	{
-		$s = base64_decode(substr($pw,5));
-		$pw = substr($s,5);
-	}
+		$pw = smsg_utils::unfusc($pw);
 	$smarty->assign('masterpass',$pw);
 }
 
