@@ -263,7 +263,7 @@ $lang['prompt_hourly_limit'] = 'Number of messages that can be sent by one IP ad
 $lang['prompt_log_delivers'] = 'Record in the admin log information about received gateway-delivery-reports';
 $lang['prompt_log_sends'] = 'Keep local records of sent messages';
 $lang['prompt_log_retain_days'] = 'Number of days that local records (if enabled) will be retained';
-$lang['prompt_master_password'] = 'Master Password';
+$lang['prompt_master_password'] = 'Pass-phrase for securing sensitive data';
 
 #Q
 
