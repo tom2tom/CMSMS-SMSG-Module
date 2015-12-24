@@ -25,6 +25,7 @@
 <div class="pageoverflow">
  <p class="pageinput">
   <input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}" />
+  <input type="submit" name="{$actionid}cancel" value="{$mod->Lang('cancel')}" />  
  </p>
 </div>
 {$formend}
@@ -170,11 +171,12 @@
  </p>
  <p class="pagetext">{$mod->Lang('prompt_master_password')}:</p>
  <p class="pageinput">
-  <input type="password" name="{$actionid}masterpass" value="{$masterpass}" size="36" maxlength="96" />
+  <textarea id="{$actionid}passwd" name="{$actionid}masterpass" style="height:3em;" rows="3" cols="50">{$masterpass}</textarea>
  </p>
  <br />
  <p class="pageinput">
   <input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}" />
+  <input type="submit" name="{$actionid}cancel" value="{$mod->Lang('cancel')}" />
  </p>
 </div>
 {$formend}
@@ -182,7 +184,8 @@
 {/if}{*$padm*}
 {$tabsfooter}
 
-{if !empty($jsincs)}{$jsincs}{/if}
+{if !empty($jsincs)}{foreach from=$jsincs item=file}{$file}
+{/foreach}{/if}
 {if !empty($jsfuncs)}
 <script type="text/javascript">
 //<![CDATA[
