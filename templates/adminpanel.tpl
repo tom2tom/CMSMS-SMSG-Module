@@ -170,7 +170,7 @@
  </p>
  <p class="pagetext">{$mod->Lang('prompt_master_password')}:</p>
  <p class="pageinput">
-  <input type="password" name="{$actionid}masterpass" value="{$masterpass}" size="20" maxlength="64" />
+  <input type="password" name="{$actionid}masterpass" value="{$masterpass}" size="36" maxlength="96" />
  </p>
  <br />
  <p class="pageinput">
