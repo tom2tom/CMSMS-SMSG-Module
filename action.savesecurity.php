@@ -5,6 +5,10 @@
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+if(!$this->CheckPermission('AdministerSMSGateways')) exit;
+
+if(isset($params['cancel']))
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>'security'));
 
 $this->SetPreference('hourlimit',(int)$params['hourlimit']);
 $this->SetPreference('daylimit',(int)$params['daylimit']);
@@ -63,7 +67,6 @@ if(isset($params['masterpass']))
 	}
 }
 
-$params['activetab'] = 'security';
-$this->Redirect($id,'defaultadmin','',$params);
+$this->Redirect($id,'defaultadmin','',array('activetab'=>'security'));
 
 ?>
