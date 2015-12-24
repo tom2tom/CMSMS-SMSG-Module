@@ -160,6 +160,11 @@ $smarty->assign('tabsfooter',$this->EndTabContent()); //for CMSMS 2+, must be be
 $smarty->assign('endtab',$this->EndTab());
 $smarty->assign('formend',$this->CreateFormEnd());
 
+$jsincs = array();
+$jsfuncs = array();
+$jsloads = array();
+$baseurl = $this->GetModuleURLPath();
+
 if($pmod || $puse)
 {
 	$smarty->assign('tabstart_gates',$this->StartTab('gates',$params));
@@ -255,10 +260,16 @@ if($padm)
 	if($pw)
 		$pw = smsg_utils::unfusc($pw);
 	$smarty->assign('masterpass',$pw);
+	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery.inputcloak.min.js"></script>';
+	$jsloads[] =<<<EOS
+ $('#{$id}passwd').inputCloak({
+  type:'see4',
+  symbol:'\u2022'
+ });
+
+EOS;
 }
 
-$jsfuncs = array();
-$jsloads = array();
 //show only the frameset for selected gateway
 $jsloads[] = <<<EOS
  $('.sms_gateway_panel').hide();
@@ -287,8 +298,7 @@ if($padm)
 
 EOS;
 	//support property reordering by table-DnD
-	$baseurl = $this->GetModuleURLPath();
-	$jsincs = <<<EOS
+	$jsincs[] = <<<EOS
 <script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
 
 EOS;
