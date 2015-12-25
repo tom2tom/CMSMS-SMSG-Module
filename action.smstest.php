@@ -5,6 +5,8 @@
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+if(!($this->CheckPermission('AdministerSMSGateways')
+  || $this->CheckPermission('ModifySMSGateways'))) exit;
 
 if(isset($params['submit']))
 {
@@ -35,7 +37,6 @@ if(isset($params['submit']))
 		$this->SetError($this->Lang('error_invalidnumber'));
 }
 
-$params['activetab'] = 'test';
-$this->Redirect($id,'defaultadmin','',$params);
+$this->Redirect($id,'defaultadmin','',array('activetab'=>'test'));
 
 ?>

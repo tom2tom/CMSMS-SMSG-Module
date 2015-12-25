@@ -5,6 +5,8 @@
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+if(!($this->CheckPermission('AdministerSMSGateways')
+  || $this->CheckPermission('ModifySMSGateways'))) exit;
 
 if(isset($params['mid']))
 {

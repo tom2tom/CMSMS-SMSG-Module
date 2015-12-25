@@ -6,18 +6,23 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 # action - edittemplate redirected here from action settemplate, add/edit
 #----------------------------------------------------------------------
+if(!($this->CheckPermission('AdministerSMSGateways')
+  || $this->CheckPermission('ModifySMSGateTemplates'))) exit;
+
+if(isset($params['cancel']))
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
 
 // check if we have a template name
 if(!(isset($params['template']) || isset($params['prefix'])))
 {
-	$params['errors'] = $this->Lang('error_params');
-	$this->Redirect($id,'defaultadmin','',$params);
+	$this->SetError($this->Lang('error_params'));
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
 }
 
 if(!isset($params['mode']) || !isset($params['title']))
 {
-	$params['errors'] = $this->Lang('error_params');
-	$this->Redirect($id,'defaultadmin','',$params);
+	$this->SetError($this->Lang('error_params'));
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
 }
 
 // handle errors

@@ -5,9 +5,11 @@
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+if(!($this->CheckPermission('AdministerSMSGateways')
+  || $this->CheckPermission('ModifySMSGateTemplates'))) exit;
 
 if(empty($params['mode'])) //we're back from edittemplate action
-	$this->Redirect($id,'defaultadmin','',$params);
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
 
 $name = $params['template'];
 $pref = $params['prefix'];
@@ -58,6 +60,6 @@ switch($params['mode'])
 	break;
 }
 
-$this->Redirect($id,'defaultadmin','',$params);
+$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
 
 ?>
