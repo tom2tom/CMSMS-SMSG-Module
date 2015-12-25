@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 if(!($this->CheckPermission('AdministerSMSGateways')
-  || $this->CheckPermission('ModifySMSGateways')) exit;
+  || $this->CheckPermission('ModifySMSGateways'))) exit;
 
 $sql = 'INSERT INTO '.cms_db_prefix().
  'module_smsg_props (gate_id,title,apiname,enabled,apiorder) VALUES (?,\'---\',\'todo\',0,99)';
