@@ -12,11 +12,9 @@ $mobile = '';
 $pref = cms_db_prefix();
 
 if(isset($params['mid']))
-{
     $mid = (int)$params['mid'];
-}
 
-$params['activetab'] = 'mobiles';
+
 if($mid != '')
 {
 	$query = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
@@ -24,7 +22,7 @@ if($mid != '')
 	if(!$tmp)
 	{
 		$this->SetError($this->Lang('error_notfound'));
-		$this->Redirect($id,'defaultadmin','',$params);
+		$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
 	}
 	$name = $tmp['name'];
 	$mobile = $tmp['mobile'];
@@ -32,7 +30,7 @@ if($mid != '')
 
 if(isset($params['cancel']))
 {
-	$this->Redirect($id,'defaultadmin','',$params);
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
 }
 else if(isset($params['submit']))
 {
@@ -90,7 +88,7 @@ else if(isset($params['submit']))
 	{
 		$this->SetError($error);
 	}
-	$this->Redirect($id,'defaultadmin','',$params);
+	$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
 }
 
 // build the form

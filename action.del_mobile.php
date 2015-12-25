@@ -16,7 +16,7 @@ if(isset($params['mid']))
 	else
 		$this->SetError($this->Lang('error_notfound'));
 }
-$params['activetab'] = 'mobiles';
-$this->Redirect($id,'defaultadmin','',$params);
+
+$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
 
 ?>
