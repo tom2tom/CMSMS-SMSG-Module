@@ -28,11 +28,9 @@ if($objs)
 			$db->Execute($sql,array($gateway));
 		}
 	}
-
+	//property-deletions handled downstream
 	foreach($objs as $classname=>$rec)
-	{
 		$rec['obj']->handle_setup_form($params);
-	}
 }
 
 $this->Redirect($id,'defaultadmin','',array('activetab'=>'gates'));
