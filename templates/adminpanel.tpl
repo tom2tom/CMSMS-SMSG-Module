@@ -171,7 +171,7 @@
  </p>
  <p class="pagetext">{$mod->Lang('prompt_master_password')}:</p>
  <p class="pageinput">
-  <textarea id="{$actionid}passwd" name="{$actionid}masterpass" style="height:3em;" rows="3" cols="50">{$masterpass}</textarea>
+  <textarea id="{$actionid}passwd" name="{$actionid}masterpass" class="cloaked" rows="2" cols="40">{$masterpass}</textarea>
  </p>
  <br />
  <p class="pageinput">
