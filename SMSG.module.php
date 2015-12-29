@@ -8,16 +8,16 @@
 # CMS Made Simple (C) 2005-2015 Ted Kulp (wishy@cmsmadesimple.org)
 # Its homepage is: http://www.cmsmadesimple.org
 #-------------------------------------------------------------------------
-# This module is free software; you can redistribute and/or modify it
+# This module is free software. You can redistribute and/or modify it
 # under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation; either version 3 of the License, or
+# by the Free Software Foundation, either version 3 of that License, or
 # (at your option) any later version.
 #
 # This module is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
-# Read the Licence online: http://www.gnu.org/licenses/licenses.html#AGPL
+# Read the License online: http://www.gnu.org/licenses/licenses.html#AGPL
 #-------------------------------------------------------------------------
 
 class SMSG extends CMSModule
@@ -32,17 +32,17 @@ class SMSG extends CMSModule
 	const PREF_ENTERTEXT_TPLDFLT = 'entertext_dflttpl';
 	const PREF_ENTERTEXT_CONTENTDFLT = 'entertext_defaultcontent';
 
+	public $before20;
 	const ENC_ROUNDS = 10000;
 	//whether password encryption is supported
 	public $havemcrypt;
-	public $before20;
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->havemcrypt = (function_exists('mcrypt_encrypt'));
 		global $CMS_VERSION;
 		$this->before20 = (version_compare($CMS_VERSION,'2.0') < 0);
+		$this->havemcrypt = function_exists('mcrypt_encrypt');
 		$this->RegisterModulePlugin(TRUE);
 	}
 
@@ -56,6 +56,12 @@ class SMSG extends CMSModule
 		return FALSE;
 	}
 
+	//for 1.11+
+	public function AllowSmartyCaching()
+	{
+		return TRUE;
+	}
+
 	public function GetName()
 	{
 		return self::MODNAME;
@@ -66,14 +72,14 @@ class SMSG extends CMSModule
 		return $this->Lang('friendlyname');
 	}
 
-	public function GetVersion()
-	{
-		return '1.0';
-	}
-
 	public function GetHelp()
 	{
 		return $this->Lang('help_module');
+	}
+
+	public function GetVersion()
+	{
+		return '1.0';
 	}
 
 	public function GetAuthor()
@@ -139,23 +145,19 @@ class SMSG extends CMSModule
 		 $this->CheckPermission('UseSMSGateways');
 	}
 
-/*	public function AdminStyle()
+	public function AdminStyle()
 	{
+		$fn = cms_join_path(dirname(__FILE__),'css','admin.css');
+		return ''.@file_get_contents($fn);
 	}
 
-	public function GetHeaderHTML()
+/*	public function GetHeaderHTML()
 	{
 	}
 */
 	public function GetDependencies()
 	{
 		return array();
-	}
-
-	//for 1.11+
-	public function AllowSmartyCaching()
-	{
-		return TRUE;
 	}
 
 	public function LazyLoadFrontend()
