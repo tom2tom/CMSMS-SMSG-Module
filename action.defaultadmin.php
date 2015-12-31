@@ -260,7 +260,7 @@ if($padm)
 	if($pw)
 		$pw = smsg_utils::unfusc($pw);
 	$smarty->assign('masterpass',$pw);
-	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery.inputcloak.min.js"></script>';
+	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery-inputCloak.min.js"></script>';
 	$jsloads[] =<<<EOS
  $('#{$id}passwd').inputCloak({
   type:'see4',
