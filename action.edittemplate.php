@@ -31,11 +31,12 @@ if(isset($params['errors']))
 
 $params['origaction'] = $params['action'];
 $contents = '';
+$tplvars = array();
 if($params['mode'] == 'add')
 {
-	$smarty->assign('formstart',$this->CreateFormStart($id,'do_addtemplate',$returnid,'POST','','','',$params));
-	$smarty->assign('templatename',$this->CreateInputText($id,'template','',40,200));
-	$smarty->assign('hidden',
+	$tplvars['formstart'] = $this->CreateFormStart($id,'do_addtemplate',$returnid,'POST','','','',$params);
+	$tplvars['templatename'] = $this->CreateInputText($id,'template','',40,200);
+	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'prefix',$params['prefix']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']));
 	if(!empty($params['defaulttemplatepref']))
@@ -55,13 +56,13 @@ if($params['mode'] == 'add')
 }
 else
 {
-	$smarty->assign('formstart',$this->CreateFormStart($id,'edittemplate',$returnid,'POST','','','',$params));
-	$smarty->assign('templatename',$params['template']);
-	$smarty->assign('hidden',
+	$tplvars['formstart'] = $this->CreateFormStart($id,'edittemplate',$returnid,'POST','','','',$params);
+	$tplvars['templatename'] = $params['template'];
+	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'template',$params['template']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']));
 	$contents = $this->GetTemplate($params['prefix'].$params['template']);
-	$smarty->assign('apply',$this->CreateInputSubmit($id,'applybutton',$this->Lang('apply')));
+	$tplvars['apply'] = $this->CreateInputSubmit($id,'applybutton',$this->Lang('apply'));
 }
 
 if(!empty($params['info']))
@@ -74,11 +75,11 @@ if(!empty($params['info']))
 			break;
 		$txt = $tmp;
 	}
-	$smarty->assign('template_info',$txt);
+	$tplvars['template_info'] = $txt; 
 }
 
 if(isset($params['moddesc']))
-	$smarty->assign('module_description',trim($params['moddesc']));
+	$tplvars['module_description'] = trim($params['moddesc']); 
 
 $title = trim($params['title']);
 for($i = 0; $i < 5; $i++)
@@ -88,14 +89,16 @@ for($i = 0; $i < 5; $i++)
 		break;
 	$title = $tmp;
 }
-$smarty->assign('title',cms_html_entity_decode($title));
 
-$smarty->assign('prompt_templatename',$this->Lang('prompt_templatename'));
-$smarty->assign('prompt_template',$this->Lang('prompt_template'));
-$smarty->assign('template',$this->CreateSyntaxArea($id,$contents,'templatecontent'));
-$smarty->assign('submit',$this->CreateInputSubmit($id,'submit',$this->Lang('submit')));
-$smarty->assign('cancel',$this->CreateInputSubmit($id,'cancel',$this->Lang('cancel')));
-$smarty->assign('formend',$this->CreateFormEnd());
+$tplvars = $tplvars + array(
+	'title' => cms_html_entity_decode($title); 
 
-echo $this->ProcessTemplate('edit_template.tpl');
+	'prompt_templatename' => $this->Lang('prompt_templatename'),
+	'prompt_template' => $this->Lang('prompt_template'),
+	'template' => $this->CreateSyntaxArea($id,$contents,'templatecontent'),
+	'submit' => $this->CreateInputSubmit($id,'submit',$this->Lang('submit')),
+	'cancel' => $this->CreateInputSubmit($id,'cancel',$this->Lang('cancel')),
+	'formend' => $this->CreateFormEnd()
+
+echo smsg_utils::ProcessTemplate($this,'edit_template.tpl',$tplvars);
 ?>

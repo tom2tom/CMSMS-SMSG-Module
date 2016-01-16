@@ -94,11 +94,12 @@ else if(isset($params['submit']))
 }
 
 // build the form
-$smarty->assign('formstart',$this->CreateFormStart($id,'edit_mobile',$returnid,'POST','','','',$params));
-$smarty->assign('formend',$this->CreateFormEnd());
-$smarty->assign('name',$name);
-$smarty->assign('mobile',$mobile);
+$tplvars = array(
+	'formstart' => $this->CreateFormStart($id,'edit_mobile',$returnid,'POST','','','',$params),
+	'formend' => $this->CreateFormEnd(),
+	'name' => $name,
+	'mobile' => $mobile
+);
 
-echo $this->ProcessTemplate('edit_mobile.tpl');
-
+echo smsg_utils::ProcessTemplate($this,'edit_mobile.tpl',$tplvars);
 ?>

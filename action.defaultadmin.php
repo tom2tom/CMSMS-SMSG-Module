@@ -98,10 +98,12 @@ $l=strlen($p);$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultco
 		$rowarray[] = $row;
 	}
 
-	$smarty->assign($prefix.'items',$rowarray);
-	$smarty->assign('parent_module_name',$mod->GetFriendlyName());
-	$smarty->assign('titlename',$mod->Lang('name'));
-	$smarty->assign('titledefault',$mod->Lang('default'));
+	$tplvars = array(
+		$prefix.'items' => $rowarray,
+		'parent_module_name' => $mod->GetFriendlyName(),
+		'titlename' => $mod->Lang('name'),
+		'titledefault' => $mod->Lang('default')
+	);
 	if($modify)
 	{
 		$args['mode'] = 'add';
@@ -110,7 +112,7 @@ $l=strlen($p);$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;if($n=='defaultco
 	}
 	else
 		$add = '';
-	$smarty->assign('add_'.$prefix.'template',$add);
+	$tplvars['add_'.$prefix.'template'] = $add; 
 
 }
 
@@ -127,12 +129,14 @@ $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
 $ptpl = $padm || $this->CheckPermission('ModifySMSGateTemplates');
 $puse = $this->CheckPermission('UseSMSGateways');
 
-$smarty->assign('padm',$padm);
-$smarty->assign('pmod',$pmod);
-$smarty->assign('ptpl',$ptpl);
-$smarty->assign('puse',$puse);
+$tplvars = $tplvars + array(
+	'padm' => $padm,
+	'pmod' => $pmod,
+	'ptpl' => $ptpl,
+	'puse' => $puse,
 
-$smarty->assign('mod',$this);
+	'mod' => $this
+);
 
 if(!empty($params['activetab']))
 	$showtab = $params['activetab'];
@@ -155,10 +159,12 @@ if($padm)
 $headers .=
  $this->EndTabHeaders().
  $this->StartTabContent();
-$smarty->assign('tabsheader',$headers);
-$smarty->assign('tabsfooter',$this->EndTabContent()); //for CMSMS 2+, must be before EndTab() !!
-$smarty->assign('endtab',$this->EndTab());
-$smarty->assign('formend',$this->CreateFormEnd());
+$tplvars = $tplvars + array(
+	'tabsheader' => $headers,
+	'tabsfooter' => $this->EndTabContent(), //for CMSMS 2+, must be before EndTab() !!
+	'endtab' => $this->EndTab(),
+	'formend' => $this->CreateFormEnd()
+);
 
 $jsincs = array();
 $jsfuncs = array();
@@ -167,9 +173,11 @@ $baseurl = $this->GetModuleURLPath();
 
 if($pmod || $puse)
 {
-	$smarty->assign('tabstart_gates',$this->StartTab('gates',$params));
-	$smarty->assign('formstart_gates',$this->CreateFormStart($id,'savegates'));
-	$smarty->assign('reporturl',$this->get_reporturl());
+	$tplvars = $tplvars + array(
+		'tabstart_gates' => $this->StartTab('gates',$params),
+		'formstart_gates' => $this->CreateFormStart($id,'savegates'),
+		'reporturl' => $this->get_reporturl()
+	);
 
 	if($pmod)
 	{
@@ -185,8 +193,8 @@ if($pmod || $puse)
 		if($current == FALSE)
 			$current = '-1';
 
-		$smarty->assign('gatecurrent',$current);
-		$smarty->assign('gatesnames',$names);
+		$tplvars['gatecurrent'] = $current; 
+		$tplvars['gatesnames'] = $names; 
 	}
 	else
 	{
@@ -194,15 +202,15 @@ if($pmod || $puse)
 			$rec = $rec['obj']->get_setup_form();
 		unset($rec);
 	}
-	$smarty->assign('gatesdata',$objs);
+	$tplvars['gatesdata'] = $objs; 
 
 	$theme = ($this->before20) ? cmsms()->get_variable('admintheme'):
 		cms_utils::get_theme_object();
 
-	$smarty->assign('tabstart_test',$this->StartTab('test',$params));
-	$smarty->assign('formstart_test',$this->CreateFormStart($id,'smstest'));
+	$tplvars['tabstart_test'] = $this->StartTab('test',$params); 
+	$tplvars['formstart_test'] = $this->CreateFormStart($id,'smstest'); 
 	
-	$smarty->assign('tabstart_mobiles',$this->StartTab('mobiles',$params));
+	$tplvars['tabstart_mobiles'] = $this->StartTab('mobiles',$params); 
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
 	$data = $db->GetAll($query);
 	if($data)
@@ -221,45 +229,47 @@ if($pmod || $puse)
 			}
 		}
 		unset($row);
-		$smarty->assign('numbers',$data);
+		$tplvars['numbers'] = $data; 
 	}
 	else
-		$smarty->assign('nonumbers',$this->Lang('nonumbers'));
+		$tplvars['nonumbers'] = $this->Lang('nonumbers'); 
 	if($pmod)
 	{
 		$text = $this->Lang('add_mobile');
 		$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
-		$smarty->assign('add_mobile',$this->CreateLink($id,'edit_mobile','',$addicon).' '.
+		$tplvars['add_mobile'] = $this->CreateLink($id,'edit_mobile','',$addicon).' '.
 			$this->CreateLink($id,'edit_mobile','',$text));
 	}
 }
 if($ptpl || $puse)
 {
 	$tid = 'enternumber';
-	$smarty->assign('tabstart_enternumber',$this->StartTab($tid,$params));
+	$tplvars['tabstart_enternumber'] = $this->StartTab($tid,$params); 
 	SetupTemplateList($this,$smarty,$ptpl,$padm,
 		$id,$returnid,$tid, //tab to come back to
 		'enternumber_', //'prefix' of templates' full-name
 		SMSG::PREF_ENTERNUMBER_TPLDFLT); //preference holding name of default template
 
 	$tid = 'entertext';
-	$smarty->assign('tabstart_entertext',$this->StartTab($tid,$params));
+	$tplvars['tabstart_entertext'] = $this->StartTab($tid,$params); 
 	SetupTemplateList($this,$smarty,$ptpl,$padm,
 		$id,$returnid,$tid,'entertext_',SMSG::PREF_ENTERTEXT_TPLDFLT);
 }
 if($padm)
 {
-	$smarty->assign('tabstart_security',$this->StartTab('security',$params));
-	$smarty->assign('formstart_security',$this->CreateFormStart($id,'savesecurity'));
-	$smarty->assign('hourlimit',$this->GetPreference('hourlimit'));
-	$smarty->assign('daylimit',$this->GetPreference('daylimit'));
-	$smarty->assign('logsends',$this->GetPreference('logsends'));
-	$smarty->assign('logdays',$this->GetPreference('logdays'));
-	$smarty->assign('logdeliveries',$this->GetPreference('logdeliveries'));
+	$tplvars = $tplvars + array(
+		'tabstart_security' => $this->StartTab('security',$params),
+		'formstart_security' => $this->CreateFormStart($id,'savesecurity'),
+		'hourlimit' => $this->GetPreference('hourlimit'),
+		'daylimit' => $this->GetPreference('daylimit'),
+		'logsends' => $this->GetPreference('logsends'),
+		'logdays' => $this->GetPreference('logdays'),
+		'logdeliveries' => $this->GetPreference('logdeliveries')
+	); 
 	$pw = $this->GetPreference('masterpass');
 	if($pw)
 		$pw = smsg_utils::unfusc($pw);
-	$smarty->assign('masterpass',$pw);
+	$tplvars['masterpass' => $pw; 
 	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery-inputCloak.min.js"></script>';
 	$jsloads[] =<<<EOS
  $('#{$id}passwd').inputCloak({
@@ -341,9 +351,9 @@ $jsfuncs[] = <<<EOS
 
 EOS;
 
-$smarty->assign('jsincs',$jsincs);
-$smarty->assign('jsfuncs',$jsfuncs);
+$tplvars['jsincs'] = $jsincs; 
+$tplvars['jsfuncs'] = $jsfuncs;
 
-echo $this->ProcessTemplate('adminpanel.tpl');
+echo smsg_utils::ProcessTemplate($this,'adminpanel.tpl',$tplvars);
 
 ?>

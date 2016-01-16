@@ -51,18 +51,18 @@ if(!$error && isset($params['smsg_submit']))
 }
 
 // display the form
-$smarty->assign('message',$message);
-$smarty->assign('error',$error);
+$tplvars = array();
+$tplvars['message'] = $message;
+$tplvars['error'] = $error;
 if(!empty($params['gatename']))
-	$smarty->assign('gatename',$params['gatename']);
-$smarty->assign('maxsmschars',160);
-$smarty->assign('smstext',$smstext);
-$smarty->assign('formstart',$this->CreateFormStart($id,'do_entertext',$returnid,'POST','','','',$params));
-$smarty->assign('formend',$this->CreateFormEnd());
+	$tplvars['gatename'] = $params['gatename'];
+$tplvars['maxsmschars'] = 160;
+$tplvars['smstext'] = $smstext;
+$tplvars['formstart'] = $this->CreateFormStart($id,'do_entertext',$returnid,'POST','','','',$params);
+$tplvars['formend'] = $this->CreateFormEnd();
 if(!isset($params['enternumbertemplate']))
 	$thetemplate = $this->GetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT);
 else
 	$thetemplate = trim($params['enternumbertemplate']);
-echo $this->ProcessTemplateFromDatabase('entertext_'.$thetemplate);
-
+echo smsg_utils::ProcessTemplateFromDatabase($this,'entertext_'.$thetemplate,$tplvars);
 ?>

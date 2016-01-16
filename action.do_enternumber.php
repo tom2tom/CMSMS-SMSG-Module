@@ -55,17 +55,18 @@ if(isset($params['smsg_submit']))
 }
 
 // display the form
-$smarty->assign('message',$message);
-$smarty->assign('error',$error);
+$tplvars = array();
+$tplvars['message'] = $message; 
+$tplvars['error'] = $error; 
 if(!empty($params['gatename']))
-	$smarty->assign('gatename',$params['gatename']);
-$smarty->assign('formstart',$this->CreateFormStart($id,'do_enternumber',$returnid,'POST','','','',$params));
-$smarty->assign('formend',$this->CreateFormEnd());
+	$tplvars['gatename'] = $params['gatename']; 
+$tplvars['formstart'] = $this->CreateFormStart($id,'do_enternumber',$returnid,'POST','','','',$params); 
+$tplvars['formend'] = $this->CreateFormEnd(); 
 
 if(empty($params['enternumbertemplate']))
 	$thetemplate = $this->GetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT);
 else
 	$thetemplate = trim($params['enternumbertemplate']);
-echo $this->ProcessTemplateFromDatabase('enternumber_'.$thetemplate);
+echo smsg_utils::ProcessTemplateFromDatabase($this,'enternumber_'.$thetemplate,$tplvars);
 
 ?>
