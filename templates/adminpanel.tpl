@@ -6,25 +6,20 @@
 {if $pmod}
 {$formstart_gates}
 <div class="pageinput pageoverflow">
- <p class="pagetext">{$mod->Lang('reporting_url')}:</p>
+ <p class="pagetext">{$reporting_url}:</p>
  <p>{$reporturl}</p>
- <br />
- <p class="pagetext">{$mod->Lang('default_gateway')}:</p>
- <p>
-  <select id="sms_gateway" name="{$actionid}sms_gateway">
-   {html_options options=$gatesnames selected=$gatecurrent}
-  </select>
- </p>
+ <p class="pagetext">{$default_gateway}:</p>
+ <select id="sms_gateway" name="{$actionid}sms_gateway">
+  {html_options options=$gatesnames selected=$gatecurrent}
+ </select>
 {foreach from=$gatesdata key=alias item=one}
  <div id="{$alias}" class="sms_gateway_panel" style="margin:0.5em 0;">
 {$one}
  </div>
 {/foreach}
- <br />
- <div class="pageinput">
-  <input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}" />
-  <input type="submit" name="{$actionid}cancel" value="{$mod->Lang('cancel')}" />  
- </div>
+ <br /><br />
+ <input type="submit" name="{$actionid}submit" value="{$submit}" />
+ <input type="submit" name="{$actionid}cancel" value="{$cancel}" />  
 </div>
 {$formend}
 {else}
@@ -47,25 +42,24 @@
 {$endtab}
 
 {$tabstart_test}
-<p>{$mod->Lang('info_smstest')}</p>
+<div class="pageinput pageoverflow">
+<p>{$info_smstest}</p>
 {$formstart_test}
-<div class="pageoverflow">
- <p class="pagetext">{$mod->Lang('phone_number')}:</p>
- <p class="pageinput"><input type="text" name="{$actionid}mobile" size="20" maxlength="20" /></p>
-</div>
-<br />
-<div class="pageoverflow">
- <p class="pageinput"><input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}" /></p>
-</div>
+ <p class="pagetext">{$phone_number}:</p>
+ <input type="text" name="{$actionid}mobile" size="20" maxlength="20" />
+ <br /><br />
+ <input type="submit" name="{$actionid}submit" value="{$submit}" />
 {$formend}
+</div>
 {$endtab}
 
 {$tabstart_mobiles}
+<div class="pageinput pageoverflow">
 {if !empty($numbers)}<table class="pagetable" style="border:0;">
  <thead><tr>
-  <th>{$mod->Lang('id')}</th>
+  <th>{$id}</th>
   <th>{$titlename}</th>
-{if $pmod} <th>{$mod->Lang('number')}</th>
+{if $pmod} <th>{$number}</th>
   <th class="pageicon">&nbsp;</th>
   <th class="pageicon">&nbsp;</th>{/if}
  </tr></thead>
@@ -87,12 +81,13 @@
 {if $pmod}<div class="pageoptions">
 {$add_mobile}
 </div>{/if}
+</div>
 {$endtab}
 {/if}{*$pmod||$puse*}
 
 {if ($ptpl|| $puse)}
 {$tabstart_enternumber}
-<div class="pageoverflow">
+<div class="pageinput pageoverflow">
 <table class="pagetable">
  <thead><tr>
   <th>{$titlename}</th>
@@ -116,8 +111,9 @@
 <p class="pageoptions">{$add_enternumber_template}</p>{/if}{*$ptpl*}
 </div>
 {$endtab}
+
 {$tabstart_entertext}
-<div class="pageoverflow">
+<div class="pageinput pageoverflow">
 <table class="pagetable">
  <thead><tr>
   <th>{$titlename}</th>
@@ -146,36 +142,22 @@
 {if $padm}
 {$tabstart_security}
 {$formstart_security}
-<div class="pageoverflow">
- <p class="pagetext">{$mod->Lang('prompt_hourly_limit')}:</p>
- <p class="pageinput">
-  <input type="text" name="{$actionid}hourlimit" value="{$hourlimit}" size="3" maxlength="3" />
- </p>
- <p class="pagetext">{$mod->Lang('prompt_daily_limit')}:</p>
- <p class="pageinput">
-  <input type="text" name="{$actionid}daylimit" value="{$daylimit}" size="3" maxlength="4" />
- </p>
- <p class="pagetext">{$mod->Lang('prompt_log_sends')}:</p>
- <p class="pageinput">
-  <input type="checkbox" name="{$actionid}logsends"{if $logsends} checked="checked"{/if} />
- </p>
- <p class="pagetext">{$mod->Lang('prompt_log_retain_days')}:</p>
- <p class="pageinput">
-  <input type="text" name="{$actionid}logdays" value="{$logdays}" size="2" maxlength="3" />
- </p>
- <p class="pagetext">{$mod->Lang('prompt_log_delivers')}:</p>
- <p class="pageinput">
-  <input type="checkbox" name="{$actionid}logdeliveries"{if $logdeliveries} checked="checked"{/if} />
- </p>
- <p class="pagetext">{$mod->Lang('prompt_master_password')}:</p>
- <p class="pageinput">
-  <textarea id="{$actionid}passwd" name="{$actionid}masterpass" class="cloaked" rows="2" cols="40">{$masterpass}</textarea>
- </p>
- <br />
- <p class="pageinput">
-  <input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}" />
-  <input type="submit" name="{$actionid}cancel" value="{$mod->Lang('cancel')}" />
- </p>
+<div class="pageinput pageoverflow">
+ <p class="pagetext">{$title_hourlylimit}:</p>
+ <input type="text" name="{$actionid}hourlimit" value="{$hourlimit}" size="3" maxlength="3" />
+ <p class="pagetext">{$title_dailylimit}:</p>
+ <input type="text" name="{$actionid}daylimit" value="{$daylimit}" size="3" maxlength="4" />
+ <p class="pagetext">{$title_logsends}:</p>
+ <input type="checkbox" name="{$actionid}logsends"{if $logsends} checked="checked"{/if} />
+ <p class="pagetext">{$title_logretain}:</p>
+ <input type="text" name="{$actionid}logdays" value="{$logdays}" size="2" maxlength="3" />
+ <p class="pagetext">{$title_logdelivers}:</p>
+ <input type="checkbox" name="{$actionid}logdeliveries"{if $logdeliveries} checked="checked"{/if} />
+ <p class="pagetext">{$title_password}:</p>
+ <textarea id="{$actionid}passwd" name="{$actionid}masterpass" class="cloaked" rows="2" cols="40">{$masterpass}</textarea>
+ <br /><br />
+ <input type="submit" name="{$actionid}submit" value="{$submit}" />
+ <input type="submit" name="{$actionid}cancel" value="{$cancel}" />
 </div>
 {$formend}
 {$endtab}
