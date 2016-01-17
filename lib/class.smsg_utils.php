@@ -255,8 +255,80 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		return '';
 	}
 
-	//this is a varargs function, 2nd argument (if it exists) is either a
-	//Lang key or one of the sms_gateway_base::STAT_* constants
+	/**
+	ProcessTemplate:
+	@mod: reference to current SMSG module object
+	@tplname: template identifier
+	@tplvars: associative array of template variables
+	@cache: optional boolean, default TRUE
+	Returns: string, processed template
+	*/
+	public static function ProcessTemplate(&$mod,$tplname,$tplvars,$cache=TRUE)
+	{
+		global $smarty;
+		if($mod->before20)
+		{
+			$smarty->assign($tplvars);
+			return $mod->ProcessTemplate($tplname);
+		}
+		else
+		{
+			if($cache)
+			{
+				$cache_id = md5('smsg'.$tplname.serialize(array_keys($tplvars)));
+				$lang = CmsNlsOperations::get_current_language();
+				$compile_id = md5('smsg'.$tplname.$lang);
+				$tpl = $smarty->CreateTemplate($mod->GetFileResource($tplname),$cache_id,compile_id,$smarty);
+				if(!$tpl->isCached())
+					$tpl->assign($tplvars);
+			}
+			else
+			{
+				$tpl = $smarty->CreateTemplate($mod->GetFileResource($tplname),NULL,NULL,$smarty,$tplvars);
+			}
+			return $tpl->fetch();
+		}
+	}
+
+	/**
+	ProcessTemplateFromDatabase:
+	@mod: reference to current SMSG module object
+	@tplname: template identifier
+	@tplvars: associative array of template variables
+	@cache: optional boolean, default TRUE
+	Returns: nothing
+	*/
+	public static function ProcessTemplateFromDatabase(&$mod,$tplname,$tplvars,$cache=TRUE)
+	{
+		global $smarty;
+		if($mod->before20)
+		{
+			$smarty->assign($tplvars);
+			echo $mod->ProcessTemplateFromDatabase($tplname);
+		}
+		else
+		{
+			if($cache)
+			{
+				$cache_id = md5('smsg'.$tplname.serialize(array_keys($tplvars)));
+				$lang = CmsNlsOperations::get_current_language();
+				$compile_id = md5('smsg'.$tplname.$lang);
+				$tpl = $smarty->CreateTemplate($mod->GetTemplateResource($tplname),$cache_id,compile_id,$smarty);
+				if(!$tpl->isCached())
+					$tpl->assign($tplvars);
+			}
+			else
+			{
+				$tpl = $smarty->CreateTemplate($mod->GetTemplateResource($tplname),NULL,NULL,$smarty,$tplvars);
+			}
+			$tpl->display();
+		}
+	}
+
+	/*
+	This is a varargs function, 2nd argument (if it exists) is either a
+	Lang key or one of the sms_gateway_base::STAT_* constants
+	*/
 	public static function get_msg(&$mod)
 	{
 		$ip = getenv('REMOTE_ADDR');
@@ -285,7 +357,9 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		return $ip;
 	}
 
-	//this is a varargs function, 2nd argument (if it exists) may be a Lang key
+	/*
+	This is a varargs function, 2nd argument (if it exists) may be a Lang key
+	*/
 	public static function get_delivery_msg(&$mod)
 	{
 		$ip = getenv('REMOTE_ADDR');
