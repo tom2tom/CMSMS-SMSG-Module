@@ -63,33 +63,86 @@ $this->SetPreference('logsends',TRUE);
 $this->SetPreference('logdays',7);
 $this->SetPreference('logdeliveries',TRUE);
 $this->SetPreference('lastcleared',time());
-$this->SetPreference('masterpass','');
+$this->SetPreference('masterpass','OWFmNT1dGbU5FbnRlciBhdCB5b3VyIG93biByaXNrISBEYW5nZXJvdXMgZGF0YSE=');
 
-$sample = $this->Lang('sample');
+$sample = $this->Lang('sample'); //CHECKME Lang not installed yet?
 //enter-number template
 $fn = cms_join_path(dirname(__FILE__),'templates','enternumber_template.tpl');
-if(is_file($fn))
-{
-	$text = ''.@file_get_contents($fn);
-	$this->SetTemplate('enternumber_'.$sample,$text);
-	$this->SetTemplate(SMSG::PREF_ENTERNUMBER_CONTENTDFLT,$text);
-	$name = $sample;
-}
-else
-	$name = '';
-$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$name);
+$numbertpl = (is_file($fn)) ? ''.@file_get_contents($fn) : FALSE;
 //enter-text template
 $fn = cms_join_path(dirname(__FILE__),'templates','entertext_template.tpl');
-if(is_file($fn))
+$texttpl = (is_file($fn)) ? ''.@file_get_contents($fn) : FALSE;
+
+if($this->before20)
 {
-	$text = ''.@file_get_contents($fn);
-	$this->SetTemplate('entertext_'.$sample,$text);
-	$this->SetTemplate(SMSG::PREF_ENTERTEXT_CONTENTDFLT,$text);
-	$name = $sample;
+	if($numbertpl)
+	{
+		$this->SetTemplate(SMSG::PREF_ENTERNUMBER_CONTENTDFLT,$numbertpl); //CHECKME why this too, if sample = default
+		$this->SetTemplate('enternumber_'.$sample,$numbertpl);
+		$name = $sample;
+	}
+	else
+		$name = '';
+	$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$name); //TODO CHECK uses
+	if($texttpl)
+	{
+		$this->SetTemplate(SMSG::PREF_ENTERTEXT_CONTENTDFLT,$texttpl);
+		$this->SetTemplate('entertext_'.$sample,$texttpl);
+		$name = $sample;
+	}
+	else
+		$name = '';
+	$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$name); //TODO CHECK uses
 }
 else
-	$name = '';
-$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$name);
+{
+	$myname = $this->GetName();
+	$ttype = new CmsLayoutTemplateType();
+	$ttype->set_originator($myname);
+	$ttype->set_name('enternumber');
+	if($numbertpl)
+	{
+		$ttype->set_dflt_flag();
+		$ttype->set_dflt_contents($numbertpl); //make the sample-template the default
+	}
+	else
+		$ttype->set_dflt_flag(FALSE);
+	$ttype->save();
+
+	if($numbertpl)
+	{
+		$tpl = new CmsLayoutTemplate();
+		$tpl->set_type('enternumber');
+		$tpl->set_name('enternumber_'.$sample);
+		$tpl->set_owner(1); //original admin user OR current installer ?
+//		$tpl->set_additional_editors($editors); nobody yet has ModifySMSGateTemplates permission
+		$tpl->set_content($numbertpl);
+		$tpl->save();
+	}
+
+	$ttype = new CmsLayoutTemplateType();
+	$ttype->set_originator($myname);
+	$ttype->set_name('entertext');
+	if($texttpl)
+	{
+		$ttype->set_dflt_flag();
+		$ttype->set_dflt_contents($texttpl);
+	}
+	else
+		$ttype->set_dflt_flag(FALSE);
+	$ttype->save();
+
+	if($texttpl)
+	{
+		$tpl = new CmsLayoutTemplate();
+		$tpl->set_type('entertext');
+		$tpl->set_name('entertext_'.$sample);
+		$tpl->set_owner(1);
+//		$tpl->set_additional_editors($editors);
+		$tpl->set_content($texttpl);
+		$tpl->save();
+	}
+}
 
 $this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));
 $this->CreatePermission('ModifySMSGateways',$this->Lang('perm_modify'));
