@@ -26,6 +26,7 @@
    <li>Encrypt sensitive data</li>
    <li>Abandon pretty-url for delivery reports</li>
    <li>Remove CGExtensions dependency</li>
+   <li>Add missing $lang[] members</li>
   </ul>
  </li>
 </ul>
