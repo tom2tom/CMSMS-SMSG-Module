@@ -2,8 +2,11 @@
 {if !empty($hidden)}{$hidden}{/if}
 <fieldset>
 <legend>{$gatetitle}</legend>
-<div class="pageoverflow" style="margin-top:0;display:inline-block;width:auto;">
-<table class="pagetable gatedata" style="margin-top:0;">
+<div style="margin-top:0;">
+{$help}
+</div>
+<div class="pageoverflow" style="margin-top:1em;width:auto;display:inline-block;">
+<table class="pagetable gatedata">
 <thead><tr>
 <th>{$title_title}</th>
 <th>{$title_value}</th>
@@ -28,10 +31,7 @@
 {/foreach}
 </tbody>
 </table>
-<br />
-{$help}
-<br /><br />
-<div class="pageoptions">
+<div class="pageoptions" style="margin-top:1em;">
 {$additem}
 {if $dcount}<div style="float:right;">{$btndelete}</div>
 <div style="float:clear"></div>{/if}
