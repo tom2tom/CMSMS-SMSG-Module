@@ -21,7 +21,26 @@ $dict->ExecuteSQLArray($sqlarray);
 
 $db->DropSequence($pref.'module_smsg_gates_seq');
 
-$this->DeleteTemplate();
+if($this->before20)
+	$this->DeleteTemplate();
+else
+{
+	$types = CmsLayoutTemplateType::load_all_by_originator($this->GetName());
+	if($types)
+	{
+		foreach($types as $type)
+		{
+			$templates = $type->get_template_list();
+			if($templates)
+			{
+				foreach($templates as $tpl)
+					$tpl->delete();
+			}
+			$type->delete();
+		}
+	}
+}
+
 $this->RemovePreference();
 
 $this->RemovePermission('AdministerSMSGateways');
