@@ -325,6 +325,21 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		}
 	}
 
+	/**
+	get_reporturl:
+	@mod: reference to current SMSG module object
+	Returns: string, delivery-reports URL
+	*/
+	public static function get_reporturl(&$mod)
+	{
+		//construct frontend-url (so no admin login is needed)
+		//cmsms 1.10+ also has ->create_url();
+		$url = $mod->CreateLink('_','devreport',1,'',array(),'',TRUE);
+		//strip the fake returnid, so that the default will be used
+		$sep = strpos($url,'&amp;');
+		return substr($url,0,$sep);
+	}
+
 	/*
 	This is a varargs function, 2nd argument (if it exists) is either a
 	Lang key or one of the sms_gateway_base::STAT_* constants
