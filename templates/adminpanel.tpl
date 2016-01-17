@@ -5,28 +5,26 @@
 {$tabstart_gates}
 {if $pmod}
 {$formstart_gates}
-<div class="pageoverflow">
+<div class="pageinput pageoverflow">
  <p class="pagetext">{$mod->Lang('reporting_url')}:</p>
- <p class="pageinput">{$reporturl}</p>
+ <p>{$reporturl}</p>
  <br />
  <p class="pagetext">{$mod->Lang('default_gateway')}:</p>
- <p class="pageinput">
+ <p>
   <select id="sms_gateway" name="{$actionid}sms_gateway">
    {html_options options=$gatesnames selected=$gatecurrent}
   </select>
  </p>
-</div>
 {foreach from=$gatesdata key=alias item=one}
-<div id="{$alias}" class="pageoverflow sms_gateway_panel" style="margin:0.5em 0;">
+ <div id="{$alias}" class="sms_gateway_panel" style="margin:0.5em 0;">
 {$one}
-</div>
+ </div>
 {/foreach}
-<br />
-<div class="pageoverflow">
- <p class="pageinput">
+ <br />
+ <div class="pageinput">
   <input type="submit" name="{$actionid}submit" value="{$mod->Lang('submit')}" />
   <input type="submit" name="{$actionid}cancel" value="{$mod->Lang('cancel')}" />  
- </p>
+ </div>
 </div>
 {$formend}
 {else}
