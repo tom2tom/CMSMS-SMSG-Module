@@ -143,7 +143,6 @@ $ptpl = $padm || $this->CheckPermission('ModifySMSGateTemplates');
 $puse = $this->CheckPermission('UseSMSGateways');
 
 $tplvars = array(
-	'mod' => $this, //template includes lots of $mod->Lang()'s !!
 	'padm' => $padm,
 	'pmod' => $pmod,
 	'ptpl' => $ptpl,
@@ -176,7 +175,22 @@ $tplvars += array(
 	'tabsheader' => $headers,
 	'tabsfooter' => $this->EndTabContent(), //for CMSMS 2+, must be before EndTab() !!
 	'endtab' => $this->EndTab(),
-	'formend' => $this->CreateFormEnd()
+	'formend' => $this->CreateFormEnd(),
+	//various titles
+	'default_gateway' => $this->Lang('default_gateway'),
+	'id' => $this->Lang('id'),
+	'info_smstest' => $this->Lang('info_smstest'),
+	'number' => $this->Lang('number'),
+	'phone_number' => $this->Lang('phone_number'),
+	'reporting_url' => $this->Lang('reporting_url'),
+	'title_dailylimit' => $this->Lang('prompt_daily_limit'),
+	'title_hourlylimit' => $this->Lang('prompt_hourly_limit'),
+	'title_logdelivers' => $this->Lang('prompt_log_delivers'),
+	'title_logretain' => $this->Lang('prompt_log_retain_days'),
+	'title_logsends' => $this->Lang('prompt_log_sends'),
+	'title_password' => $this->Lang('prompt_master_password'),
+	'submit' => $this->Lang('submit'),
+	'cancel' => $this->Lang('cancel')
 );
 
 $jsincs = array();
