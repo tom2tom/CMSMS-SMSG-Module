@@ -1,3 +1,5 @@
+p.pagetext { margin-top:0.5em; margin-bottom:0.5em; margin-left:0 !important}
+
 textarea.cloaked {
  font-family:auto;
  font-family:inherit;
@@ -6,3 +8,5 @@ textarea.cloaked {
  width:40em;
  height:2.4em;
 }
+
+table.pagetable { padding:3px; border-spacing:0; margin-left:0; width:auto }
