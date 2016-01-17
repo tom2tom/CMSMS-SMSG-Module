@@ -1,6 +1,8 @@
+<input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
+{if !empty($hidden)}{$hidden}{/if}
 <fieldset>
 <legend>{$gatetitle}</legend>
-<div class="pageoverflow" style="margin-top:0;">
+<div class="pageoverflow" style="margin-top:0;display:inline-block;width:auto;">
 <table class="pagetable gatedata" style="margin-top:0;">
 <thead><tr>
 <th>{$title_title}</th>
@@ -31,9 +33,7 @@
 <br /><br />
 <div class="pageoptions">
 {$additem}
-{if $dcount}<div style="margin:0;float:right;text-align:right">{$btndelete}</div>
+{if $dcount}<div style="float:right;">{$btndelete}</div>
 <div style="float:clear"></div>{/if}
 </div>
-<input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
-{if !empty($hidden)}{$hidden}{/if}
 </fieldset>

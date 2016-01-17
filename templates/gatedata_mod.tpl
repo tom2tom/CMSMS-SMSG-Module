@@ -1,3 +1,5 @@
+<input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
+{if !empty($hidden)}{$hidden}{/if}
 <fieldset>
 <legend>{$gatetitle}</legend>
 <div class="pageoverflow" style="margin-top:0;">
@@ -10,6 +12,4 @@
 {if !empty($one->help)}<p class="pageinput">{$one->help}</p>{/if}
 {/foreach}
 </div>
-<input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
-{if !empty($hidden)}{$hidden}{/if}
 </fieldset>
