@@ -213,12 +213,6 @@ class SMSG extends CMSModule
 		$this->SetParameterType('smstext',CLEAN_STRING);
 		$this->SetParameterType('urlonly',CLEAN_INT);
 		$this->SetParameterType(CLEAN_REGEXP.'/smsg_.*/',CLEAN_NONE);
-
-		$returnid = cmsms()->GetContentOperations()->GetDefaultPageID(); //any valid id will do ?
-		$this->RegisterRoute('/SMSG\/devreport$/',
-		  array('action'=>'devreport',
-				'showtemplate'=>'false', //not FALSE, or any of its equivalents !
-				'returnid'=>$returnid));
 	}
 
 	//partial setup for pre-1.10, backend setup for 1.10+
@@ -261,15 +255,6 @@ class SMSG extends CMSModule
 	public function get_tasks()
 	{
 		return new smsg_clearlog_task();
-	}
-
-	//construct delivery-reports URL (pretty or not)
-	public function get_reporturl()
-	{
-		$returnid = cmsms()->GetContentOperations()->GetDefaultContent();
-		//CMSMS 1.10+ has ->create_url();
-		return $this->CreateLink('m1_','devreport',$returnid,'',array(),'',
-			TRUE,FALSE,'',FALSE,'SMSG/devreport');
 	}
 
 }
