@@ -188,7 +188,7 @@ This is accomplished in a variety of ways:</p>
 <h3>Requirements:</h3>
 <ul>
 <li>CMS Made Simple 1.9+</li>
-<li>PHP 5.2+ (5.2.11+ is recommended)</li>
+<li>PHP 5.3+</li>
 <li>Authority to use at least one suported gateway</li>
 <li>The website host must allow outgoing HTTP connections</li>
 </ul>
@@ -201,7 +201,7 @@ This is accomplished in a variety of ways:</p>
 </ul>
 <p>For the latest version of the module, or to report a bug, visit the module's <a href="http://dev.cmsmadesimple.org/projects/smsg">forge-page</a>.</p>
 <h3>Copyright and license</h3>
-<p>Portions copyright &copy; 2015 Tom Phane &lt;tpgww@onepost.net&gt;.<br />
+<p>Portions copyright &copy; 2015-2016 Tom Phane &lt;tpgww@onepost.net&gt;.<br />
 Portions copyright &copy; 2010 Robert Campbell &lt;calguy1000@cmsmadesimple.org&gt;.<br />
 All rights reserved.</p>
 <p>This module is free software. It may be redistributed and/or modified
