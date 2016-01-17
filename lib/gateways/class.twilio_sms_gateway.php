@@ -69,9 +69,9 @@ class twilio_sms_gateway extends sms_gateway_base
 		return $gid;
 	}
 
-	public function custom_setup(&$smarty,$padm)
+	public function custom_setup(&$tplvars,$padm)
 	{
-		foreach($smarty->tpl_vars['data']->value as &$ob)
+		foreach($tplvars['data'] as &$ob)
 		{
 			if($ob->signature == '_account'
 			|| $ob->signature == '_token')
@@ -80,9 +80,8 @@ class twilio_sms_gateway extends sms_gateway_base
 		unset($ob);
 		if($padm)
 		{
-			$help = $smarty->tpl_vars['help']->value.'<br />'.
-			 $this->_module->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
-			$smarty->assign('help',$help);
+			$tplvars['help'] .= '<br />'.
+				$this->_module->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
 		}
 	}
 

@@ -38,7 +38,7 @@ if($params['mode'] == 'add')
 	$tplvars['templatename'] = $this->CreateInputText($id,'template','',40,200);
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'prefix',$params['prefix']).
-		$this->CreateInputHidden($id,'activetab',$params['activetab']));
+		$this->CreateInputHidden($id,'activetab',$params['activetab']);
 	if(!empty($params['defaulttemplatepref']))
 	{
 		if(endswith($params['defaulttemplatepref'],'.tpl'))
@@ -48,7 +48,10 @@ if($params['mode'] == 'add')
 		}
 		else
 		{
-			$contents = $this->GetTemplate($params['defaulttemplatepref']);
+			if($this->before20)
+				$contents = $this->GetTemplate($params['defaulttemplatepref']);
+			else
+				$contents = $TemplateTODO;
 			if(!$contents)
 				 $contents = $this->GetPreference($params['defaulttemplatepref']);
 		}
@@ -60,8 +63,11 @@ else
 	$tplvars['templatename'] = $params['template'];
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'template',$params['template']).
-		$this->CreateInputHidden($id,'activetab',$params['activetab']));
-	$contents = $this->GetTemplate($params['prefix'].$params['template']);
+		$this->CreateInputHidden($id,'activetab',$params['activetab']);
+	if($this->before20)
+		$contents = $this->GetTemplate($params['prefix'].$params['template']);
+	else
+		$contents = $TemplateTODO;
 	$tplvars['apply'] = $this->CreateInputSubmit($id,'applybutton',$this->Lang('apply'));
 }
 
@@ -75,11 +81,11 @@ if(!empty($params['info']))
 			break;
 		$txt = $tmp;
 	}
-	$tplvars['template_info'] = $txt; 
+	$tplvars['template_info'] = $txt;
 }
 
 if(isset($params['moddesc']))
-	$tplvars['module_description'] = trim($params['moddesc']); 
+	$tplvars['module_description'] = trim($params['moddesc']);
 
 $title = trim($params['title']);
 for($i = 0; $i < 5; $i++)
@@ -90,8 +96,8 @@ for($i = 0; $i < 5; $i++)
 	$title = $tmp;
 }
 
-$tplvars = $tplvars + array(
-	'title' => cms_html_entity_decode($title); 
+$tplvars += array(
+	'title' => cms_html_entity_decode($title),
 
 	'prompt_templatename' => $this->Lang('prompt_templatename'),
 	'prompt_template' => $this->Lang('prompt_template'),
@@ -99,6 +105,7 @@ $tplvars = $tplvars + array(
 	'submit' => $this->CreateInputSubmit($id,'submit',$this->Lang('submit')),
 	'cancel' => $this->CreateInputSubmit($id,'cancel',$this->Lang('cancel')),
 	'formend' => $this->CreateFormEnd()
+);
 
 echo smsg_utils::ProcessTemplate($this,'edit_template.tpl',$tplvars);
 ?>

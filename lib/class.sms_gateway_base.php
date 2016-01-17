@@ -246,16 +246,18 @@ abstract class sms_gateway_base
 		if(!$gdata)
 			return '';
 
-		$smarty = cmsms()->GetSmarty();
 		$pmod = $padm || $mod->CheckPermission('ModifySMSGateways');
 		if(!($padm || $pmod))
 		{
-			$smarty->assign('gatetitle',$gdata['title']);
-			$smarty->assign('default',($gdata['active'])?$mod->Lang('yes'):'');
-			return $mod->ProcessTemplate('gatedata_use.tpl');
+			$tplvars = array(
+				'gatetitle' => $gdata['title'],
+				'default' => ($gdata['active'])?$mod->Lang('yes'):''
+			);
+			return smsg_utils::ProcessTemplate($mod,'gatedata_use.tpl',$tplvars);
 		}
-		
-		$smarty->assign('gatetitle',$mod->Lang('frame_title',$gdata['title']));
+
+		$tplvars = array();
+		$tplvars['gatetitle'] = $mod->Lang('frame_title',$gdata['title']);
 		$parms = array();
 		$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 		if(!$padm)
@@ -287,41 +289,45 @@ abstract class sms_gateway_base
 			$ob->space = '';
 			$parms[] = $ob;
 		}
-		$smarty->assign('data',$parms);
-		$smarty->assign('dcount',$dcount);
-		$smarty->assign('space',$alias); //for gateway-data 'namespace'
-		$smarty->assign('gateid',$gid);
-		
+		$tplvars += array(
+			'data' => $parms,
+			'dcount' => $dcount,
+			'space' => $alias, //for gateway-data 'namespace'
+			'gateid' => $gid
+		);
+
 		if($padm)
 		{
-			$smarty->assign('title_title',$mod->Lang('title'));
-			$smarty->assign('title_value',$mod->Lang('value'));
-			$smarty->assign('title_encrypt',$mod->Lang('encrypt'));
-			$smarty->assign('title_apiname',$mod->Lang('apiname'));
-			$smarty->assign('title_enabled',$mod->Lang('enabled'));
-			$smarty->assign('title_help',$mod->Lang('helptitle'));
-			$smarty->assign('title_select',$mod->Lang('select'));
-			$smarty->assign('help',
-				$mod->Lang('help_dnd').'<br />'.$mod->Lang('help_sure'));
-			$id = $smarty->tpl_vars['actionid']->value;
+			$tplvars += array(
+				'title_title' => $mod->Lang('title'),
+				'title_value' => $mod->Lang('value'),
+				'title_encrypt' => $mod->Lang('encrypt'),
+				'title_apiname' => $mod->Lang('apiname'),
+				'title_enabled' => $mod->Lang('enabled'),
+				'title_help' => $mod->Lang('helptitle'),
+				'title_select' => $mod->Lang('select'),
+				'help' => $mod->Lang('help_dnd').'<br />'.$mod->Lang('help_sure')
+			);
+
+			$id = 'm1_'; //module admin instance-id is hard-coded (OR $smarty->tpl_vars['actionid']->value)
 			$text = $mod->Lang('add_parameter');
 			$theme = ($mod->before20) ? cmsms()->get_variable('admintheme'):
 				cms_utils::get_theme_object();
 			$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
 			$args = array('gate_id'=>$gid);
-			$smarty->assign('additem',$mod->CreateLink($id,'addgate','',$addicon,$args).' '.
-				$mod->CreateLink($id,'addgate','',$text,$args));
+			$tplvars['additem'] = $mod->CreateLink($id,'addgate','',$addicon,$args).' '.
+				$mod->CreateLink($id,'addgate','',$text,$args);
 			if($dcount > 0)
 			{
-				$smarty->assign('btndelete',$mod->CreateInputSubmit($id,$alias.'~delete',
-					$mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').'"'));
+				$tplvars['btndelete'] = $mod->CreateInputSubmit($id,$alias.'~delete',
+					$mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').'"');
 				//confirmation js applied in $(document).ready() - see action.defaultadmin.php
 			}
 		}
 		// anything else to set up for the template
-		$this->custom_setup($smarty,$padm); //e.g. each $ob->size
-		$tpl = ($padm) ? 'gatedata_admin.tpl' : 'gatedata_mod.tpl';
-		return $mod->ProcessTemplate($tpl);
+		$this->custom_setup($tplvars,$padm); //e.g. each $ob->size
+		$tplname = ($padm) ? 'gatedata_admin.tpl' : 'gatedata_mod.tpl';
+		return smsg_utils::ProcessTemplate($mod,$tplname,$tplvars);
 	}
 
 	/**
@@ -413,13 +419,13 @@ abstract class sms_gateway_base
 
 	//For internal use only
 	//Record or update gateway-specific details in the module's database tables
-	//Returns key-value of the row added to the gates-table,for the gateway
+	//Returns key-value of the row added to the gates-table, for the gateway
 	abstract public function upsert_tables();
 
 	//For internal use only
 	//Setup gateway-specific details for defaultadmin action
-	//$padm = boolean,TRUE if current user has AdministerSMSGateways permission
-	abstract public function custom_setup(&$smarty,$padm);
+	//$padm = boolean, TRUE if current user has AdministerSMSGateways permission
+	abstract public function custom_setup(&$tplvars,$padm);
 
 	//For internal use only
 	//Process gateway-specific details after 'submit' in defaultadmin action
