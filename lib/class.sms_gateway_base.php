@@ -299,14 +299,14 @@ abstract class sms_gateway_base
 		if($padm)
 		{
 			$tplvars += array(
+				'help' => $mod->Lang('help_sure').' '.$mod->Lang('help_dnd'),
 				'title_title' => $mod->Lang('title'),
 				'title_value' => $mod->Lang('value'),
 				'title_encrypt' => $mod->Lang('encrypt'),
 				'title_apiname' => $mod->Lang('apiname'),
 				'title_enabled' => $mod->Lang('enabled'),
 				'title_help' => $mod->Lang('helptitle'),
-				'title_select' => $mod->Lang('select'),
-				'help' => $mod->Lang('help_dnd').'<br />'.$mod->Lang('help_sure')
+				'title_select' => $mod->Lang('select')
 			);
 
 			$id = 'm1_'; //module admin instance-id is hard-coded (OR $smarty->tpl_vars['actionid']->value)
