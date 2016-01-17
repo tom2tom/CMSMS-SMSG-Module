@@ -17,7 +17,7 @@
 {$one}
  </div>
 {/foreach}
- <br /><br />
+ <br />
  <input type="submit" name="{$actionid}submit" value="{$submit}" />
  <input type="submit" name="{$actionid}cancel" value="{$cancel}" />  
 </div>
