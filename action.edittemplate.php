@@ -35,7 +35,7 @@ $tplvars = array();
 if($params['mode'] == 'add')
 {
 	$tplvars['formstart'] = $this->CreateFormStart($id,'do_addtemplate',$returnid,'POST','','','',$params);
-	$tplvars['templatename'] = $this->CreateInputText($id,'template','',40,200);
+	$tplvars['name'] = $this->CreateInputText($id,'template','',40,200);
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'prefix',$params['prefix']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']);
@@ -60,7 +60,16 @@ if($params['mode'] == 'add')
 else
 {
 	$tplvars['formstart'] = $this->CreateFormStart($id,'edittemplate',$returnid,'POST','','','',$params);
-	$tplvars['templatename'] = $params['template'];
+/*	$title = trim($params['title']);
+	for($i = 0; $i < 5; $i++)
+	{
+		$tmp = cms_html_entity_decode($title);
+		if($tmp == $title)
+			break;
+		$title = $tmp;
+	}
+*/
+	$tplvars['name'] = $params['template']; //.'<br />'.$title;
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'template',$params['template']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']);
@@ -87,21 +96,10 @@ if(!empty($params['info']))
 if(isset($params['moddesc']))
 	$tplvars['module_description'] = trim($params['moddesc']);
 
-$title = trim($params['title']);
-for($i = 0; $i < 5; $i++)
-{
-	$tmp = cms_html_entity_decode($title);
-	if($tmp == $title)
-		break;
-	$title = $tmp;
-}
-
 $tplvars += array(
-	'title' => cms_html_entity_decode($title),
-
-	'prompt_templatename' => $this->Lang('prompt_templatename'),
-	'prompt_template' => $this->Lang('prompt_template'),
-	'template' => $this->CreateSyntaxArea($id,$contents,'templatecontent'),
+	'title_name' => $this->Lang('template_name'),
+	'title_content' => $this->Lang('template_content'),
+	'content' => $this->CreateSyntaxArea($id,$contents,'templatecontent','','','','',50,15,'style="font-size:1em;"'),
 	'submit' => $this->CreateInputSubmit($id,'submit',$this->Lang('submit')),
 	'cancel' => $this->CreateInputSubmit($id,'cancel',$this->Lang('cancel')),
 	'formend' => $this->CreateFormEnd()
