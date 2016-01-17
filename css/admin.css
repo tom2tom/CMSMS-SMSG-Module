@@ -1,4 +1,6 @@
+table.pagetable { padding:3px; border-spacing:0; margin-left:0; width:auto }
 p.pagetext { margin-top:0.5em; margin-bottom:0.5em; margin-left:0 !important}
+fieldset { padding:0 5px 5px 5px; margin:0;display:inline-block }
 
 textarea.cloaked {
  font-family:auto;
@@ -9,4 +11,3 @@ textarea.cloaked {
  height:2.4em;
 }
 
-table.pagetable { padding:3px; border-spacing:0; margin-left:0; width:auto }
