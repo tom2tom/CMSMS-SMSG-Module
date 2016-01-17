@@ -27,6 +27,7 @@ $lang['add_parameter'] = 'Add parameter';
 $lang['add_template'] = 'Add template';
 $lang['addedit_mobile'] = 'Add/Edit a Mobile Phone Record';
 $lang['apiname'] = 'API name';
+$lang['apply'] = 'Apply';
 $lang['ask_delete_mobile'] = 'Are you sure you want to delete this mobile phone number from the database?';
 
 #B
@@ -93,7 +94,7 @@ This parameter is used to decide the behavour of the module. Valid values for th
 </ul>
 EOT;
 $lang['help_destpage'] = 'This parameter indicates that the resulting form should be displayed on a different CMSMS content page (specified by page id or alias)';
-$lang['help_dnd'] = 'You can change the order by dragging row(s)';
+$lang['help_dnd'] = 'You can change the order by dragging row(s).';
 $lang['help_enternumbertemplate'] = 'Applicable only to the enternumber action, this parameter allows specifying a non default enternumber template to create the form with';
 $lang['help_entertexttemplate'] = 'Applicable only to the entertext action, this parameter allows specifying a non default entertext template to create the form with';
 $lang['help_gatename'] = 'This parameter allows overriding the default gateway';
@@ -221,7 +222,7 @@ $lang['info_enternumber_templates'] = 'This template allows website visitors to 
 $lang['info_entertext_templates'] = 'This template allows website visitors to enter a message that will be sent to a predefined mobile phone number.';
 $lang['info_smstest'] = <<<EOS
 To test whether the settings for the default SMS gateway are correct, you can send a message to the specified mobile phone number.
-Please be aware that it may take several minutes before the phone receives the message.
+It may be <strong>several minutes</strong> before the phone receives the message.
 EOS;
 $lang['info_sysdflt_enternumber_template'] = 'This is the starting point for creating new \'enter number\' templates. Altering this template will have no immediate effect on anything displayed on the website.';
 $lang['info_sysdflt_entertext_template'] = 'This is the starting point for creating new \'enter text\' templates. Altering this template will have no immediate effect on anything displayed on the website.';
@@ -299,7 +300,9 @@ $lang['sure_ask'] = 'Are you sure ?';
 
 #T
 $lang['taskdescription_clearlog'] = 'Remove old log data';
+$lang['template_content'] = 'Content';
 $lang['template_saved'] = 'Template saved';
+$lang['template_name'] = 'Template name';
 $lang['test'] = 'Test';
 $lang['test_message'] = 'Test message from %s';
 $lang['title'] = 'Displayed title';
