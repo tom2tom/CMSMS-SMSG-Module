@@ -39,7 +39,7 @@ $lang['custom'] = 'Custom';
 
 #D
 $lang['default'] = 'Default';
-$lang['default_gateway'] = 'Default Gateway';
+$lang['default_gateway'] = 'Default gateway';
 $lang['default_template_title'] = 'Prototype for new templates';
 $lang['default_tip'] = 'default';
 $lang['defaultset_tip'] = 'make default';
@@ -269,7 +269,7 @@ $lang['prompt_master_password'] = 'Pass-phrase for securing sensitive data';
 
 
 #R
-$lang['reporting_url'] = 'URL to which the SMS gateway can send delivery reports';
+$lang['reporting_url'] = 'Any gateway can send delivery reports to';
 $lang['reset'] = 'Reset';
 $lang['reset_tip'] = 'revert to factory default';
 
