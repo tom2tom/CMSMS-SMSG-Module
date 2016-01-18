@@ -16,7 +16,33 @@ $pref = $params['prefix'];
 switch($params['mode'])
 {
  case 'add':
-	//setup for handover to edittemplate action
+	if(isset($params['cancel']) || isset($params['submit'])) //2nd-pass, after addition
+	{
+		if(isset($params['submit']))
+		{
+			if($this->before20)
+			{
+				$this->SetTemplate($pref.$name,$params['templatecontent']);
+			}
+			else
+			{
+				$uid = get_userid(FALSE);
+				$type = rtrim($pref,'_');
+				try {
+					$tpl = new CmsLayoutTemplate();
+					$tpl->set_type($type);
+					$tpl->set_name($pref.$name);
+					$tpl->set_owner($uid);
+					$tpl->set_content($params['templatecontent']);
+					$tpl->save();
+				} catch (Exception $e) {
+					$this->SetError($e->getMessage());
+				}
+			}
+		}
+		$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+	}
+	//1st-pass: setup for handover to edittemplate action
 	$params['defaulttemplatepref'] = $pref.'defaultcontent';
  case 'edit':
 	$params['moddesc'] = $this->GetFriendlyName();
@@ -41,18 +67,65 @@ switch($params['mode'])
 	}
 	$this->Redirect($id,'edittemplate','',$params);
  case 'delete':
-	$this->DeleteTemplate($pref.$name,SMSG::MODNAME);
+	if($this->before20)
+		$this->DeleteTemplate($pref.$name,SMSG::MODNAME);
+	else
+	{
+		try {
+			$tpl = CmsLayoutTemplate::load($pref.$name);
+			$tpl->delete();
+		} catch (Exception $e) {
+			$this->SetError($e->getMessage());
+		}
+	}
 	break;
  case 'default':
-	$this->SetTemplate($pref.'defaultcontent',$this->GetTemplate($pref.$name),SMSG::MODNAME);
+	if($this->before20)
+		$this->SetTemplate($pref.'defaultcontent',$this->GetTemplate($pref.$name),SMSG::MODNAME);
+	else
+	{
+		try {
+			$tpl = CmsLayoutTemplate::load($pref.$name);
+			$text = $tpl->get_content();
+			if($text)
+			{
+				$tpl = CmsLayoutTemplate::load($pref.'defaultcontent');
+				$tpl->set_content($text);
+				$tpl->save();
+			}
+			else
+			{
+				$this->SetError($this->Lang('error_notfound'));
+				break;
+			}
+		} catch (Exception $e) {
+			$this->SetError($e->getMessage());
+			break;
+		}
+	}
 	$this->SetPreference($pref.'dflttpl',$name);
 	break;
  case 'revert':
 	$fn = cms_join_path(dirname(__FILE__),'templates',$pref.'template.tpl');
 	if(is_file($fn))
-	{
 		$text = ''.@file_get_contents($fn);
-		$this->SetTemplate($pref.'defaultcontent',$text,SMSG::MODNAME);
+	if($text)
+	{
+		if($this->before20)
+		{
+			$this->SetTemplate($pref.'defaultcontent',$text,SMSG::MODNAME);
+		}
+		else
+		{
+			try {
+				$tpl = CmsLayoutTemplate::load($pref.'defaultcontent');
+				$tpl->set_content($text);
+				$tpl->save();
+			} catch (Exception $e) {
+				$this->SetError($e->getMessage());
+				break;
+			}
+		}
 		$this->SetMessage($this->Lang('template_saved'));
 	}
 	else
