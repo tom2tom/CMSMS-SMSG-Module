@@ -278,7 +278,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 				$cache_id = md5('smsg'.$tplname.serialize(array_keys($tplvars)));
 				$lang = CmsNlsOperations::get_current_language();
 				$compile_id = md5('smsg'.$tplname.$lang);
-				$tpl = $smarty->CreateTemplate($mod->GetFileResource($tplname),$cache_id,compile_id,$smarty);
+				$tpl = $smarty->CreateTemplate($mod->GetFileResource($tplname),$cache_id,$compile_id,$smarty);
 				if(!$tpl->isCached())
 					$tpl->assign($tplvars);
 			}
@@ -308,12 +308,13 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		}
 		else
 		{
+			//TODO handle V1 template if V2 N/A
 			if($cache)
 			{
 				$cache_id = md5('smsg'.$tplname.serialize(array_keys($tplvars)));
 				$lang = CmsNlsOperations::get_current_language();
 				$compile_id = md5('smsg'.$tplname.$lang);
-				$tpl = $smarty->CreateTemplate($mod->GetTemplateResource($tplname),$cache_id,compile_id,$smarty);
+				$tpl = $smarty->CreateTemplate($mod->GetTemplateResource($tplname),$cache_id,$compile_id,$smarty);
 				if(!$tpl->isCached())
 					$tpl->assign($tplvars);
 			}
