@@ -25,6 +25,26 @@ if(!isset($params['mode']) || !isset($params['title']))
 	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
 }
 
+if(isset($params['submit']) || isset($params['apply']))
+{
+	if($this->before20)
+	{
+		$this->SetTemplate($params['prefix'].$params['template'],$params['templatecontent']);
+	}
+	else
+	{
+		try {
+			$tpl = CmsLayoutTemplate::load($params['prefix'].$params['template']);
+			$tpl->set_content($params['templatecontent']);
+			$tpl->save();
+		} catch (Exception $e) {
+			$params['errors'] = $e->getMessage();
+		}
+	}
+	if(isset($params['submit']))
+		$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+}
+
 // handle errors
 if(isset($params['errors']))
 	echo $this->ShowErrors($params['errors']);
@@ -34,7 +54,7 @@ $contents = '';
 $tplvars = array();
 if($params['mode'] == 'add')
 {
-	$tplvars['formstart'] = $this->CreateFormStart($id,'do_addtemplate',$returnid,'POST','','','',$params);
+	$tplvars['formstart'] = $this->CreateFormStart($id,'settemplate',$returnid,'POST','','','',$params);
 	$tplvars['name'] = $this->CreateInputText($id,'template','',40,200);
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'prefix',$params['prefix']).
@@ -51,7 +71,14 @@ if($params['mode'] == 'add')
 			if($this->before20)
 				$contents = $this->GetTemplate($params['defaulttemplatepref']);
 			else
-				$contents = $TemplateTODO;
+			{
+				try {
+					$tpl = CmsLayoutTemplate::load($params['defaulttemplatepref']);
+					$contents = $tpl->get_content();
+				} catch (Exception $e) {
+					$contents = '';
+				}
+			}
 			if(!$contents)
 				 $contents = $this->GetPreference($params['defaulttemplatepref']);
 		}
@@ -76,8 +103,15 @@ else
 	if($this->before20)
 		$contents = $this->GetTemplate($params['prefix'].$params['template']);
 	else
-		$contents = $TemplateTODO;
-	$tplvars['apply'] = $this->CreateInputSubmit($id,'applybutton',$this->Lang('apply'));
+	{
+		try {
+			$tpl = CmsLayoutTemplate::load($params['prefix'].$params['template']);
+			$contents = $tpl->get_content();
+		} catch (Exception $e) {
+			$contents = '';
+		}
+	}
+	$tplvars['apply'] = $this->CreateInputSubmit($id,'apply',$this->Lang('apply'));
 }
 
 if(!empty($params['info']))
