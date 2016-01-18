@@ -17,9 +17,10 @@
 {$one}
  </div>
 {/foreach}
- <br />
+ <p style="margin-top:1em">
  <input type="submit" name="{$actionid}submit" value="{$submit}" />
- <input type="submit" name="{$actionid}cancel" value="{$cancel}" />  
+ <input type="submit" name="{$actionid}cancel" value="{$cancel}" />
+ </p>
 </div>
 {$formend}
 {else}
