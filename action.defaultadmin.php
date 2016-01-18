@@ -37,12 +37,9 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 	else
 		$yes = $mod->Lang('yes');
 
-	$defaultname = $mod->GetPreference($prefdefname);
-	$rowarray = array();
-
 	if($mod->before20)
 	{
-		$mytemplates = $mod->ListTemplates(SMSG::MODNAME); //TODO filter by type/prefix
+		$mytemplates = $mod->ListTemplates(SMSG::MODNAME);
 		//exclude unwanted types, and wanted type's 'defaultcontent' template (anonymous callback >> PHP 5.3+)
 		array_walk($mytemplates,function(&$n,$k,$p)
 		{
@@ -51,16 +48,25 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 			if($n=='defaultcontent')
 			 $n=FALSE;
 		},$prefix);
-		$mytemplates = array_filter($mytemplates);
 	}
 	else
 	{
-		$name = rtrim($prefix,'_');
-		$ttype = CmsLayoutTemplateType::load('SMSG::'.$name);
+		$l = strlen($prefix);
+		$type = rtrim($prefix,'_');
+		$ttype = CmsLayoutTemplateType::load('SMSG::'.$type);
 		$mytemplates = $ttype->get_template_list();
-		//TODO cleanup names, for presentation
+		array_walk($mytemplates,function(&$n,$k,$l)
+		{
+			$n=substr($n->get_name(),$l);
+			if($n=='defaultcontent')
+			 $n=FALSE;
+		},$l);
 	}
+	$mytemplates = array_filter($mytemplates);
 	sort($mytemplates,SORT_LOCALE_STRING);
+
+	$defaultname = $mod->GetPreference($prefdefname);
+	$rowarray = array();
 
 	foreach($mytemplates as $one)
 	{
