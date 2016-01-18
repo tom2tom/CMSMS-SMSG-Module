@@ -193,7 +193,7 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 	*/
 	public function process_delivery_report()
 	{
-		switch ($REQUEST['status'])
+		switch ($_REQUEST['status'])
 		{
 		 case 'Delivered':
 			$status = parent::DELIVERY_OK;
@@ -206,8 +206,8 @@ class smsbroadcast_sms_gateway extends sms_gateway_base
 			$status = parent::DELIVERY_UNKNOWN;
 			break;
 		}
-		$smsid = $REQUEST['smsref'];
-		$smsto = $REQUEST['to'];
+		$smsid = $_REQUEST['smsref'];
+		$smsto = $_REQUEST['to'];
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 

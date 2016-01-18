@@ -252,7 +252,7 @@ queue 1,2,3 1=highest priority, 3=default
 	*/
 	public function process_delivery_report()
 	{
-		switch ((int)$REQUEST['status'])
+		switch ((int)$_REQUEST['status'])
 		{
 		 case 3:
 		 case 4:
@@ -278,8 +278,8 @@ queue 1,2,3 1=highest priority, 3=default
 			$status = parent::DELIVERY_UNKNOWN;
 			break;
 		}
-		$smsid = $REQUEST['apiMsgId'];
-		$smsto = $REQUEST['to'];
+		$smsid = $_REQUEST['apiMsgId'];
+		$smsto = $_REQUEST['to'];
 		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
 	}
 
