@@ -17,4 +17,16 @@ $this->SendEvent('SMSDeliveryReported',array(
 	'status'=>$gateway->get_status(),
 	'message'=>$msg,
 	'timestamp'=>strftime('%X %Z')));
+
+//clear all page content echoed before now
+$handlers = ob_list_handlers();
+if($handlers)
+{
+	$l = count($handlers);
+	for ($c = 0; $c < $l; $c++)
+		ob_end_clean();
+}
+
+exit;
+
 ?>
