@@ -6,9 +6,9 @@
 {if $pmod}
 {$formstart_gates}
 <div class="pageinput pageoverflow">
- <p class="pagetext">{$reporting_url}:</p>
+ <p class="pagetext leftward">{$reporting_url}:</p>
  <p>{$reporturl}</p>
- <p class="pagetext">{$default_gateway}:</p>
+ <p class="pagetext leftward">{$default_gateway}:</p>
  <select id="sms_gateway" name="{$actionid}sms_gateway">
   {html_options options=$gatesnames selected=$gatecurrent}
  </select>
@@ -46,7 +46,7 @@
 <div class="pageinput pageoverflow">
 <p>{$info_smstest}</p>
 {$formstart_test}
- <p class="pagetext">{$phone_number}:</p>
+ <p class="pagetext leftward">{$phone_number}:</p>
  <input type="text" name="{$actionid}mobile" size="20" maxlength="20" />
  <br /><br />
  <input type="submit" name="{$actionid}submit" value="{$submit}" />
@@ -55,7 +55,7 @@
 {$endtab}
 
 {$tabstart_mobiles}
-<div class="pageinput pageoverflow">
+<div class="pageinput pageoverflow" style="display:inline-block;">
 {if !empty($numbers)}<table class="pagetable" style="border:0;">
  <thead><tr>
   <th>{$id}</th>
@@ -88,7 +88,7 @@
 
 {if ($ptpl|| $puse)}
 {$tabstart_enternumber}
-<div class="pageinput pageoverflow">
+<div class="pageinput pageoverflow" style="display:inline-block;">
 <table class="pagetable">
  <thead><tr>
   <th>{$titlename}</th>
@@ -108,13 +108,13 @@
 {/foreach}
  </tbody>
 </table>
-{if $ptpl}<br />
+{if $ptpl}
 <p class="pageoptions">{$add_enternumber_template}</p>{/if}{*$ptpl*}
 </div>
 {$endtab}
 
 {$tabstart_entertext}
-<div class="pageinput pageoverflow">
+<div class="pageinput pageoverflow" style="display:inline-block;">
 <table class="pagetable">
  <thead><tr>
   <th>{$titlename}</th>
@@ -134,7 +134,7 @@
 {/foreach}
  </tbody>
 </table>
-{if $ptpl}<br />
+{if $ptpl}
 <p class="pageoptions">{$add_entertext_template}</p>{/if}{*$ptpl*}
 </div>
 {$endtab}
@@ -144,17 +144,17 @@
 {$tabstart_security}
 {$formstart_security}
 <div class="pageinput pageoverflow">
- <p class="pagetext">{$title_hourlylimit}:</p>
+ <p class="pagetext leftward">{$title_hourlylimit}:</p>
  <input type="text" name="{$actionid}hourlimit" value="{$hourlimit}" size="3" maxlength="3" />
- <p class="pagetext">{$title_dailylimit}:</p>
+ <p class="pagetext leftward">{$title_dailylimit}:</p>
  <input type="text" name="{$actionid}daylimit" value="{$daylimit}" size="3" maxlength="4" />
- <p class="pagetext">{$title_logsends}:</p>
+ <p class="pagetext leftward">{$title_logsends}:</p>
  <input type="checkbox" name="{$actionid}logsends"{if $logsends} checked="checked"{/if} />
- <p class="pagetext">{$title_logretain}:</p>
+ <p class="pagetext leftward">{$title_logretain}:</p>
  <input type="text" name="{$actionid}logdays" value="{$logdays}" size="2" maxlength="3" />
- <p class="pagetext">{$title_logdelivers}:</p>
+ <p class="pagetext leftward">{$title_logdelivers}:</p>
  <input type="checkbox" name="{$actionid}logdeliveries"{if $logdeliveries} checked="checked"{/if} />
- <p class="pagetext">{$title_password}:</p>
+ <p class="pagetext leftward">{$title_password}:</p>
  <textarea id="{$actionid}passwd" name="{$actionid}masterpass" class="cloaked" rows="2" cols="40">{$masterpass}</textarea>
  <br /><br />
  <input type="submit" name="{$actionid}submit" value="{$submit}" />

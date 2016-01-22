@@ -1,6 +1,6 @@
 <input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
 {if !empty($hidden)}{$hidden}{/if}
-<fieldset>
+<fieldset class="settings">
 <legend>{$gatetitle}</legend>
 <div class="pageoverflow" style="margin-top:0;">
 {foreach from=$data item=one name=block}

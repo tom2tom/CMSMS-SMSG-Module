@@ -1,6 +1,23 @@
-table.pagetable { padding:3px; border-spacing:0; margin-left:0; width:auto }
-p.pagetext { margin-top:0.5em; margin-bottom:0.5em; margin-left:0 !important}
-fieldset { padding:0 5px 5px 5px; margin:0;display:inline-block }
+.leftward { margin-left:0 !important }
+
+table.leftside {
+ padding:3px;
+ border-spacing:0;
+ margin-left:0;
+ width:auto
+}
+
+fieldset.gate {
+ padding:5px;
+ max-width:50em;
+}
+fieldset.gate legend { padding:0 5px; }
+
+fieldset.trim {
+ padding:0 5px 5px 5px;
+ margin:0;
+ display:inline-block
+}
 
 textarea.cloaked {
  font-family:auto;

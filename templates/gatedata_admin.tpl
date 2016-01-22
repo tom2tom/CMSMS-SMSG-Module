@@ -1,6 +1,6 @@
 <input type="hidden" name="{$actionid}{$space}~gate_id" value="{$gateid}" />
 {if !empty($hidden)}{$hidden}{/if}
-<fieldset>
+<fieldset class="gate">
 <legend>{$gatetitle}</legend>
 <div style="margin-top:0;">
 {$help}
