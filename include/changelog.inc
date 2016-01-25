@@ -16,17 +16,21 @@
  </li>
  <li>Version 0.9.9 - April 2015
   <ul>
-   <li>Support CMSMS 1.12.x</li>
+   <li>Also support CMSMS 1.12.x</li>
    <li>Implement gateway delivery-report processing, where possible</li>
   </ul>
  </li>
  <li>Version 1.0 - January 2016
   <ul>
-   <li>Support CMSMS 2+</li>
+   <li>Also support CMSMS 2+</li>
    <li>Encrypt sensitive data</li>
    <li>Abandon pretty-url for delivery reports</li>
    <li>Remove CGExtensions dependency</li>
    <li>Add missing $lang[] members</li>
   </ul>
  </li>
+ <li>Version 1.0.1 - February 2016
+  <ul>
+   <li>https protocol for Clickatell-gateway interactions</li>
+  </ul>
 </ul>
