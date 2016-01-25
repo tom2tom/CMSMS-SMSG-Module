@@ -8,9 +8,9 @@
 
 class clickatell_sms_gateway extends sms_gateway_base
 {
-	const CTELL_HTTP_GATEWAY = 'http://api.clickatell.com/http';
+	const CTELL_HTTP_GATEWAY = 'https://api.clickatell.com/http';
 	const CTELL_API_URL = 'https://www.clickatell.com/apis-scripts/apis/http-s';
-	//CHECKME https ?
+
 	private $_rawstatus;
 
 	public function get_name()
@@ -30,7 +30,7 @@ class clickatell_sms_gateway extends sms_gateway_base
 
 	public function support_custom_sender()
 	{
-		return TRUE; //only registered/approved/purchased numbers
+		return TRUE; //BUT only registered/approved/purchased numbers TODO determine if any have been, report that
 	}
 
 	public function support_mms()
