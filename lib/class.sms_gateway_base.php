@@ -170,7 +170,7 @@ abstract class sms_gateway_base
 	}
 
 	//for internal use only
-	//get parameter stored(for some gateways) when operation result-message was parsed
+	//get parameter stored (for some gateways) when operation result-message was parsed
 	public function get_smsid()
 	{
 		return $this->_smsid;
