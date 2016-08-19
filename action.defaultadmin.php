@@ -219,7 +219,7 @@ if($pmod || $puse)
 		if($current == FALSE)
 			$current = '-1';
 		$tplvars['gatecurrent'] = $current;
-	
+
 		$names = array(-1 => $this->Lang('none'));
 		foreach($objs as $key=>&$rec)
 		{
@@ -304,12 +304,12 @@ if($padm)
 	$pw = $this->GetPreference('masterpass');
 	if($pw)
 		$pw = smsg_utils::unfusc($pw);
-	$tplvars['masterpass'] = $pw; 
+	$tplvars['masterpass'] = $pw;
 	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery-inputCloak.min.js"></script>';
 	$jsloads[] =<<<EOS
  $('#{$id}passwd').inputCloak({
   type:'see4',
-  symbol:'\u2022'
+  symbol:'\u25CF'
  });
 
 EOS;
