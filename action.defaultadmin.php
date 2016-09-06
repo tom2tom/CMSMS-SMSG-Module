@@ -245,7 +245,7 @@ if($pmod || $puse)
 
 	$tplvars['tabstart_mobiles'] = $this->StartTab('mobiles',$params);
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
-	$data = $db->GetAll($query);
+	$data = $db->GetArray($query);
 	if($data)
 	{
 		$editicon = $theme->DisplayImage('icons/system/edit.gif',$mod->Lang('edit_tip'),'','','systemicon');

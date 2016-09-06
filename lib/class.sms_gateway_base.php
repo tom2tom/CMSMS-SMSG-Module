@@ -264,7 +264,7 @@ abstract class sms_gateway_base
 			$query .= ' AND enabled=1';
 		$query .= ' ORDER BY apiorder';
 		$gid = (int)$gdata['gate_id'];
-		$res = $db->GetAll($query,array($gid));
+		$res = $db->GetArray($query,array($gid));
 		if($res)
 		{
 			foreach($res as &$row)

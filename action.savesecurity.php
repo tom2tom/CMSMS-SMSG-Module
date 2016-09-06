@@ -26,7 +26,7 @@ if(isset($params['masterpass']))
 		//update current passwords
 		$pref = cms_db_prefix();
 		$sql = 'SELECT gate_id,title,value,encvalue FROM '.$pref.'module_smsg_props WHERE encrypt>0';
-		$rows = $db->GetAll($sql);
+		$rows = $db->GetArray($sql);
 		if($rows)
 		{
 			$e = ($this->havemcrypt) ?
