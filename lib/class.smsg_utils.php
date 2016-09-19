@@ -199,7 +199,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			if($passwd && $mod->havemcrypt)
 			{
-				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
+				$e = new smsg_Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
 				$value = $e->encrypt($value,$passwd);
 			}
 		}
@@ -218,7 +218,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			if($passwd && $mod->havemcrypt)
 			{
-				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
+				$e = new smsg_Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
 				$value = $e->decrypt($value,$passwd);
 			}
 		}
@@ -343,7 +343,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 
 	/*
 	This is a varargs function, 2nd argument (if it exists) is either a
-	Lang key or one of the sms_gateway_base::STAT_* constants
+	Lang key or one of the base_sms_gateway::STAT_* constants
 	*/
 	public static function get_msg(&$mod)
 	{
@@ -365,7 +365,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			else
 			{
 				$txt = implode(',',$parms);
-				if($ip && $parms[0] != sms_gateway_base::STAT_NOTSENT)
+				if($ip && $parms[0] != base_sms_gateway::STAT_NOTSENT)
 					$txt .= ','.$ip;
 			}
 			return $txt;
@@ -416,7 +416,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			 '##########',
 			 '###########');
 
-			$str = ereg_replace('[0-9]','#',$number);
+			$str = preg_replace('/[0-9]/','#',$number);
 			if(in_array($str,$formats)) return TRUE;
 		}
 		return FALSE;
