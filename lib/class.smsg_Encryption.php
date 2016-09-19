@@ -15,16 +15,16 @@
  * See http://stackoverflow.com/questions/5089841/two-way-encryption-i-need-to-store-passwords-that-can-be-retrieved
  *
  * Usage example:
- * $e = new Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+ * $e = new smsg_Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
  * $encryptedData = $e->encrypt($data,$key);
  * Then, to decrypt:
- * $e = new Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+ * $e = new smsg_Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
  * $data = $e->decrypt($encryptedData,$key);
  *
  * Requires:
  * mcrypt extension 
  */
-class Encryption {
+class smsg_Encryption {
 
     /**
      * @var string $cipher The mcrypt cipher to use for this instance
