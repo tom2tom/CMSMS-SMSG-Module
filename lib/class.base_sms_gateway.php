@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-abstract class sms_gateway_base
+abstract class base_sms_gateway
 {
 	const STAT_OK = 'sms_sent';
 	const STAT_NOTSENT = 'sms_notsent';
