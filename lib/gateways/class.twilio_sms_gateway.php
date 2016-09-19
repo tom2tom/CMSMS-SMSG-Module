@@ -91,7 +91,7 @@ class twilio_sms_gateway extends base_sms_gateway
 
 	protected function setup()
 	{
-		require_once cms_join_path(dirname(__FILE__),'twilio','Twilio.php');
+		require_once cms_join_path(dirname(__FILE__),'Twilio','autoload.php');
 	}
 
 	protected function prep_command()
