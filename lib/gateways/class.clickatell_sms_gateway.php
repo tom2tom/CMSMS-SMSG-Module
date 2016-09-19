@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class clickatell_sms_gateway extends sms_gateway_base
+class clickatell_sms_gateway extends base_sms_gateway
 {
 	const CTELL_HTTP_GATEWAY = 'https://api.clickatell.com/http';
 	const CTELL_API_URL = 'https://www.clickatell.com/apis-scripts/apis/http-s';

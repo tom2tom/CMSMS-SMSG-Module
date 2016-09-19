@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class twilio_sms_gateway extends sms_gateway_base
+class twilio_sms_gateway extends base_sms_gateway
 {
 	const TWILIO_API_URL = 'https://www.twilio.com/docs/api';
 	private $_rawstatus;
@@ -123,7 +123,7 @@ class twilio_sms_gateway extends sms_gateway_base
 		$args = array(/*'From' => $from,*/'To' => $to,'Body' => $body);
 
 		if(1) //want delivery reports TODO interface parameter
-			$args['StatusCallback'] = $this->_module->get_reporturl();
+			$args['StatusCallback'] = smsg_utils::get_reporturl($this->_module);
 
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($this->_module,$gid);

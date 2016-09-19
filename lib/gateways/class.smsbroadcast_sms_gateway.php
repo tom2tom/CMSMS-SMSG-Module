@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class smsbroadcast_sms_gateway extends sms_gateway_base
+class smsbroadcast_sms_gateway extends base_sms_gateway
 {
 	const SMSBC_API_URL = 'https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf';
 	private $_rawstatus;

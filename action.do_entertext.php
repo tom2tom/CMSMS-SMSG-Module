@@ -35,7 +35,7 @@ if(!$error && isset($params['smsg_submit']))
 			$gateway->set_num($mobile);
 			$gateway->send();
 
-			if($gateway->get_status() == sms_gateway_base::STAT_OK)
+			if($gateway->get_status() == base_sms_gateway::STAT_OK)
 				$message = $this->Lang('sms_message_sent',$mobile);
 			else
 				$error = $gateway->get_statusmsg();

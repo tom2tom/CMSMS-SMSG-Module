@@ -7,7 +7,7 @@
 #----------------------------------------------------------------------
 
 //class name must be like 'somename_sms_gateway'
-class skeleton_sms_gateway extends sms_gateway_base
+class skeleton_sms_gateway extends base_sms_gateway
 {
 	//TODO specific name and real URL for API reference
 	const SKEL_API_URL = 'https://somewhere.com/...';

@@ -6,7 +6,7 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-class googlevoice_sms_gateway extends sms_gateway_base
+class googlevoice_sms_gateway extends base_sms_gateway
 {
 	const GOOGLEVOICE_API_URL = 'https://code.google.com/p/phpgooglevoice';
 	private $_rawstatus;
