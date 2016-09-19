@@ -139,7 +139,7 @@ smsg_utils::refresh_gateways($this);
 $objs = smsg_utils::get_gateways_full($this);
 if(!$objs)
 {
-	echo $this->ShowErrors($this->Lang('error_nogatewaysfound'));
+	echo $this->ShowErrors($this->Lang('error_nogatewayfound'));
 	return;
 }
 

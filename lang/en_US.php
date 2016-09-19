@@ -63,7 +63,7 @@ $lang['error_invalid_number'] = 'The mobile phone number you entered is invalid'
 $lang['error_invalid_text'] = 'The text you entered contains invalid characters';
 $lang['error_name_exists'] = 'An item by that name already exists';
 $lang['error_nodatafound'] = 'No data are available';
-$lang['error_nogatewaysfound'] = 'Could not find any SMS gateway';
+$lang['error_nogatewayfound'] = 'Could not find any SMS gateway';
 $lang['error_notfound'] = 'Could not find the requested item';
 $lang['error_params'] = 'Parameter error';
 $lang['event_desc_delivery'] = 'Sent when a message-delivery-report is received from the current gateway (if such reports are enabled)';
@@ -138,7 +138,7 @@ Choose values for module settings such as the SMS sending-limits (to reduce spam
 </ol>
 <br />
 <p>This module contains a simple API for sending SMS messages from other modules or from UDTs.
-The API is set out in file .../lib/class.sms_gateway_base.php. In summary, it comprises</p>
+The API is set out in file .../lib/class.base_sms_gateway.php. In summary, it comprises</p>
 <ul>
 <li>get_alias()</li>
 <li>get_description()</li>

@@ -25,16 +25,16 @@ if(isset($params['submit']))
 			$gateway->send();
 			$status = $gateway->get_status();
 			$msg = $gateway->get_statusmsg();
-			if($status == sms_gateway_base::STAT_OK)
+			if($status == base_sms_gateway::STAT_OK)
 				$this->SetMessage($msg);
 			else
 				$this->SetError($msg);
 		}
 		else
-			$this->SetError($this->Lang('error_nogateway'));
+			$this->SetError($this->Lang('error_nogatewayfound'));
 	}
 	else
-		$this->SetError($this->Lang('error_invalidnumber'));
+		$this->SetError($this->Lang('error_invalid_number'));
 }
 
 $this->Redirect($id,'defaultadmin','',array('activetab'=>'test'));
