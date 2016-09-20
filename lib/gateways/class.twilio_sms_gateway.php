@@ -119,24 +119,29 @@ class twilio_sms_gateway extends base_sms_gateway
 			return FALSE;
 		}
 */
-		//NOTE these array keys must be capitalised
-		$args = array(/*'From' => $from,*/'To' => $to,'Body' => $body);
+/*		//NOTE these array keys must be capitalised
+		$args = array(/ *'From' => $from,* /'To' => $to,'Body' => $body);
 
 		if(1) //want delivery reports TODO interface parameter
 			$args['StatusCallback'] = smsg_utils::get_reporturl($this->_module);
-
+*/
 		$gid = parent::get_gateid(self::get_alias());
 		$parms = smsg_utils::getprops($this->_module,$gid);
-		$ob = new Services_Twilio(
+
+		$client = new Twilio\Rest\Client(
 		 $parms['_account']['value'],
 		 $parms['_token']['value']
 		);
-
-		try
+		try //try to send it
 		{
-			return $ob->account->messages->create($args); //send it
+			return $client->account->messages->create(
+				$to,array(
+				'from' => $parms['_from']['value'],
+				'body' => $body
+				)			
+			);
 		}
-		catch (Services_Twilio_RestException $e)
+		catch (Twilio\Exceptions\TwilioException $e)
 		{
 			return $e;
 		}
