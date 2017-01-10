@@ -119,7 +119,7 @@ class smsg_Encryption {
         $cipherKey = substr($key, 0, $keySize);
         $macKey = substr($key, $keySize, $keySize);
         $iv = substr($key, 2 * $keySize);
-        return array($cipherKey, $macKey, $iv);
+        return [$cipherKey, $macKey, $iv];
     }
 
     /**

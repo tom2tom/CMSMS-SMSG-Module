@@ -8,7 +8,7 @@
 if(!$this->CheckPermission('AdministerSMSGateways')) exit;
 
 if(isset($params['cancel']))
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>'security'));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>'security']);
 
 $this->SetPreference('hourlimit',(int)$params['hourlimit']);
 $this->SetPreference('daylimit',(int)$params['daylimit']);
@@ -56,7 +56,7 @@ if(isset($params['masterpass']))
 					$revised = $raw;
 				if(!$revised)
 					$revised = NULL;
-				$db->Execute($sql,array($revised,$encval,$onerow['gate_id'],$onerow['title']));
+				$db->Execute($sql,[$revised,$encval,$onerow['gate_id'],$onerow['title']]);
 			}
 			unset($onerow);
 		}
@@ -67,6 +67,6 @@ if(isset($params['masterpass']))
 	}
 }
 
-$this->Redirect($id,'defaultadmin','',array('activetab'=>'security'));
+$this->Redirect($id,'defaultadmin','',['activetab'=>'security']);
 
 ?>

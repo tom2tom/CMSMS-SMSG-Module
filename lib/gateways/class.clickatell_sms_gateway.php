@@ -61,11 +61,11 @@ class clickatell_sms_gateway extends base_sms_gateway
 			parent::set_gateid($gid);
 			$mod = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
-			smsg_utils::setprops($gid,array(
-			 array($mod->Lang('username'),'user',NULL,0),
-			 array($mod->Lang('password'),'password',NULL,1),
-			 array($mod->Lang('apiid'),'api_id',NULL,0)
-			));
+			smsg_utils::setprops($gid,[
+			 [$mod->Lang('username'),'user',NULL,0],
+			 [$mod->Lang('password'),'password',NULL,1],
+			 [$mod->Lang('apiid'),'api_id',NULL,0]
+			]);
 		}
 		return $gid;
 	}
@@ -123,7 +123,7 @@ class clickatell_sms_gateway extends base_sms_gateway
 			return FALSE;
 		}
 
-		$sends = array();
+		$sends = [];
 		foreach($parms as &$val)
 			$sends[$val['apiname']] = $val['value']; //CHECKME urlencode ?
 		unset($val);

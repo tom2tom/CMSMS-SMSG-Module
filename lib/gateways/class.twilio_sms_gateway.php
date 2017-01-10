@@ -60,11 +60,11 @@ class twilio_sms_gateway extends base_sms_gateway
 			$mod = $this->_module;
 			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//none of the apiname's is actually used (indicated by '_' prefix)
-			smsg_utils::setprops($gid,array(
-			 array($mod->Lang('account'),'_account',NULL,0),
-			 array($mod->Lang('token'),'_token',NULL,1),
-			 array($mod->Lang('from'),'_from',NULL,0)
-			));
+			smsg_utils::setprops($gid,[
+			 [$mod->Lang('account'),'_account',NULL,0],
+			 [$mod->Lang('token'),'_token',NULL,1],
+			 [$mod->Lang('from'),'_from',NULL,0]
+			]);
 		}
 		return $gid;
 	}
@@ -135,10 +135,10 @@ class twilio_sms_gateway extends base_sms_gateway
 		try //try to send it
 		{
 			return $client->account->messages->create(
-				$to,array(
+				$to,[
 				'from' => $parms['_from']['value'],
 				'body' => $body
-				)			
+				]			
 			);
 		}
 		catch (Twilio\Exceptions\TwilioException $e)

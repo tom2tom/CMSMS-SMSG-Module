@@ -37,6 +37,6 @@ if(isset($params['submit']))
 		$this->SetError($this->Lang('error_invalid_number'));
 }
 
-$this->Redirect($id,'defaultadmin','',array('activetab'=>'test'));
+$this->Redirect($id,'defaultadmin','',['activetab'=>'test']);
 
 ?>

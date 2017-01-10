@@ -17,7 +17,7 @@ class smsg_utils
 		$dir = cms_join_path(dirname(__FILE__),'gateways','');
 		if($mod === NULL)
 			$mod = cms_utils::get_module(SMSG::MODNAME);
-		$objs = array();
+		$objs = [];
 		foreach($aliases as $thisone)
 		{
 			$classname = $thisone.'_sms_gateway';
@@ -26,7 +26,7 @@ class smsg_utils
 
 			$obj = new $classname($mod);
 			//return array, so other keys may be added, upstream
-			$objs[$thisone] = array('obj' => $obj);
+			$objs[$thisone] = ['obj' => $obj];
 		}
 
 		return $objs;
@@ -37,7 +37,7 @@ class smsg_utils
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$alias = ($title) ?
-			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE title=? AND enabled>0',array($title)):
+			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE title=? AND enabled>0',[$title]):
 			$db->GetOne('SELECT alias FROM '.$pref.'module_smsg_gates WHERE active>0 AND enabled>0');
 		if($alias)
 		{
@@ -82,19 +82,19 @@ class smsg_utils
 		$pref = cms_db_prefix();
 		//upsert, sort-of
 		$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
-		$gid = $db->GetOne($sql,array($alias));
+		$gid = $db->GetOne($sql,[$alias]);
 		if(!$gid)
 		{
 		  $gid = $db->GenID($pref.'module_smsg_gates_seq');
 		  $sql = 'INSERT INTO '.$pref.'module_smsg_gates (gate_id,alias,title,description) VALUES (?,?,?,?)';
-		  $db->Execute($sql,array($gid,$alias,$title,$desc));
+		  $db->Execute($sql,[$gid,$alias,$title,$desc]);
 		}
 		else
 		{
 		   $gid = (int)$gid;
 		   $sql = 'UPDATE '.$pref.
 			'module_smsg_gates set title=?,description=? WHERE gate_id=?';
-		   $db->Execute($sql,array($title,$desc,$gid));
+		   $db->Execute($sql,[$title,$desc,$gid]);
 		}
 		return $gid;
 	}
@@ -109,14 +109,14 @@ class smsg_utils
 		$db = cmsms()->GetDb();
 		$pref = cms_db_prefix();
 		$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
-		$found = array();
+		$found = [];
 		foreach($files as &$thisfile)
 		{
 			include($thisfile);
-			$classname = str_replace(array($dir,'class.','.php'),array('','',''),$thisfile);
+			$classname = str_replace([$dir,'class.','.php'],['','',''],$thisfile);
 			$obj = new $classname($mod);
 			$alias = $obj->get_alias();
-			$res = $db->GetOne($sql,array($alias));
+			$res = $db->GetOne($sql,[$alias]);
 			if(!$res)
 				$res = $obj->upsert_tables();
 			$found[] = $res;
@@ -150,13 +150,13 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		{
 			if($data[3])
 			{
-				$a1 = array($data[0],NULL,$data[2],$data[1],1,$o,$gid,$data[1]);
-				$a2 = array($gid,$data[0],NULL,$data[2],$data[1],$data[1],1,$o,$gid,$data[1]);
+				$a1 = [$data[0],NULL,$data[2],$data[1],1,$o,$gid,$data[1]];
+				$a2 = [$gid,$data[0],NULL,$data[2],$data[1],$data[1],1,$o,$gid,$data[1]];
 			}
 			else
 			{
-				$a1 = array($data[0],$data[2],NULL,$data[1],0,$o,$gid,$data[1]);
-				$a2 = array($gid,$data[0],$data[2],NULL,$data[1],$data[1],0,$o,$gid,$data[1]);
+				$a1 = [$data[0],$data[2],NULL,$data[1],0,$o,$gid,$data[1]];
+				$a2 = [$gid,$data[0],$data[2],NULL,$data[1],$data[1],0,$o,$gid,$data[1]];
 			}
 			$db->Execute($sql1,$a1);
 			$db->Execute($sql2,$a2);
@@ -175,7 +175,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$pref = cms_db_prefix();
 		$props = $db->GetAssoc('SELECT signature,apiname,value,encvalue,encrypt FROM '.$pref.
 		 'module_smsg_props WHERE gate_id=? AND enabled>0 ORDER BY apiorder',
-		 array($gid));
+		 [$gid]);
 		foreach($props as &$row)
 		{
 			if ($row['encrypt'])
@@ -335,7 +335,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	{
 		//construct frontend-url (so no admin login is needed)
 		//cmsms 1.10+ also has ->create_url();
-		$url = $mod->CreateLink('_','devreport',1,'',array(),'',TRUE);
+		$url = $mod->CreateLink('_','devreport',1,'',[],'',TRUE);
 		//strip the fake returnid, so that the default will be used
 		$sep = strpos($url,'&amp;');
 		return substr($url,0,$sep);
@@ -402,7 +402,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	{
 		if($number)
 		{
-			$formats = array(
+			$formats = [
 			 '+##########',
 			 '+###########',
 			 '###-###-####', 
@@ -414,7 +414,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			 '###-###-###',
 			 '#####-###-###', 
 			 '##########',
-			 '###########');
+			 '###########'];
 
 			$str = preg_replace('/[0-9]/','#',$number);
 			if(in_array($str,$formats)) return TRUE;
@@ -427,7 +427,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$db = cmsms()->GetDb();
 		$sql = 'INSERT INTO '.cms_db_prefix().
 		 'module_smsg_sent (mobile,ip,msg,sdate) VALUES (?,?,?,NOW())';
-		$db->Execute($sql,array($mobile,$ip_address,$msg));
+		$db->Execute($sql,[$mobile,$ip_address,$msg]);
 	}
 
 	public static function clean_log(&$mod = NULL,$time = 0)
@@ -447,7 +447,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			$db->Execute('DELETE FROM '.$pref.'module_smsg_sent WHERE sdate<'.$limit);
 		}
 		$db->Execute('DELETE FROM '.$pref.'adminlog WHERE timestamp<? AND (item_id='.SMSG::AUDIT_SEND.
-		' OR item_id = '.SMSG::AUDIT_DELIV.') AND item_name='.SMSG::MODNAME,array($time));
+		' OR item_id = '.SMSG::AUDIT_DELIV.') AND item_name='.SMSG::MODNAME,[$time]);
 	}
 
 	public static function ip_can_send(&$mod,$ip_address)
@@ -463,7 +463,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			$date = $db->DbTimeStamp($t-3600);
 			$sql = 'SELECT COUNT(mobile) AS num FROM '.$pref.
 			 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date and $now)";
-			$num = $db->GetOne($sql,array($ip_address));
+			$num = $db->GetOne($sql,[$ip_address]);
 			if($num > $limit)
 				return FALSE;
 		}
@@ -473,7 +473,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			$date = $db->DbTimeStamp($t-24*3600);
 			$sql = 'SELECT COUNT(mobile) AS num FROM '.$pref.
 			 "module_smsg_sent WHERE ip=? AND (sdate BETWEEN $date and $now)";
-			$num = $db->GetOne($sql,array($ip_address));
+			$num = $db->GetOne($sql,[$ip_address]);
 			if($num > $limit)
 				return FALSE;
 		}

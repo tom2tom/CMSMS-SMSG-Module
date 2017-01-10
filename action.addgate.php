@@ -10,8 +10,8 @@ if(!($this->CheckPermission('AdministerSMSGateways')
 
 $sql = 'INSERT INTO '.cms_db_prefix().
  'module_smsg_props (gate_id,title,apiname,enabled,apiorder) VALUES (?,\'---\',\'todo\',0,99)';
-$db->Execute($sql,array((int)$params['gate_id']));
+$db->Execute($sql,[(int)$params['gate_id']]);
 
-$this->Redirect($id,'defaultadmin','',array('activetab'=>'gates'));
+$this->Redirect($id,'defaultadmin','',['activetab'=>'gates']);
 
 ?>

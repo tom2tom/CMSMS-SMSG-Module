@@ -12,11 +12,11 @@ $msg = $gateway->process_delivery_report();
 if($msg && $this->GetPreference('logdeliveries'))
 	$this->Audit(SMSG::AUDIT_DELIV,SMSG::MODNAME,$msg);
 
-$this->SendEvent('SMSDeliveryReported',array(
+$this->SendEvent('SMSDeliveryReported',[
 	'gateway'=>$gateway->get_name(),
 	'status'=>$gateway->get_status(),
 	'message'=>$msg,
-	'timestamp'=>strftime('%X %Z')));
+	'timestamp'=>strftime('%X %Z')]);
 
 //clear all page content echoed before now
 $handlers = ob_list_handlers();

@@ -55,7 +55,7 @@ if(isset($params['smsg_submit']))
 }
 
 // display the form
-$tplvars = array();
+$tplvars = [];
 $tplvars['message'] = $message; 
 $tplvars['error'] = $error; 
 if(!empty($params['gatename']))

@@ -9,11 +9,11 @@ if(!($this->CheckPermission('AdministerSMSGateways')
   || $this->CheckPermission('ModifySMSGateways'))) exit;
 
 if(isset($params['cancel']))
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>'gates'));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>'gates']);
 
 $gateway = $params['sms_gateway']; //e.g. 'smsbroadcast' or -1
 if(!(isset($params['submit']) || isset($params[$gateway.'~delete'])))
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>'gates'));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>'gates']);
 
 $objs = smsg_utils::get_gateways_full($this);
 if($objs)
@@ -26,7 +26,7 @@ if($objs)
 		if($gateway != '-1')
 		{
 			$sql = 'UPDATE '.$pref.'module_smsg_gates SET enabled=1,active=1 WHERE alias=?';
-			$db->Execute($sql,array($gateway));
+			$db->Execute($sql,[$gateway]);
 		}
 	}
 	//property-deletions handled downstream
@@ -34,6 +34,6 @@ if($objs)
 		$rec['obj']->handle_setup_form($params);
 }
 
-$this->Redirect($id,'defaultadmin','',array('activetab'=>'gates'));
+$this->Redirect($id,'defaultadmin','',['activetab'=>'gates']);
 
 ?>

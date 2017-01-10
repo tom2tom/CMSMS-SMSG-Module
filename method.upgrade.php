@@ -23,8 +23,8 @@ function rmdir_recursive($dir)
 $db = cmsms()->GetDb();
 $dict = NewDataDictionary($db);
 $pref = cms_db_prefix();
-$taboptarray = array('mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci',
- 'mysqli' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci');
+$taboptarray = ['mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci',
+ 'mysqli' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci'];
 
 switch($oldversion)
 {
@@ -33,7 +33,7 @@ case '1.0':
 case '1.0.1':
 	//remove files now renamed
 	$path = dirname(__FILE__).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR;
-	$bases = array('Encryption','sms_gateway_base');
+	$bases = ['Encryption','sms_gateway_base'];
 	foreach ($bases as $base)
 	{
 		$fp = $path.'class.'.$base.'.php';

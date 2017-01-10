@@ -20,11 +20,11 @@ if(isset($params['mid']))
 if($mid != '')
 {
 	$query = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
-	$tmp = $db->GetRow($query,array($mid));
+	$tmp = $db->GetRow($query,[$mid]);
 	if(!$tmp)
 	{
 		$this->SetError($this->Lang('error_notfound'));
-		$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
+		$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
 	}
 	$name = $tmp['name'];
 	$mobile = $tmp['mobile'];
@@ -32,7 +32,7 @@ if($mid != '')
 
 if(isset($params['cancel']))
 {
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
 }
 else if(isset($params['submit']))
 {
@@ -50,7 +50,7 @@ else if(isset($params['submit']))
 	{
 		// check for duplicate name
 		$query = 'SELECT id FROM '.$pref.'module_smsg_nums WHERE name=?';
-		$parms = array();
+		$parms = [];
 		if($mid != '')
 		{
 			$query .= ' AND id!=?';
@@ -71,13 +71,13 @@ else if(isset($params['submit']))
 		{
 			// insert
 			$query = 'INSERT INTO '.$pref.'module_smsg_nums (name,mobile) VALUES(?,?)';
-			$res = $db->Execute($query,array($name,$mobile));
+			$res = $db->Execute($query,[$name,$mobile]);
 		}
 		else
 		{
 			// update
 			$query = 'UPDATE '.$pref.'module_smsg_nums SET name=?,mobile=? WHERE id=?';
-			$res = $db->Execute($query,array($name,$mobile,$mid));
+			$res = $db->Execute($query,[$name,$mobile,$mid]);
 		}
 
 		if(!$res)
@@ -90,16 +90,16 @@ else if(isset($params['submit']))
 	{
 		$this->SetError($error);
 	}
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
 }
 
 // build the form
-$tplvars = array(
+$tplvars = [
 	'formstart' => $this->CreateFormStart($id,'edit_mobile',$returnid,'POST','','','',$params),
 	'formend' => $this->CreateFormEnd(),
 	'name' => $name,
 	'mobile' => $mobile
-);
+];
 
 echo smsg_utils::ProcessTemplate($this,'edit_mobile.tpl',$tplvars);
 ?>

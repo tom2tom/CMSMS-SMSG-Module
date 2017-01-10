@@ -9,7 +9,7 @@ if(!($this->CheckPermission('AdministerSMSGateways')
   || $this->CheckPermission('ModifySMSGateTemplates'))) exit;
 
 if(empty($params['mode'])) //we're back from edittemplate action
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 
 $name = $params['template'];
 $pref = $params['prefix'];
@@ -40,7 +40,7 @@ switch($params['mode'])
 				}
 			}
 		}
-		$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+		$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 	}
 	//1st-pass: setup for handover to edittemplate action
 	$params['defaulttemplatepref'] = $pref.'defaultcontent';
@@ -133,6 +133,6 @@ switch($params['mode'])
 	break;
 }
 
-$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 
 ?>

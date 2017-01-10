@@ -11,7 +11,7 @@ if(!($this->CheckPermission('AdministerSMSGateways')
 if(isset($params['mid']))
 {
 	$query = 'DELETE FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
-	$res = $db->Execute($query,array((int)$params['mid']));
+	$res = $db->Execute($query,[(int)$params['mid']]);
 
 	if($res)
 		$this->SetMessage($this->Lang('msg_rec_deleted'));
@@ -19,6 +19,6 @@ if(isset($params['mid']))
 		$this->SetError($this->Lang('error_notfound'));
 }
 
-$this->Redirect($id,'defaultadmin','',array('activetab'=>'mobiles'));
+$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
 
 ?>

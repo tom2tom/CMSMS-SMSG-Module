@@ -102,7 +102,7 @@ class SMSG extends CMSModule
 		return TRUE;
 	}
 
-	public function HasCapability($capability,$params = array())
+	public function HasCapability($capability,$params = [])
 	{
 		switch($capability)
 		{
@@ -157,7 +157,7 @@ class SMSG extends CMSModule
 */
 	public function GetDependencies()
 	{
-		return array();
+		return [];
 	}
 
 	public function LazyLoadFrontend()

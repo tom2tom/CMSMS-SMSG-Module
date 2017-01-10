@@ -10,19 +10,19 @@ if(!($this->CheckPermission('AdministerSMSGateways')
   || $this->CheckPermission('ModifySMSGateTemplates'))) exit;
 
 if(isset($params['cancel']))
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 
 // check if we have a template name
 if(!(isset($params['template']) || isset($params['prefix'])))
 {
 	$this->SetError($this->Lang('error_params'));
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 }
 
 if(!isset($params['mode']) || !isset($params['title']))
 {
 	$this->SetError($this->Lang('error_params'));
-	$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 }
 
 if(isset($params['submit']) || isset($params['apply']))
@@ -42,7 +42,7 @@ if(isset($params['submit']) || isset($params['apply']))
 		}
 	}
 	if(isset($params['submit']))
-		$this->Redirect($id,'defaultadmin','',array('activetab'=>$params['activetab']));
+		$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 }
 
 // handle errors
@@ -51,7 +51,7 @@ if(isset($params['errors']))
 
 $params['origaction'] = $params['action'];
 $contents = '';
-$tplvars = array();
+$tplvars = [];
 if($params['mode'] == 'add')
 {
 	$tplvars['formstart'] = $this->CreateFormStart($id,'settemplate',$returnid,'POST','','','',$params);
@@ -130,14 +130,14 @@ if(!empty($params['info']))
 if(isset($params['moddesc']))
 	$tplvars['module_description'] = trim($params['moddesc']);
 
-$tplvars += array(
+$tplvars += [
 	'title_name' => $this->Lang('template_name'),
 	'title_content' => $this->Lang('template_content'),
 	'content' => $this->CreateSyntaxArea($id,$contents,'templatecontent','','','','',50,15,'style="font-size:1em;"'),
 	'submit' => $this->CreateInputSubmit($id,'submit',$this->Lang('submit')),
 	'cancel' => $this->CreateInputSubmit($id,'cancel',$this->Lang('cancel')),
 	'formend' => $this->CreateFormEnd()
-);
+];
 
 echo smsg_utils::ProcessTemplate($this,'edit_template.tpl',$tplvars);
 ?>

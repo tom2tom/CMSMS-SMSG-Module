@@ -70,10 +70,10 @@ class skeleton_sms_gateway extends base_sms_gateway
 			$mod = $this->_module;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//by convention, apiname's which are not actually used are indicated by a '_' prefix
-			smsg_utils::setprops($gid,array(
-			 array($mod->Lang('username'),'user',NULL,0),
-			 array($mod->Lang('password'),'password',NULL,1)
-			));
+			smsg_utils::setprops($gid,[
+			 [$mod->Lang('username'),'user',NULL,0],
+			 [$mod->Lang('password'),'password',NULL,1]
+			]);
 		}
 		return $gid;
 	}

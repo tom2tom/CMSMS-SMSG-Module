@@ -32,7 +32,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		$editicon = $theme->DisplayImage('icons/system/edit.gif',$mod->Lang('edit_tip'),'','','systemicon');
 		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$mod->Lang('deleteone_tip'),'','','systemicon');
 		$prompt = $mod->Lang('sure_ask');
-		$args = array('prefix'=>$prefix,'activetab'=>$activetab);
+		$args = ['prefix'=>$prefix,'activetab'=>$activetab];
 	}
 	else
 		$yes = $mod->Lang('yes');
@@ -66,7 +66,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 	sort($mytemplates,SORT_LOCALE_STRING);
 
 	$defaultname = $mod->GetPreference($prefdefname);
-	$rowarray = array();
+	$rowarray = [];
 
 	foreach($mytemplates as $one)
 	{
@@ -118,12 +118,12 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		$rowarray[] = $oneset;
 	}
 
-	$tplvars += array(
+	$tplvars += [
 		$prefix.'items' => $rowarray,
 		'parent_module_name' => $mod->GetFriendlyName(),
 		'titlename' => $mod->Lang('name'),
 		'titledefault' => $mod->Lang('default')
-	);
+	];
 	if($modify)
 	{
 		$args['mode'] = 'add';
@@ -148,12 +148,12 @@ $pmod = $padm || $this->CheckPermission('ModifySMSGateways');
 $ptpl = $padm || $this->CheckPermission('ModifySMSGateTemplates');
 $puse = $this->CheckPermission('UseSMSGateways');
 
-$tplvars = array(
+$tplvars = [
 	'padm' => $padm,
 	'pmod' => $pmod,
 	'ptpl' => $ptpl,
 	'puse' => $puse
-);
+];
 
 if(!empty($params['activetab']))
 	$showtab = $params['activetab'];
@@ -177,7 +177,7 @@ $headers .=
  $this->EndTabHeaders().
  $this->StartTabContent();
 
-$tplvars += array(
+$tplvars += [
 	'tabsheader' => $headers,
 	'tabsfooter' => $this->EndTabContent(), //for CMSMS 2+, must be before EndTab() !!
 	'endtab' => $this->EndTab(),
@@ -197,20 +197,20 @@ $tplvars += array(
 	'title_password' => $this->Lang('prompt_master_password'),
 	'submit' => $this->Lang('submit'),
 	'cancel' => $this->Lang('cancel')
-);
+];
 
-$jsincs = array();
-$jsfuncs = array();
-$jsloads = array();
+$jsincs = [];
+$jsfuncs = [];
+$jsloads = [];
 $baseurl = $this->GetModuleURLPath();
 
 if($pmod || $puse)
 {
-	$tplvars += array(
+	$tplvars += [
 		'tabstart_gates' => $this->StartTab('gates',$params),
 		'formstart_gates' => $this->CreateFormStart($id,'savegates'),
 		'reporturl' => smsg_utils::get_reporturl($this)
-	);
+	];
 
 	if($pmod)
 	{
@@ -220,7 +220,7 @@ if($pmod || $puse)
 			$current = '-1';
 		$tplvars['gatecurrent'] = $current;
 
-		$names = array(-1 => $this->Lang('none'));
+		$names = [-1 => $this->Lang('none')];
 		foreach($objs as $key=>&$rec)
 		{
 			$names[$key] = $rec['obj']->get_name();
@@ -256,7 +256,7 @@ if($pmod || $puse)
 			$row = (object)$row;
 			if($pmod)
 			{
-				$args = array('mid'=>$row->id);
+				$args = ['mid'=>$row->id];
 				$rec->editlink = $this->CreateLink($id,'edit_mobile','',$editicon,$args);
 				$rec->deletelink = $this->CreateLink($id,'del_mobile','',$deleteicon,$args,$prompt);
 			}
@@ -292,7 +292,7 @@ if($ptpl || $puse)
 
 if($padm)
 {
-	$tplvars += array(
+	$tplvars += [
 		'tabstart_security' => $this->StartTab('security',$params),
 		'formstart_security' => $this->CreateFormStart($id,'savesecurity'),
 		'hourlimit' => $this->GetPreference('hourlimit'),
@@ -300,7 +300,7 @@ if($padm)
 		'logsends' => $this->GetPreference('logsends'),
 		'logdays' => $this->GetPreference('logdays'),
 		'logdeliveries' => $this->GetPreference('logdeliveries')
-	);
+	];
 	$pw = $this->GetPreference('masterpass');
 	if($pw)
 		$pw = smsg_utils::unfusc($pw);

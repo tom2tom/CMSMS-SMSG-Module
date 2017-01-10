@@ -51,7 +51,7 @@ abstract class base_sms_gateway
 		{
 			$db = cmsms()->GetDb();
 			$query = 'SELECT gate_id FROM '.cms_db_prefix().'module_smsg_gates WHERE alias=?';
-			$gid = $db->GetOne($query,array($alias));
+			$gid = $db->GetOne($query,[$alias]);
 			$this->_gate_id = (int)$gid;
 		}
 		return $this->_gate_id;
@@ -242,29 +242,29 @@ abstract class base_sms_gateway
 		if(!$padm)
 			$query .= ' AND enabled=1';
 		$alias = $this->get_alias();
-		$gdata = $db->GetRow($query,array($alias));
+		$gdata = $db->GetRow($query,[$alias]);
 		if(!$gdata)
 			return '';
 
 		$pmod = $padm || $mod->CheckPermission('ModifySMSGateways');
 		if(!($padm || $pmod))
 		{
-			$tplvars = array(
+			$tplvars = [
 				'gatetitle' => $gdata['title'],
 				'default' => ($gdata['active'])?$mod->Lang('yes'):''
-			);
+			];
 			return smsg_utils::ProcessTemplate($mod,'gatedata_use.tpl',$tplvars);
 		}
 
-		$tplvars = array();
+		$tplvars = [];
 		$tplvars['gatetitle'] = $mod->Lang('frame_title',$gdata['title']);
-		$parms = array();
+		$parms = [];
 		$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
 		if(!$padm)
 			$query .= ' AND enabled=1';
 		$query .= ' ORDER BY apiorder';
 		$gid = (int)$gdata['gate_id'];
-		$res = $db->GetArray($query,array($gid));
+		$res = $db->GetArray($query,[$gid]);
 		if($res)
 		{
 			foreach($res as &$row)
@@ -289,16 +289,16 @@ abstract class base_sms_gateway
 			$ob->space = '';
 			$parms[] = $ob;
 		}
-		$tplvars += array(
+		$tplvars += [
 			'data' => $parms,
 			'dcount' => $dcount,
 			'space' => $alias, //for gateway-data 'namespace'
 			'gateid' => $gid
-		);
+		];
 
 		if($padm)
 		{
-			$tplvars += array(
+			$tplvars += [
 				'help' => $mod->Lang('help_sure').' '.$mod->Lang('help_dnd'),
 				'title_title' => $mod->Lang('title'),
 				'title_value' => $mod->Lang('value'),
@@ -307,14 +307,14 @@ abstract class base_sms_gateway
 				'title_enabled' => $mod->Lang('enabled'),
 				'title_help' => $mod->Lang('helptitle'),
 				'title_select' => $mod->Lang('select')
-			);
+			];
 
 			$id = 'm1_'; //module admin instance-id is hard-coded (OR $smarty->tpl_vars['actionid']->value)
 			$text = $mod->Lang('add_parameter');
 			$theme = ($mod->before20) ? cmsms()->get_variable('admintheme'):
 				cms_utils::get_theme_object();
 			$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
-			$args = array('gate_id'=>$gid);
+			$args = ['gate_id'=>$gid];
 			$tplvars['additem'] = $mod->CreateLink($id,'addgate','',$addicon,$args).' '.
 				$mod->CreateLink($id,'addgate','',$text,$args);
 			if($dcount > 0)
@@ -347,9 +347,9 @@ abstract class base_sms_gateway
 		$this->custom_save($params); //any gateway-specific adjustments to $params
 		$delete = isset($params[$alias.'~delete']);
 
-		$srch = array(' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a');
-		$repl = array('' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,'');
-		$conds = array();
+		$srch = [' ',"'",'"','=','\\','/','\0',"\n","\r",'\x1a'];
+		$repl = ['' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,''];
+		$conds = [];
 
 		if($delete)
 		{
@@ -378,12 +378,12 @@ abstract class base_sms_gateway
 					else
 						$parts[1] = 'todo';
 					if(!array_key_exists($parts[1],$conds))
-						$conds[$parts[1]] = array();
+						$conds[$parts[1]] = [];
 					$conds[$parts[1]][$parts[2]] = $val;
 				}
 				elseif($delete && $parts[2] == 'sel')
 				{
-					$db->Execute($sql12,array($gid,$parts[1]));
+					$db->Execute($sql12,[$gid,$parts[1]]);
 				}
 			}
 		}
@@ -410,7 +410,7 @@ abstract class base_sms_gateway
 				'=?,signature=CASE WHEN signature IS NULL THEN ? ELSE signature END,apiorder=? WHERE gate_id=? AND apiname=?';
 			//NOTE any record for a new parameter includes apiname='todo' & signature=NULL
 			$sig = ($apiname != 'todo') ? $apiname : $data['apiname'];
-			$args = array_merge(array_values($data),array($sig,$o,$gid,$apiname));
+			$args = array_merge(array_values($data),[$sig,$o,$gid,$apiname]);
 			$ares = $db->Execute($sql,$args);
 			$o++;
 		}

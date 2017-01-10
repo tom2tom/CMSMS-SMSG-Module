@@ -16,7 +16,7 @@ $message = '';
 // check that the supplied SMS ID is valid
 $smsnum = (int)$params['smsnum'];
 $query = 'SELECT mobile FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
-$mobile = $db->GetOne($query,array($smsnum));
+$mobile = $db->GetOne($query,[$smsnum]);
 $error = ($mobile) ? '' : $this->Lang('error_notfound');
 
 if(!$error && isset($params['smsg_submit']))
@@ -51,7 +51,7 @@ if(!$error && isset($params['smsg_submit']))
 }
 
 // display the form
-$tplvars = array();
+$tplvars = [];
 $tplvars['message'] = $message;
 $tplvars['error'] = $error;
 if(!empty($params['gatename']))
