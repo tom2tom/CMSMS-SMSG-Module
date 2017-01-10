@@ -189,7 +189,7 @@ This is accomplished in a variety of ways:</p>
 <h3>Requirements:</h3>
 <ul>
 <li>CMS Made Simple 1.9+</li>
-<li>PHP 5.3+</li>
+<li>PHP 5.4+</li>
 <li>Authority to use at least one suported gateway</li>
 <li>The website host must allow outgoing HTTP connections</li>
 </ul>
