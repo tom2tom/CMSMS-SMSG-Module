@@ -5,6 +5,7 @@
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+//namespace SMSG;
 
 class smsg_utils
 {
@@ -199,7 +200,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			if($passwd && $mod->havemcrypt)
 			{
-				$e = new smsg_Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
+				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::STRETCHES);
 				$value = $e->encrypt($value,$passwd);
 			}
 		}
@@ -218,7 +219,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			if($passwd && $mod->havemcrypt)
 			{
-				$e = new smsg_Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::ENC_ROUNDS);
+				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::STRETCHES);
 				$value = $e->decrypt($value,$passwd);
 			}
 		}
@@ -405,14 +406,14 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			$formats = [
 			 '+##########',
 			 '+###########',
-			 '###-###-####', 
+			 '###-###-####',
 			 '####-###-###',
-			 '(###) ###-###', 
+			 '(###) ###-###',
 			 '####-####-####',
-			 '##-###-####-####', 
-			 '####-####', 
+			 '##-###-####-####',
+			 '####-####',
 			 '###-###-###',
-			 '#####-###-###', 
+			 '#####-###-###',
 			 '##########',
 			 '###########'];
 
@@ -456,7 +457,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		$pref = cms_db_prefix();
 		$t = time();
 		$now = $db->DbTimeStamp($t);
-		
+
 		$limit = $mod->GetPreference('hourlimit',0);
 		if($limit > 0)
 		{
@@ -489,7 +490,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 		  $text)) return FALSE;
 		return TRUE;
 	}
-	
+
     /**
 	implode_with_key:
     Implode @assoc into a string suitable for forming a URL string with multiple key/value pairs
