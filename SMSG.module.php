@@ -33,7 +33,7 @@ class SMSG extends CMSModule
 	const PREF_ENTERTEXT_CONTENTDFLT = 'entertext_defaultcontent';
 
 	public $before20;
-	const ENC_ROUNDS = 10000;
+	const STRETCHES = 10000;
 	//whether password encryption is supported
 	public $havemcrypt;
 
