@@ -5,7 +5,7 @@
  * Note that this is not just straight encryption.  It also has a few other
  *  features in it to make the encrypted data far more secure.  Note that any
  *  other implementations used to decrypt data will have to do the same exact
- *  operations.  
+ *  operations.
  *
  * Security Benefits:
  *  Uses Key stretching
@@ -15,16 +15,18 @@
  * See http://stackoverflow.com/questions/5089841/two-way-encryption-i-need-to-store-passwords-that-can-be-retrieved
  *
  * Usage example:
- * $e = new smsg_Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+ * $e = new Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
  * $encryptedData = $e->encrypt($data,$key);
  * Then, to decrypt:
- * $e = new smsg_Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+ * $e = new Encryption(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
  * $data = $e->decrypt($encryptedData,$key);
  *
  * Requires:
- * mcrypt extension 
+ * mcrypt extension
  */
-class smsg_Encryption {
+//namespace SMSG;
+
+class Encryption {
 
     /**
      * @var string $cipher The mcrypt cipher to use for this instance
@@ -83,7 +85,7 @@ class smsg_Encryption {
 
     /**
      * Encrypt the supplied data using the supplied key
-     * 
+     *
      * @param string $data The data to encrypt
      * @param string $key  The key to encrypt with
      *
