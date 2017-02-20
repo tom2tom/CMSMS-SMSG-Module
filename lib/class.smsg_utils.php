@@ -200,7 +200,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			if($passwd && $mod->havemcrypt)
 			{
-				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::STRETCHES);
+				$e = new Encryption('BF-CBC','default',SMSG::STRETCHES);
 				$value = $e->encrypt($value,$passwd);
 			}
 		}
@@ -219,7 +219,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			if($passwd && $mod->havemcrypt)
 			{
-				$e = new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::STRETCHES);
+				$e = new Encryption('BF-CBC','default',SMSG::STRETCHES);
 				$value = $e->decrypt($value,$passwd);
 			}
 		}

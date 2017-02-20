@@ -30,7 +30,7 @@ if(isset($params['masterpass']))
 		if($rows)
 		{
 			$e = ($this->havemcrypt) ?
-			 new Encryption(MCRYPT_BLOWFISH,MCRYPT_MODE_CBC,SMSG::STRETCHES) : FALSE;
+				new Encryption('BF-CBC','default',SMSG::STRETCHES) : FALSE;
 			if($e && $newpw)
 			{
 				$tofield = 'encvalue';
