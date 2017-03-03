@@ -27,7 +27,7 @@
  * openssl extension
  * use of an openssl cipher with blocksize <= 2040 bits
  */
-//namespace SMSG;
+namespace SMSG;
 
 final class Encryption
 {
@@ -175,7 +175,7 @@ final class Encryption
 		}
 		$rounds = 1 << $rounds;
 		if ($rounds < BCRYPT_MINROUNDS) {
-			throw new Exception('Invalid rounds');
+			throw new \Exception('Invalid rounds');
 		}
 
 		$state = blowfish.initstate()
