@@ -1,7 +1,7 @@
 <?php
 #-------------------------------------------------------------------------
 # CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Derived in part from module CGSMS by Robert Campbell <calguy1000@cmsmadesimple.org>
 # This module provides the ability for other modules to send SMS messages
 #-------------------------------------------------------------------------
