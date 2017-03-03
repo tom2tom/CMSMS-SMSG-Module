@@ -33,9 +33,16 @@
   <ul>
    <li>https protocol for Clickatell-gateway interactions</li>
   </ul>
+ </li>
  <li>Version 1.1 - September 2016
   <ul>
-   <li>renamed classes to fix namespace conflict</li>
-   <li>updated Twilio library to v.5.4.1</li>
+   <li>rename classes to fix namespace conflict</li>
+   <li>update Twilio library to v.5.4.1</li>
   </ul>
+ </li>
+ <li>Version 1.2 - March 2017
+  <ul>
+   <li>revise encryption based on PHP openssl extension</li>
+  </ul>
+ </li>
 </ul>
