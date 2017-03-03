@@ -105,115 +105,6 @@ $lang['help_smstext'] = 'Applicable only to the enternumber action, this paramet
 $lang['help_sure'] = 'Be <strong>very sure</strong> about what you\'re doing, before modifying anything except title(s) and/or value(s)!';
 $lang['help_urlcheck'] = 'Refer to the <a href="%s">%s</a> for details';
 $lang['help_urlonly'] = 'This parameter indicates that instead of a full link only the URL should be echoed, allowing you to build your own link.';
-$lang['help_module'] = <<<EOS
-<h3>What does it do?</h3>
-<p>This module allows website visitors to either send a pre-determined (and encrypted) text
- message to any text capable phone, or to allow sending a user specified text message to a pre-determined
- (and hidden) mobile phone number.  It is useful for such things as sending addresses from a directory to a mobile phone number...
- or for messaging a website administrator with urgent information.</p>
-<h3>How do I use it?</h3>
-<p>The first thing to do is grant relevant permissions to users. Three permissions are available:</p>
-<ul>
-<li>Modify module settings other than templates</li>
-<li>Modify module templates</li>
-<li>Administration, which includes the above two plus more-extensive settings manipulation</li>
-</ul>
-<p>Then, via the module's admin panel (menu &quot;Extensions &gt;&gt; SMS Utility&quot;), record information
-about how the module is to work.
-Choose one of the available gateways and enter the corresponding interface parameters.
-Choose values for module settings such as the SMS sending-limits (to reduce spam).</p>
-<p>Then perform at least one test (there's a tab in the module admin panel to allow this) to ensure that SMS messages are being sent to your mobile phone.</p>
-<br />
-<p>There are two primary ways to use this module in the website front end:</p>
-<ol>
- <li>To send predefined text to a user-specified phone number, put a tag like
- <code>{SMSG action='enternumber' smstext='the quick brown fox'}</code> into a page or template.
- That creates a link that when clicked will display a form for the user to enter a mobile phone number.</p>
- </li>
- <li>To send user-specified text to a predefined phone number, put a tag like
- <code>{SMSG action='entertext' smsnum=5}</code> into a page or template.
- That creates a link that when clicked will display a form for the user to enter a 160-character message
- that is then sent to a predetermined mobile number (in the example, the one with id=5)
-</li>
-</ol>
-<br />
-<p>This module contains a simple API for sending SMS messages from other modules or from UDTs.
-The API is set out in file .../lib/class.base_sms_gateway.php. In summary, it comprises</p>
-<ul>
-<li>get_alias()</li>
-<li>get_description()</li>
-<li>get_name()</li>
-<li>get_status()</li>
-<li>get_statusmsg()</li>
-<li>multi_number_separator()</li>
-<li>require_country_prefix()</li>
-<li>require_plus_prefix()</li>
-<li>reset()</li>
-<li>send()</li>
-<li>set_from(\$from)</li>
-<li>set_msg(\$msg)</li>
-<li>set_num(\$num)</li>
-<li>support_custom_sender()</li>
-<li>support_mms()</li>
-</ul>
-<p>A brief example of how to use it is:<br /><br />
-<code>
-\$gateway = smsg_utils::get_gateway();<br />
-\$gateway->set_msg('hello world');<br />
-\$gateway->set_num('12225551212');<br />
-\$gateway->send();<br />
-</code></p>
-<h3>SMS gateways</h3>
-<p>This module depends on selecting a supported SMS gateway and recording the corresponding authentication and other parameters. You will need to sign up to at least one of the supported gateways.  This will typically involve paying money to the service provider.</p>
-<p>SMS gateways will have their own requirements and limitations on the amount, size, source, and destination messages that can be sent. It is your responsibility to understand these limitations.</p>
-<p>Currently, these gateways are implemented:</p>
-<ul>
-<li>{$lang['advice_clickatell']}</li>
-<li>{$lang['advice_googlevoice']}</li>
-<li>{$lang['advice_smsbroadcast']}</li>
-<li>{$lang['advice_twilio']}</li>
-</ul>
-<h3>Extra gateways</h3>
-<p>A PHP-class must be created for each gateway. Refer to the README document in the module folder .../lib/gateways.</p>
-<p>If you ask <strong>really nicely</strong>, and you can offer some sort of service in return, the author might perhaps be persuaded to add support for some other gateway.</p>
-<h3>Security</h3>
-<p>Attempts have been made to ensure a reasonable level of security at all times.
-This is accomplished in a variety of ways:</p>
-<ol>
-<li>All text messages are checked for length limits and valid characters, before sending.</li>
-<li>All text messages are recorded in the database, including the IP address of the sender.</li>
-<li>Before any text message is sent, there's a check that the allowed maximum (daily, hourly) counts of messages from that IP address have not been exceeded.</li>
-<li>When sending to a pre-defined phone, the destination number is hidden from the initiator, to prevent spamming.</li>
-<li>When sending a message, the message text is stored in the database and cannot be altered.</li>
-</ol>
-<h3>Requirements:</h3>
-<ul>
-<li>CMS Made Simple 1.9+</li>
-<li>PHP 5.4+</li>
-<li>Authority to use at least one suported gateway</li>
-<li>The website host must allow outgoing HTTP connections</li>
-</ul>
-<h3>Support</h3>
-<p>This module is provided as-is. Please read the text of the license for the full disclaimer.</p>
-<p>For help:</p>
-<ul>
-<li>discussion may be found in the <a href="http://forum.cmsmadesimple.org">CMS Made Simple Forums</a>; or</li>
-<li>you may have some success emailing the author directly.</li>
-</ul>
-<p>For the latest version of the module, or to report a bug, visit the module's <a href="http://dev.cmsmadesimple.org/projects/smsg">forge-page</a>.</p>
-<h3>Copyright and license</h3>
-<p>Portions copyright &copy; 2015-2016 Tom Phane &lt;tpgww@onepost.net&gt;.<br />
-Portions copyright &copy; 2010 Robert Campbell &lt;calguy1000@cmsmadesimple.org&gt;.<br />
-All rights reserved.</p>
-<p>This module is free software. It may be redistributed and/or modified
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.</p>
-<p>This module is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-<a href="http://www.gnu.org/licenses/licenses.html#AGPL">GNU Affero General Public License</a> for more details.</p>
-EOS;
 $lang['helptitle'] = 'Help';
 
 #I
@@ -326,6 +217,5 @@ $lang['value'] = 'Value';
 $lang['yes'] = 'Yes';
 
 #Z
-
 
 ?>
