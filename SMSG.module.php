@@ -74,12 +74,12 @@ class SMSG extends CMSModule
 
 	public function GetHelp()
 	{
-		return $this->Lang('help_module');
+		return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','modhelp.html'));
 	}
 
 	public function GetVersion()
 	{
-		return '1.1';
+		return '1.2';
 	}
 
 	public function GetAuthor()
@@ -94,7 +94,7 @@ class SMSG extends CMSModule
 
 	public function GetChangeLog()
 	{
-		return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.inc'));
+		return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.html'));
 	}
 
 	public function IsPluginModule()
