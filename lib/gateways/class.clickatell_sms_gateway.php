@@ -1,17 +1,18 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+namespace SMSG\gateways;
 
-class clickatell_sms_gateway extends base_sms_gateway
+class clickatell_sms_gateway extends \SMSG\base_sms_gateway
 {
 	const CTELL_HTTP_GATEWAY = 'https://api.clickatell.com/http';
 	const CTELL_API_URL = 'https://www.clickatell.com/apis-scripts/apis/http-s';
 
-	private $_rawstatus;
+	private $rawstatus;
 
 	public function get_name()
 	{
@@ -25,7 +26,7 @@ class clickatell_sms_gateway extends base_sms_gateway
 
 	public function get_description()
 	{
-		return $this->_module->Lang('description_clickatell');
+		return $this->mod->Lang('description_clickatell');
 	}
 
 	public function support_custom_sender()
@@ -55,13 +56,12 @@ class clickatell_sms_gateway extends base_sms_gateway
 
 	public function upsert_tables()
 	{
-		$gid = smsg_utils::setgate($this);
-		if($gid)
-		{
+		$gid = \SMSG\Utils::setgate($this);
+		if ($gid) {
 			parent::set_gateid($gid);
-			$mod = $this->_module;
+			$mod = $this->mod;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
-			smsg_utils::setprops($gid,[
+			\SMSG\Utils::setprops($gid,[
 			 [$mod->Lang('username'),'user',NULL,0],
 			 [$mod->Lang('password'),'password',NULL,1],
 			 [$mod->Lang('apiid'),'api_id',NULL,0]
@@ -72,19 +72,16 @@ class clickatell_sms_gateway extends base_sms_gateway
 
 	public function custom_setup(&$tplvars,$padm)
 	{
-		foreach($tplvars['data'] as &$ob)
-		{
-			if($ob->signature == 'password')
-			{
+		foreach ($tplvars['data'] as &$ob) {
+			if ($ob->signature == 'password') {
 				$ob->size = 20;
 				break;
 			}
 		}
 		unset($ob);
-		if($padm)
-		{
+		if ($padm) {
 			$tplvars['help'] .= '<br />'.
-				$this->_module->Lang('help_urlcheck',self::CTELL_API_URL,self::get_name().' API');
+				$this->mod->Lang('help_urlcheck',self::CTELL_API_URL,self::get_name().' API');
 		}
 	}
 
@@ -99,36 +96,35 @@ class clickatell_sms_gateway extends base_sms_gateway
 	protected function prep_command()
 	{
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($this->_module,$gid);
-		if(
+		$parms = \SMSG\Utils::getprops($this->mod,$gid);
+		if (
 		 $parms['user']['value'] == FALSE ||
 		 $parms['password']['value'] == FALSE ||
 		 $parms['api_id']['value'] == FALSE
-		)
-		{
-			$this->_status = parent::STAT_ERROR_AUTH;
+		) {
+			$this->status = parent::STAT_ERROR_AUTH;
 			return FALSE;
 		}
-		if($this->_num == FALSE)
-		{
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+		if ($this->num == FALSE) {
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
-		$text = strip_tags($this->_msg);
-		if(!self::support_mms())
+		$text = strip_tags($this->msg);
+		if (!self::support_mms()) {
 			$text = substr($text,0,160);
-		if(!smsg_utils::text_is_valid($text,0))
-		{
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+		}
+		if (!\SMSG\Utils::text_is_valid($text,0)) {
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
 		$sends = [];
-		foreach($parms as &$val)
+		foreach ($parms as &$val) {
 			$sends[$val['apiname']] = $val['value']; //CHECKME urlencode ?
+		}
 		unset($val);
 
-		$sends['to'] = $this->_num;
+		$sends['to'] = $this->num;
 /*
 from = international format number, registered and approved
 callback to registered URL
@@ -138,7 +134,7 @@ queue 1,2,3 1=highest priority, 3=default
 */
 		$sends['text'] = urlencode($text);
 
-		$str = smsg_utils::implode_with_key($sends);
+		$str = \SMSG\Utils::implode_with_key($sends);
 		$str = self::CTELL_HTTP_GATEWAY.'/sendmsg?'.str_replace('amp;','',$str);
 		return $str;
 	}
@@ -188,42 +184,38 @@ queue 1,2,3 1=highest priority, 3=default
 	*/
 	protected function parse_result($str)
 	{
-		$this->_rawstatus = $str;
+		$this->rawstatus = $str;
 
 		$parts = explode(':',$str);
-		if($parts[0] == 'ID')
-		{
-			$this->_status = parent::STAT_OK;
-			$this->_smsid = trim($parts[1]);
-		}
-		else
-		{
+		if ($parts[0] == 'ID') {
+			$this->status = parent::STAT_OK;
+			$this->smsid = trim($parts[1]);
+		} else {
 			$parts = explode(',',$parts[1]);
 			$code = trim($parts[0]) + 0;
-			switch($code)
-			{
+			switch($code) {
 			 case 1:
 			 case 2:
 			 case 7:
 			 case 103:
 			 case 108:
-				$this->_status = parent::STAT_ERROR_AUTH;
+				$this->status = parent::STAT_ERROR_AUTH;
 				break;
 			 case 101:
 			 case 106:
 			 case 107:
 			 case 113:
 			 case 116:
-				$this->_status = parent::STAT_ERROR_INVALID_DATA;
+				$this->status = parent::STAT_ERROR_INVALID_DATA;
 				break;
 			 case 121:
-				$this->_status = parent::STAT_ERROR_BLOCKED;
+				$this->status = parent::STAT_ERROR_BLOCKED;
 				break;
 			 case 130:
-				$this->_status = parent::STAT_ERROR_LIMIT;
+				$this->status = parent::STAT_ERROR_LIMIT;
 				break;
 			 default:
-				$this->_status = parent::STAT_ERROR_OTHER;
+				$this->status = parent::STAT_ERROR_OTHER;
 				break;
 			}
 		}
@@ -252,8 +244,7 @@ queue 1,2,3 1=highest priority, 3=default
 	*/
 	public function process_delivery_report()
 	{
-		switch ((int)$_REQUEST['status'])
-		{
+		switch ((int)$_REQUEST['status']) {
 		 case 3:
 		 case 4:
 		 case 8:
@@ -280,13 +271,11 @@ queue 1,2,3 1=highest priority, 3=default
 		}
 		$smsid = $_REQUEST['apiMsgId'];
 		$smsto = $_REQUEST['to'];
-		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
+		return \SMSG\Utils::get_delivery_msg($this->mod,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()
 	{
-		return $this->_rawstatus;
+		return $this->rawstatus;
 	}
 }
-
-?>

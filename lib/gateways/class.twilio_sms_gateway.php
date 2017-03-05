@@ -1,15 +1,16 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+namespace SMSG\gateways;
 
-class twilio_sms_gateway extends base_sms_gateway
+class twilio_sms_gateway extends \SMSG\base_sms_gateway
 {
 	const TWILIO_API_URL = 'https://www.twilio.com/docs/api';
-	private $_rawstatus;
+	private $rawstatus;
 
 	public function get_name()
 	{
@@ -23,14 +24,14 @@ class twilio_sms_gateway extends base_sms_gateway
 
 	public function get_description()
 	{
-		return $this->_module->Lang('description_twilio');
+		return $this->mod->Lang('description_twilio');
 	}
 
 	public function support_custom_sender()
 	{
 		return FALSE; //only account-specific from-numbers are allowed
 	}
-	
+
 	public function support_mms()
 	{
 		return TRUE;
@@ -53,14 +54,13 @@ class twilio_sms_gateway extends base_sms_gateway
 
 	public function upsert_tables()
 	{
-		$gid = smsg_utils::setgate($this);
-		if($gid)
-		{
+		$gid = \SMSG\Utils::setgate($this);
+		if($gid) {
 			parent::set_gateid($gid);
-			$mod = $this->_module;
+			$mod = $this->mod;
 			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//none of the apiname's is actually used (indicated by '_' prefix)
-			smsg_utils::setprops($gid,[
+			\SMSG\Utils::setprops($gid,[
 			 [$mod->Lang('account'),'_account',NULL,0],
 			 [$mod->Lang('token'),'_token',NULL,1],
 			 [$mod->Lang('from'),'_from',NULL,0]
@@ -71,17 +71,15 @@ class twilio_sms_gateway extends base_sms_gateway
 
 	public function custom_setup(&$tplvars,$padm)
 	{
-		foreach($tplvars['data'] as &$ob)
-		{
+		foreach($tplvars['data'] as &$ob) {
 			if($ob->signature == '_account'
 			|| $ob->signature == '_token')
 				$ob->size = 32;
 		}
 		unset($ob);
-		if($padm)
-		{
+		if($padm) {
 			$tplvars['help'] .= '<br />'.
-				$this->_module->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
+				$this->mod->Lang('help_urlcheck',self::TWILIO_API_URL,self::get_name().' API');
 		}
 	}
 
@@ -91,7 +89,7 @@ class twilio_sms_gateway extends base_sms_gateway
 
 	protected function setup()
 	{
-		require_once cms_join_path(dirname(__FILE__),'Twilio','autoload.php');
+		require_once \cms_join_path(__DIR__,'Twilio','autoload.php');
 	}
 
 	protected function prep_command()
@@ -100,22 +98,20 @@ class twilio_sms_gateway extends base_sms_gateway
 	}
 
 	//returns object: Services_Twilio_Rest_Message or Services_Twilio_RestException, or FALSE
-	protected function _command($dummy)
+	protected function command($dummy)
 	{
-		$to = $this->_num;
-		$body = strip_tags($this->_msg);
+		$to = $this->num;
+		$body = strip_tags($this->msg);
 		if(!self::support_mms())
 			$body = substr($body,0,160);
-		if(!$to || !smsg_utils::text_is_valid($body,0))
-		{
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+		if(!$to || !\SMSG\Utils::text_is_valid($body,0)) {
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
 /*		$from = ''; //TODO
-		if(!$from)
-		{
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+		if(!$from) {
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 */
@@ -123,26 +119,23 @@ class twilio_sms_gateway extends base_sms_gateway
 		$args = array(/ *'From' => $from,* /'To' => $to,'Body' => $body);
 
 		if(1) //want delivery reports TODO interface parameter
-			$args['StatusCallback'] = smsg_utils::get_reporturl($this->_module);
+			$args['StatusCallback'] = \SMSG\Utils::get_reporturl($this->mod);
 */
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($this->_module,$gid);
+		$parms = \SMSG\Utils::getprops($this->mod,$gid);
 
-		$client = new Twilio\Rest\Client(
+		$client = new \Twilio\Rest\Client(
 		 $parms['_account']['value'],
 		 $parms['_token']['value']
 		);
-		try //try to send it
-		{
+		try { //try to send it
 			return $client->account->messages->create(
 				$to,[
 				'from' => $parms['_from']['value'],
 				'body' => $body
-				]			
+				]
 			);
-		}
-		catch (Twilio\Exceptions\TwilioException $e)
-		{
+		} catch (Twilio\Exceptions\TwilioException $e) {
 			return $e;
 		}
 	}
@@ -150,39 +143,30 @@ class twilio_sms_gateway extends base_sms_gateway
 	//$ob = object Services_Twilio_Rest_Message object or Services_Twilio_RestException, or FALSE
 	protected function parse_result($ob)
 	{
-		if (!$ob)
-		{
-			$this->_rawstatus = '';
-			//$this->_status set in self::_command()
+		if (!$ob) {
+			$this->rawstatus = '';
+			//$this->status set in self::_command()
 			return;
-		}
-		elseif(get_class($ob) == 'Services_Twilio_Rest_Message')
-		{
-			if($ob->error_code)
-			{
-				$this->_rawstatus = $ob->error_message;
+		} elseif(get_class($ob) == 'Services_Twilio_Rest_Message') {
+			if($ob->error_code) {
+				$this->rawstatus = $ob->error_message;
 				$code = (int)$ob->error_code;
-			}
-			else
-			{
-				$this->_rawstatus = '';
+			} else {
+				$this->rawstatus = '';
 				$code = 0;
 			}
-		}
-		else //Services_Twilio_RestException
-		{
-			$this->_rawstatus = $ob->getMessage();
+		} else { //Services_Twilio_RestException
+			$this->rawstatus = $ob->getMessage();
 			$code = $ob->getCode();
 		}
 		//see https://www.twilio.com/docs/errors/reference
-		switch ($code)
-		{
+		switch ($code) {
 		 case 0:
-			$this->_status = parent::STAT_OK;
+			$this->status = parent::STAT_OK;
 			break;
 		 case 20003:
 		 case 20403:
-			$this->_status = parent::STAT_ERROR_AUTH;
+			$this->status = parent::STAT_ERROR_AUTH;
 			break;
 		 case 11100:
 		 case 14101:
@@ -195,21 +179,21 @@ class twilio_sms_gateway extends base_sms_gateway
 		 case 21605:
 		 case 21606:
 		 case 21607:
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
 			break;
 		 case 21612:
 		 case 22001:
-			$this->_status = parent::STAT_NOTSENT;
+			$this->status = parent::STAT_NOTSENT;
 			break;
 		 case 14107:
-			$this->_status = parent::STAT_ERROR_LIMIT;
+			$this->status = parent::STAT_ERROR_LIMIT;
 			break;
 		 case 21610:
 		 case 30004:
-			$this->_status = parent::STAT_ERROR_BLOCKED;
+			$this->status = parent::STAT_ERROR_BLOCKED;
 			break;
 		 default:
-			$this->_status = parent::STAT_ERROR_OTHER;
+			$this->status = parent::STAT_ERROR_OTHER;
 			break;
 		}
 	}
@@ -217,7 +201,7 @@ class twilio_sms_gateway extends base_sms_gateway
 	/*
 	Must parse $_REQUEST directly
 	Gateway returns:
-	
+
 	MessageSid	34 character unique identifier for the message.
 	SmsSid	    Same value as MessageSid. Deprecated.
 	AccountSid	34 character id of the account this message is associated with.
@@ -249,8 +233,7 @@ class twilio_sms_gateway extends base_sms_gateway
 	*/
 	public function process_delivery_report()
 	{
-		switch ($_REQUEST['MessageStatus'])
-		{
+		switch ($_REQUEST['MessageStatus']) {
 		 case 'queued':
 		 case 'sending':
 			$status = parent::DELIVERY_PENDING;
@@ -261,8 +244,7 @@ class twilio_sms_gateway extends base_sms_gateway
 			break;
 		 case 'failed':
 		 case 'undelivered':
-			switch ($_REQUEST['ErrorCode'])
-			{
+			switch ($_REQUEST['ErrorCode']) {
 			 case 30002:
 				$status = parent::DELIVERY_BILLING;
 				break 2;
@@ -279,14 +261,11 @@ class twilio_sms_gateway extends base_sms_gateway
 		}
 		$smsid = $_REQUEST['MessageSid'];
 		$smsto = $_REQUEST['To'];
-		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
+		return \SMSG\Utils::get_delivery_msg($this->mod,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()
 	{
-		return $this->_rawstatus;
+		return $this->rawstatus;
 	}
-
 }
-
-?>

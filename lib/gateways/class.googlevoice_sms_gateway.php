@@ -1,15 +1,16 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+namespace SMSG\gateways;
 
-class googlevoice_sms_gateway extends base_sms_gateway
+class googlevoice_sms_gateway extends \SMSG\base_sms_gateway
 {
 	const GOOGLEVOICE_API_URL = 'https://code.google.com/p/phpgooglevoice';
-	private $_rawstatus;
+	private $rawstatus;
 
 	public function get_name()
 	{
@@ -23,7 +24,7 @@ class googlevoice_sms_gateway extends base_sms_gateway
 
 	public function get_description()
 	{
-		return $this->_module->Lang('description_googlevoice');
+		return $this->mod->Lang('description_googlevoice');
 	}
 
 	public function support_custom_sender()
@@ -53,14 +54,13 @@ class googlevoice_sms_gateway extends base_sms_gateway
 
 	public function upsert_tables()
 	{
-		$gid = smsg_utils::setgate($this);
-		if($gid)
-		{
+		$gid = \SMSG\Utils::setgate($this);
+		if ($gid) {
 			parent::set_gateid($gid);
-			$mod = $this->_module;
+			$mod = $this->mod;
 			//setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
 			//none of the apiname's is actually used (indicated by '_' prefix)
-			smsg_utils::setprops($gid,[
+			\SMSG\Utils::setprops($gid,[
 			 [$mod->Lang('email'),'_email',NULL,0],
 			 [$mod->Lang('password'),'_password',NULL,1]
 			]);
@@ -70,18 +70,17 @@ class googlevoice_sms_gateway extends base_sms_gateway
 
 	public function custom_setup(&$tplvars,$padm)
 	{
-		foreach($tplvars['data'] as &$ob)
-		{
-			if($ob->signature == '_email')
+		foreach ($tplvars['data'] as &$ob) {
+			if ($ob->signature == '_email') {
 				$ob->size = 24;
-			elseif($ob->signature == '_password')
+			} elseif ($ob->signature == '_password') {
 				$ob->size = 20;
+			}
 		}
 		unset($ob);
-		if($padm)
-		{
+		if ($padm) {
 			$tplvars['help'] .= '<br />'.
-				$this->_module->Lang('help_urlcheck',self::GOOGLEVOICE_API_URL,self::get_name().' API');
+				$this->mod->Lang('help_urlcheck',self::GOOGLEVOICE_API_URL,self::get_name().' API');
 		}
 	}
 
@@ -91,7 +90,7 @@ class googlevoice_sms_gateway extends base_sms_gateway
 
 	protected function setup()
 	{
-		require_once(cms_join_path(dirname(__FILE__),'googlevoice','class.googlevoice2.php'));
+		require_once(\cms_join_path(__DIR__,'googlevoice','class.googlevoice2.php'));
 	}
 
 	protected function prep_command()
@@ -100,43 +99,45 @@ class googlevoice_sms_gateway extends base_sms_gateway
 		return 'good';
 	}
 
-	protected function _command($cmd)
+	protected function command($cmd)
 	{
-		try
-		{
+		require_once(\cms_join_path(__DIR__,'googlevoice','class.googlevoice2.php'));
+		try {
 			$gid = parent::get_gateid(self::get_alias());
-			$parms = smsg_utils::getprops($this->_module,$gid);
-			$gv = new GoogleVoice(
+			$parms = \SMSG\Utils::getprops($this->mod,$gid);
+			$gv = new \GoogleVoice(
 			$parms['_email']['value'],
 			$parms['_password']['value']);
 
-			$num = $this->_num;
-			if(!$num)
+			$num = $this->num;
+			if (!$num) {
 				return FALSE;
-			$msg = strip_tags($this->_msg);
-			if(!self::support_mms())
+			}
+			$msg = strip_tags($this->msg);
+			if (!self::support_mms()) {
 				$msg = substr($msg,0,160);
-			if(!smsg_utils::text_is_valid($msg,0))
+			}
+			if (!\SMSG\Utils::text_is_valid($msg,0)) {
 				return FALSE;
+			}
 			$gv->sms($num,$msg); //result ignored
 			// need to return a status
 			return 'good';
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 			return $e->getMessage();
 		}
 	}
 
 	protected function parse_result($str)
 	{
-		$this->_rawstatus = $str;
-		if($str == 'good')
-			$this->_status = parent::STAT_OK;
-		elseif($str === FALSE)
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
-		else
-			$this->_status = parent::STAT_ERROR_OTHER;
+		$this->rawstatus = $str;
+		if ($str == 'good') {
+			$this->status = parent::STAT_OK;
+		} elseif ($str === FALSE) {
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
+		} else {
+			$this->status = parent::STAT_ERROR_OTHER;
+		}
 	}
 
 	public function process_delivery_report()
@@ -146,8 +147,6 @@ class googlevoice_sms_gateway extends base_sms_gateway
 
 	public function get_raw_status()
 	{
-		return $this->_rawstatus;
+		return $this->rawstatus;
 	}
 }
-
-?>

@@ -1,15 +1,16 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+namespace SMSG\gateways;
 
-class smsbroadcast_sms_gateway extends base_sms_gateway
+class smsbroadcast_sms_gateway extends \SMSG\base_sms_gateway
 {
 	const SMSBC_API_URL = 'https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf';
-	private $_rawstatus;
+	private $rawstatus;
 
 	public function get_name()
 	{
@@ -23,7 +24,7 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 
 	public function get_description()
 	{
-		return $this->_module->Lang('description_smsbroadcast');
+		return $this->mod->Lang('description_smsbroadcast');
 	}
 
 	public function support_custom_sender()
@@ -53,13 +54,12 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 
 	public function upsert_tables()
 	{
-		$gid = smsg_utils::setgate($this);
-		if($gid)
-		{
+		$gid = \SMSG\Utils::setgate($this);
+		if($gid) {
 			parent::set_gateid($gid);
-			$mod = $this->_module;
+			$mod = $this->mod;
 		    //setprops() argument $props = array of arrays, each with [0]=title [1]=apiname [2]=value [3]=encrypt
-			smsg_utils::setprops($gid,[
+			\SMSG\Utils::setprops($gid,[
 			 [$mod->Lang('username'),'username',NULL,0],
 			 [$mod->Lang('password'),'password',NULL,1],
 			 [$mod->Lang('from'),'from',NULL,0],
@@ -71,19 +71,16 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 
 	public function custom_setup(&$tplvars,$padm)
 	{
-		foreach($tplvars['data'] as &$ob)
-		{
-			if($ob->signature == 'password')
-			{
+		foreach($tplvars['data'] as &$ob) {
+			if($ob->signature == 'password') {
 				$ob->size = 20;
 				break;
 			}
 		}
 		unset($ob);
-		if($padm)
-		{
+		if($padm) {
 			$tplvars['help'] .= '<br />'.
-				$this->_module->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
+				$this->mod->Lang('help_urlcheck',self::SMSBC_API_URL,self::get_name().' API');
 		}
 	}
 
@@ -100,49 +97,50 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 		return 'good'; //anything which passes upstream test
 	}
 
-	protected function _command($dummy)
+	protected function command($dummy)
 	{
 		$gid = parent::get_gateid(self::get_alias());
-		$parms = smsg_utils::getprops($this->_module,$gid);
+		$parms = \SMSG\Utils::getprops($this->mod,$gid);
 		if($parms['username']['value'] == FALSE ||
-		   $parms['password']['value'] == FALSE)
-		{
-			$this->_status = parent::STAT_ERROR_AUTH;
+		   $parms['password']['value'] == FALSE) {
+			$this->status = parent::STAT_ERROR_AUTH;
 			return FALSE;
 		}
 
-		$to = $this->_num;
-		$text = strip_tags($this->_msg);
-		if(!self::support_mms())
+		$to = $this->num;
+		$text = strip_tags($this->msg);
+		if(!self::support_mms()) {
 			$text = substr($text,0,160);
-		if(!$to || !smsg_utils::text_is_valid($text,0))
-		{
-			$this->_status = parent::STAT_ERROR_INVALID_DATA;
+		}
+		if(!$to || !\SMSG\Utils::text_is_valid($text,0)) {
+			$this->status = parent::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
-		$source = $this->_fromnum; //can be text e.g. 'MyCompany';
+		$source = $this->fromnum; //can be text e.g. 'MyCompany';
 		$ref = ''; //'abc123';
 
 		$ch = curl_init('https://api.smsbroadcast.com.au/api-adv.php');
-		if(!$ch)
-		{
-			$this->_status = parent::STAT_ERROR_OTHER;
+		if(!$ch) {
+			$this->status = parent::STAT_ERROR_OTHER;
 			return FALSE;
 		}
 
-		foreach($parms as &$val)
+		foreach($parms as &$val) {
 			$val = rawurlencode($val['value']);
+		}
 		unset($val);
 
 		$parms['to'] = rawurlencode($to);
-		if($source)
+		if($source) {
 			$parms['from'] = rawurlencode($source);
+		}
 		$parms['message'] = rawurlencode($text);
-		if($ref)
+		if($ref) {
 			$parms['ref'] = rawurlencode($ref);
+		}
 
-		$str = smsg_utils::implode_with_key($parms);
+		$str = \SMSG\Utils::implode_with_key($parms);
 		$str = str_replace('amp;','',$str);
 
 		curl_setopt($ch,CURLOPT_POST,TRUE);
@@ -156,24 +154,22 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 	protected function parse_result($str)
 	{
 		$lines = explode('\n',$str);
-		foreach($lines as $oneline)
-		{
+		foreach($lines as $oneline) {
 			$message_data = explode(':',$oneline);
-			switch ($message_data[0])
-			{
+			switch ($message_data[0]) {
 			 case 'OK':
-				$this->_rawstatus = '';
-				$this->_status = parent::STAT_OK;
+				$this->rawstatus = '';
+				$this->status = parent::STAT_OK;
 				break;
 			 case 'BAD':
-				$this->_rawstatus = $message_data[2];
-				$this->_status = parent::STAT_NOTSENT;
+				$this->rawstatus = $message_data[2];
+				$this->status = parent::STAT_NOTSENT;
 				break;
 			 case 'ERROR':
-				$this->_rawstatus = $message_data[1];
-				$this->_status = parent::STAT_ERROR_OTHER;
+				$this->rawstatus = $message_data[1];
+				$this->status = parent::STAT_ERROR_OTHER;
 				break;
-			}		
+			}
 		}
 	}
 
@@ -193,8 +189,7 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 	*/
 	public function process_delivery_report()
 	{
-		switch ($_REQUEST['status'])
-		{
+		switch ($_REQUEST['status']) {
 		 case 'Delivered':
 			$status = parent::DELIVERY_OK;
 			break;
@@ -208,14 +203,12 @@ class smsbroadcast_sms_gateway extends base_sms_gateway
 		}
 		$smsid = $_REQUEST['smsref'];
 		$smsto = $_REQUEST['to'];
-		return smsg_utils::get_delivery_msg($this->_module,$status,$smsid,$smsto);
+		return \SMSG\Utils::get_delivery_msg($this->mod,$status,$smsid,$smsto);
 	}
 
 	public function get_raw_status()
 	{
-		return $this->_rawstatus;
+		return $this->rawstatus;
 	}
 
 }
-
-?>
