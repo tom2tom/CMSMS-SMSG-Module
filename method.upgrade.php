@@ -1,7 +1,7 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
@@ -11,10 +11,11 @@ function rmdir_recursive($dir)
 	foreach(scandir($dir) as $file) {
 		if (!($file === '.' || $file === '..')) {
 			$fp = $dir.DIRECTORY_SEPARATOR.$file;
-			if (is_dir($fp))
+			if (is_dir($fp)) {
 				rmdir_recursive($fp);
-			else
-				@unlink($fp);
+			} else {
+ 				@unlink($fp);
+			}
 		}
 	}
 	rmdir($dir);
@@ -44,5 +45,14 @@ case '1.0.1':
 	if(@is_dir($fp)) {
 		rmdir_recursive($fp);
 	}
+case '1.1':
+	$t = 'nQCeESKBr99A';
+	$this->SetPreference($t, hash('sha256', $t.microtime()));
+	$pw = $this->GetPreference('masterpass');
+	if ($pw) {
+		$s = base64_decode(substr($pw,5));
+		$pw = substr($s,5);
+	}
+	$cfuncs = new SMSG\Crypter($this);
+	$cfuncs->encrypt_preference('masterpass',$pw);
 }
-?>
