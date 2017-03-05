@@ -1,11 +1,11 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
-if(!($this->CheckPermission('AdministerSMSGateways')
+if (!($this->CheckPermission('AdministerSMSGateways')
   || $this->CheckPermission('ModifySMSGateways'))) exit;
 
 $mid = '';
@@ -13,16 +13,14 @@ $name = '';
 $mobile = '';
 $pref = cms_db_prefix();
 
-if(isset($params['mid']))
+if (isset($params['mid'])) {
     $mid = (int)$params['mid'];
+}
 
-
-if($mid != '')
-{
+if ($mid != '') {
 	$query = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
 	$tmp = $db->GetRow($query,[$mid]);
-	if(!$tmp)
-	{
+	if (!$tmp) {
 		$this->SetError($this->Lang('error_notfound'));
 		$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
 	}
@@ -30,64 +28,51 @@ if($mid != '')
 	$mobile = $tmp['mobile'];
 }
 
-if(isset($params['cancel']))
-{
+if (isset($params['cancel'])) {
 	$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
-}
-else if(isset($params['submit']))
-{
+} else if (isset($params['submit'])) {
 	$name = trim($params['name']);
 	$mobile = trim($params['mobile']);
 	$error = '';
 
 	// basic data checks
-	if(!$name || !is_numeric($mobile))
-	{
+	if (!$name || !is_numeric($mobile)) {
 		$error = $this->Lang('error_invalid_info');
 	}
 
-	if(empty($error))
-	{
+	if (empty($error)) {
 		// check for duplicate name
 		$query = 'SELECT id FROM '.$pref.'module_smsg_nums WHERE name=?';
 		$parms = [];
-		if($mid != '')
-		{
+		if ($mid != '') {
 			$query .= ' AND id!=?';
 			$parms[] = $mid;
 		}
 		$tmp = $db->GetOne($query,$parms);
-		if($tmp)
-		{
+		if ($tmp) {
 			$error = $this->Lang('error_name_exists');
 		}
 	}
 
-	if(empty($error))
-	{
+	if (empty($error)) {
 		// good to go... do add or insert
 		$res = '';
-		if($mid == '')
-		{
+		if ($mid == '') {
 			// insert
 			$query = 'INSERT INTO '.$pref.'module_smsg_nums (name,mobile) VALUES(?,?)';
 			$res = $db->Execute($query,[$name,$mobile]);
-		}
-		else
-		{
+		} else {
 			// update
 			$query = 'UPDATE '.$pref.'module_smsg_nums SET name=?,mobile=? WHERE id=?';
 			$res = $db->Execute($query,[$name,$mobile,$mid]);
 		}
 
-		if(!$res)
-		{
+		if (!$res) {
 			$error = $this->Lang('error_db_op_failed');
 		}
 	}
 
-	if(!empty($error))
-	{
+	if (!empty($error)) {
 		$this->SetError($error);
 	}
 	$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
@@ -101,5 +86,4 @@ $tplvars = [
 	'mobile' => $mobile
 ];
 
-echo smsg_utils::ProcessTemplate($this,'edit_mobile.tpl',$tplvars);
-?>
+echo SMSG\Utils::ProcessTemplate($this,'edit_mobile.tpl',$tplvars);

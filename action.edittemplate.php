@@ -1,38 +1,32 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright(C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright(C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 # action - edittemplate redirected here from action settemplate, add/edit
 #----------------------------------------------------------------------
-if(!($this->CheckPermission('AdministerSMSGateways')
+if (!($this->CheckPermission('AdministerSMSGateways')
   || $this->CheckPermission('ModifySMSGateTemplates'))) exit;
 
-if(isset($params['cancel']))
+if (isset($params['cancel'])) {
 	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
-
+}
 // check if we have a template name
-if(!(isset($params['template']) || isset($params['prefix'])))
-{
+if (!(isset($params['template']) || isset($params['prefix']))) {
 	$this->SetError($this->Lang('error_params'));
 	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 }
 
-if(!isset($params['mode']) || !isset($params['title']))
-{
+if (!isset($params['mode']) || !isset($params['title'])) {
 	$this->SetError($this->Lang('error_params'));
 	$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
 }
 
-if(isset($params['submit']) || isset($params['apply']))
-{
-	if($this->before20)
-	{
+if (isset($params['submit']) || isset($params['apply'])) {
+	if ($this->before20) {
 		$this->SetTemplate($params['prefix'].$params['template'],$params['templatecontent']);
-	}
-	else
-	{
+	} else {
 		try {
 			$tpl = CmsLayoutTemplate::load($params['prefix'].$params['template']);
 			$tpl->set_content($params['templatecontent']);
@@ -41,37 +35,32 @@ if(isset($params['submit']) || isset($params['apply']))
 			$params['errors'] = $e->getMessage();
 		}
 	}
-	if(isset($params['submit']))
+	if (isset($params['submit'])) {
 		$this->Redirect($id,'defaultadmin','',['activetab'=>$params['activetab']]);
+	}
 }
 
 // handle errors
-if(isset($params['errors']))
+if (isset($params['errors']))
 	echo $this->ShowErrors($params['errors']);
 
 $params['origaction'] = $params['action'];
 $contents = '';
 $tplvars = [];
-if($params['mode'] == 'add')
-{
+if ($params['mode'] == 'add') {
 	$tplvars['formstart'] = $this->CreateFormStart($id,'settemplate',$returnid,'POST','','','',$params);
 	$tplvars['name'] = $this->CreateInputText($id,'template','',40,200);
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'prefix',$params['prefix']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']);
-	if(!empty($params['defaulttemplatepref']))
-	{
-		if(endswith($params['defaulttemplatepref'],'.tpl'))
-		{
+	if (!empty($params['defaulttemplatepref'])) {
+		if (endswith($params['defaulttemplatepref'],'.tpl')) {
 			$fp = cms_join_path($this->GetModulePath(),'templates',$params['defaulttemplatepref']);
 			$contents = @file_get_contents($fp);
-		}
-		else
-		{
-			if($this->before20)
+		} else {
+			if ($this->before20) {
 				$contents = $this->GetTemplate($params['defaulttemplatepref']);
-			else
-			{
+			} else {
 				try {
 					$tpl = CmsLayoutTemplate::load($params['defaulttemplatepref']);
 					$contents = $tpl->get_content();
@@ -79,19 +68,16 @@ if($params['mode'] == 'add')
 					$contents = '';
 				}
 			}
-			if(!$contents)
+			if (!$contents)
 				 $contents = $this->GetPreference($params['defaulttemplatepref']);
 		}
 	}
-}
-else
-{
+} else {
 	$tplvars['formstart'] = $this->CreateFormStart($id,'edittemplate',$returnid,'POST','','','',$params);
 /*	$title = trim($params['title']);
-	for($i = 0; $i < 5; $i++)
-	{
+	for ($i = 0; $i < 5; $i++) {
 		$tmp = cms_html_entity_decode($title);
-		if($tmp == $title)
+		if ($tmp == $title)
 			break;
 		$title = $tmp;
 	}
@@ -100,10 +86,9 @@ else
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'template',$params['template']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']);
-	if($this->before20)
+	if ($this->before20) {
 		$contents = $this->GetTemplate($params['prefix'].$params['template']);
-	else
-	{
+	} else {
 		try {
 			$tpl = CmsLayoutTemplate::load($params['prefix'].$params['template']);
 			$contents = $tpl->get_content();
@@ -114,20 +99,18 @@ else
 	$tplvars['apply'] = $this->CreateInputSubmit($id,'apply',$this->Lang('apply'));
 }
 
-if(!empty($params['info']))
-{
+if (!empty($params['info'])) {
 	$txt = trim($params['info']);
-	for($i = 0; $i < 5; $i++)
-	{
+	for ($i = 0; $i < 5; $i++) {
 		$tmp = cms_html_entity_decode($txt);
-		if($tmp == $txt)
+		if ($tmp == $txt)
 			break;
 		$txt = $tmp;
 	}
 	$tplvars['template_info'] = $txt;
 }
 
-if(isset($params['moddesc']))
+if (isset($params['moddesc']))
 	$tplvars['module_description'] = trim($params['moddesc']);
 
 $tplvars += [
@@ -139,5 +122,4 @@ $tplvars += [
 	'formend' => $this->CreateFormEnd()
 ];
 
-echo smsg_utils::ProcessTemplate($this,'edit_template.tpl',$tplvars);
-?>
+echo SMSG\Utils::ProcessTemplate($this,'edit_template.tpl',$tplvars);
