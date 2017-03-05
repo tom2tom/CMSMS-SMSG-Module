@@ -164,13 +164,3 @@
 {$endtab}
 {/if}{*$padm*}
 {$tabsfooter}
-
-{if !empty($jsincs)}{foreach from=$jsincs item=inc}{$inc}
-{/foreach}{/if}
-{if !empty($jsfuncs)}
-<script type="text/javascript">
-//<![CDATA[
-{foreach from=$jsfuncs item=func}{$func}{/foreach}
-//]]>
-</script>
-{/if}
