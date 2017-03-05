@@ -58,7 +58,7 @@ class GoogleVoice
 		$this->_login = $login;
 		$this->_pass = $pass;
 
-		$config = cmsms()->getConfig();
+		$config = \cmsms()->getConfig();
 		$this->_cookieFile = $config['root_url'].'/tmp/cache/gvCookies.txt';
 
 		$this->_ch = curl_init();
