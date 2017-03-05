@@ -1,10 +1,17 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+
+/*
+$t = 'nQCeESKBr99A';
+$this->SetPreference($t, hash('sha256', $t.microtime()));
+$cfuncs = new SMSG\Crypter($this);
+$cfuncs->encrypt_preference('masterpass',base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh'));
+*/
 
 /**
  @mod: reference to current SMSG module object
@@ -22,8 +29,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 	$id,$returnid,$activetab,
 	$prefix,$prefdefname)
 {
-	if($modify)
-	{
+	if ($modify) {
 		$theme = ($mod->before20) ? cmsms()->get_variable('admintheme'):
 			cms_utils::get_theme_object();
 		$trueicon = $theme->DisplayImage('icons/system/true.gif',$mod->Lang('default_tip'),'','','systemicon');
@@ -33,24 +39,20 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$mod->Lang('deleteone_tip'),'','','systemicon');
 		$prompt = $mod->Lang('sure_ask');
 		$args = ['prefix'=>$prefix,'activetab'=>$activetab];
-	}
-	else
+	} else {
 		$yes = $mod->Lang('yes');
-
-	if($mod->before20)
-	{
+	}
+	if ($mod->before20) {
 		$mytemplates = $mod->ListTemplates(SMSG::MODNAME);
 		//exclude unwanted types, and wanted type's 'defaultcontent' template (anonymous callback >> PHP 5.3+)
 		array_walk($mytemplates,function(&$n,$k,$p)
 		{
 			$l=strlen($p);
 			$n=(strncmp($n,$p,$l) === 0)?substr($n,$l):FALSE;
-			if($n=='defaultcontent')
+			if ($n=='defaultcontent')
 			 $n=FALSE;
 		},$prefix);
-	}
-	else
-	{
+	} else {
 		$l = strlen($prefix);
 		$type = rtrim($prefix,'_');
 		$ttype = CmsLayoutTemplateType::load('SMSG::'.$type);
@@ -58,7 +60,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		array_walk($mytemplates,function(&$n,$k,$l)
 		{
 			$n=substr($n->get_name(),$l);
-			if($n=='defaultcontent')
+			if ($n=='defaultcontent')
 			 $n=FALSE;
 		},$l);
 	}
@@ -68,12 +70,10 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 	$defaultname = $mod->GetPreference($prefdefname);
 	$rowarray = [];
 
-	foreach($mytemplates as $one)
-	{
+	foreach ($mytemplates as $one) {
 		$default = ($one == $defaultname);
 		$oneset = new StdClass();
-		if($modify)
-		{
+		if ($modify) {
 			$args['template'] = $one;
 			$args['mode'] = 'edit';
 			$oneset->name = $mod->CreateLink($id,'settemplate',$returnid,$one,$args);
@@ -88,9 +88,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 			$oneset->deletelink = ($default) ?
 				'':
 				$mod->CreateLink($id,'settemplate',$returnid,$deleteicon,$args,$prompt);
-		}
-		else
-		{
+		} else {
 			$oneset->name = $one;
 			$oneset->default = ($default) ? $yes:'';
 			$oneset->editlink = '';
@@ -99,8 +97,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		$rowarray[] = $oneset;
 	}
 
-	if($modify && $dflttpl)
-	{
+	if ($modify && $dflttpl) {
 		$oneset = new StdClass();
 		$args['template'] = 'defaultcontent';
 		$args['mode'] = 'edit';
@@ -124,21 +121,20 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		'titlename' => $mod->Lang('name'),
 		'titledefault' => $mod->Lang('default')
 	];
-	if($modify)
-	{
+
+	if ($modify) {
 		$args['mode'] = 'add';
 		$add = $mod->CreateLink($id,'settemplate',$returnid,$addicon,$args).' '.
 			$mod->CreateLink($id,'settemplate',$returnid,$mod->Lang('add_template'),$args);
-	}
-	else
+	} else {
 		$add = '';
+	}
 	$tplvars['add_'.$prefix.'template'] = $add;
 }
 
-smsg_utils::refresh_gateways($this);
-$objs = smsg_utils::get_gateways_full($this);
-if(!$objs)
-{
+SMSG\Utils::refresh_gateways($this);
+$objs = SMSG\Utils::get_gateways_full($this);
+if (!$objs) {
 	echo $this->ShowErrors($this->Lang('error_nogatewayfound'));
 	return;
 }
@@ -155,24 +151,28 @@ $tplvars = [
 	'puse' => $puse
 ];
 
-if(!empty($params['activetab']))
+if (!empty($params['activetab'])) {
 	$showtab = $params['activetab'];
-else
+} else {
 	$showtab = 'gates'; //default
+}
 
 $headers = $this->StartTabHeaders();
-if($pmod || $puse)
+if ($pmod || $puse) {
 	$headers .=
  $this->SetTabHeader('gates',$this->Lang('gateways'),($showtab=='gates')).
  $this->SetTabHeader('test',$this->Lang('test'),($showtab=='test')).
  $this->SetTabHeader('mobiles',$this->Lang('phone_numbers'),($showtab=='mobiles'));
-if($ptpl || $puse)
+}
+if ($ptpl || $puse) {
 	$headers .=
  $this->SetTabHeader('enternumber',$this->Lang('enter_number_templates'),($showtab=='enternumber')).
  $this->SetTabHeader('entertext',$this->Lang('enter_text_templates'),($showtab=='entertext'));
-if($padm)
+}
+if ($padm) {
 	$headers .=
  $this->SetTabHeader('security',$this->Lang('security_tab_lbl'),($showtab=='security'));
+}
 $headers .=
  $this->EndTabHeaders().
  $this->StartTabContent();
@@ -204,35 +204,31 @@ $jsfuncs = [];
 $jsloads = [];
 $baseurl = $this->GetModuleURLPath();
 
-if($pmod || $puse)
-{
+if ($pmod || $puse) {
 	$tplvars += [
 		'tabstart_gates' => $this->StartTab('gates',$params),
 		'formstart_gates' => $this->CreateFormStart($id,'savegates'),
-		'reporturl' => smsg_utils::get_reporturl($this)
+		'reporturl' => SMSG\Utils::get_reporturl($this)
 	];
 
-	if($pmod)
-	{
+	if ($pmod) {
 		$current = $db->GetOne('SELECT alias FROM '.cms_db_prefix().
 			'module_smsg_gates WHERE enabled=1 AND active=1');
-		if($current == FALSE)
+		if ($current == FALSE)
 			$current = '-1';
 		$tplvars['gatecurrent'] = $current;
 
 		$names = [-1 => $this->Lang('none')];
-		foreach($objs as $key=>&$rec)
-		{
+		foreach ($objs as $key=>&$rec) {
 			$names[$key] = $rec['obj']->get_name();
 			$rec = $rec['obj']->get_setup_form();
 		}
 		unset($rec);
 		$tplvars['gatesnames'] = $names;
-	}
-	else
-	{
-		foreach($objs as $key=>&$rec)
+	} else {
+		foreach ($objs as $key=>&$rec) {
 			$rec = $rec['obj']->get_setup_form();
+		}
 		unset($rec);
 	}
 	$tplvars['gatesdata'] = $objs;
@@ -246,16 +242,13 @@ if($pmod || $puse)
 	$tplvars['tabstart_mobiles'] = $this->StartTab('mobiles',$params);
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
 	$data = $db->GetArray($query);
-	if($data)
-	{
+	if ($data) {
 		$editicon = $theme->DisplayImage('icons/system/edit.gif',$mod->Lang('edit_tip'),'','','systemicon');
 		$deleteicon = $theme->DisplayImage('icons/system/delete.gif',$mod->Lang('deleteone_tip'),'','','systemicon');
 		$prompt = $this->Lang('ask_delete_mobile');
-		foreach($data as &$row)
-		{
+		foreach($data as &$row) {
 			$row = (object)$row;
-			if($pmod)
-			{
+			if ($pmod) {
 				$args = ['mid'=>$row->id];
 				$rec->editlink = $this->CreateLink($id,'edit_mobile','',$editicon,$args);
 				$rec->deletelink = $this->CreateLink($id,'del_mobile','',$deleteicon,$args,$prompt);
@@ -263,11 +256,10 @@ if($pmod || $puse)
 		}
 		unset($row);
 		$tplvars['numbers'] = $data;
-	}
-	else
+	} else {
 		$tplvars['nonumbers'] = $this->Lang('nonumbers');
-	if($pmod)
-	{
+	}
+	if ($pmod) {
 		$text = $this->Lang('add_mobile');
 		$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
 		$tplvars['add_mobile'] = $this->CreateLink($id,'edit_mobile','',$addicon).' '.
@@ -275,8 +267,7 @@ if($pmod || $puse)
 	}
 }
 
-if($ptpl || $puse)
-{
+if ($ptpl || $puse) {
 	$tid = 'enternumber'; //tab identifier
 	$tplvars['tabstart_enternumber'] = $this->StartTab($tid,$params);
 	SetupTemplateList($this,$tplvars,$ptpl,$padm,
@@ -290,8 +281,7 @@ if($ptpl || $puse)
 		$id,$returnid,$tid,'entertext_',SMSG::PREF_ENTERTEXT_TPLDFLT);
 }
 
-if($padm)
-{
+if ($padm) {
 	$tplvars += [
 		'tabstart_security' => $this->StartTab('security',$params),
 		'formstart_security' => $this->CreateFormStart($id,'savesecurity'),
@@ -301,9 +291,8 @@ if($padm)
 		'logdays' => $this->GetPreference('logdays'),
 		'logdeliveries' => $this->GetPreference('logdeliveries')
 	];
-	$pw = $this->GetPreference('masterpass');
-	if($pw)
-		$pw = smsg_utils::unfusc($pw);
+	$cfuncs = new SMSG\Crypter($this);
+	$pw = $cfuncs->decrypt_preference('masterpass');
 	$tplvars['masterpass'] = $pw;
 	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery-inputCloak.min.js"></script>';
 	$jsloads[] =<<<EOS
@@ -323,7 +312,7 @@ $jsloads[] = <<<EOS
  $('#'+val).show();
 
 EOS;
-if($padm)
+if ($padm)
 {
 	$prompt = $this->Lang('sure_ask');
 	$jsloads[] = <<<EOS
@@ -334,7 +323,7 @@ if($padm)
  });
  $('input[type="submit"][name$="~delete"]').click(function(ev) {
   var cb = $(this).closest('fieldset').find('input[name$="~sel"]:checked');
-  if(cb.length > 0) {
+  if (cb.length > 0) {
    return confirm('{$prompt}');
   } else {
    return false;
@@ -376,19 +365,13 @@ EOS;
 EOS;
 }
 
-$jsfuncs[] = <<<EOS
-$(document).ready(function() {
+$jsall = NULL;
+SMSG\Utils::MergeJS($jsincs,$jsfuncs,$jsloads,$jsall);
+unset($jsincs);
+unset($jsfuncs);
+unset($jsloads);
 
-EOS;
-$jsfuncs = array_merge($jsfuncs,$jsloads);
-$jsfuncs[] = <<<EOS
-});
-
-EOS;
-
-$tplvars['jsincs'] = $jsincs;
-$tplvars['jsfuncs'] = $jsfuncs;
-
-echo smsg_utils::ProcessTemplate($this,'adminpanel.tpl',$tplvars);
-
-?>
+echo SMSG\Utils::ProcessTemplate($this,'adminpanel.tpl',$tplvars);
+if ($jsall) {
+	echo $jsall;
+}
