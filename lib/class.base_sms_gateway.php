@@ -1,10 +1,11 @@
 <?php
 #----------------------------------------------------------------------
 # This file is part of CMS Made Simple module: SMSG
-# Copyright (C) 2015-2016 Tom Phane <tpgww@onepost.net>
+# Copyright (C) 2015-2017 Tom Phane <tpgww@onepost.net>
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+namespace SMSG;
 
 abstract class base_sms_gateway
 {
@@ -23,38 +24,38 @@ abstract class base_sms_gateway
 	const DELIVERY_BILLING = 'sms_delivery_billing';
 	const DELIVERY_OTHER   = 'sms_delivery_other';
 
-	protected $_module;
-	protected $_gate_id;
-	protected $_num;
-	protected $_fromnum;
-	protected $_msg;
-	protected $_statusmsg;
-	protected $_use_curl;
-	protected $_status;
-	protected $_smsid;
+	protected $mod;
+	protected $gate_id;
+	protected $num;
+	protected $fromnum;
+	protected $msg;
+	protected $statusmsg;
+	protected $use_curl;
+	protected $status;
+	protected $smsid;
 
 	function __construct(&$mod)
 	{
-		$this->_module = $mod;
-	  	$this->_gate_id = 0;
+		$this->mod = $mod;
+	  	$this->gate_id = 0;
 		self::reset();
 	}
 
 	protected function set_gateid($gid)
 	{
-		$this->_gate_id = (int)$gid;
+		$this->gate_id = (int)$gid;
 	}
 
 	protected function get_gateid($alias,$force = FALSE)
 	{
-		if($force || !$this->_gate_id)
-		{
-			$db = cmsms()->GetDb();
-			$query = 'SELECT gate_id FROM '.cms_db_prefix().'module_smsg_gates WHERE alias=?';
-			$gid = $db->GetOne($query,[$alias]);
-			$this->_gate_id = (int)$gid;
+		if ($force || !$this->gate_id) {
+			$db = \cmsms()->GetDb();
+			$pref = \cms_db_prefix();
+			$sql = 'SELECT gate_id FROM '.$pref.'module_smsg_gates WHERE alias=?';
+			$gid = $db->GetOne($sql,[$alias]);
+			$this->gate_id = (int)$gid;
 		}
-		return $this->_gate_id;
+		return $this->gate_id;
 	}
 
 	/**
@@ -63,17 +64,17 @@ abstract class base_sms_gateway
 	*/
 	public function reset()
 	{
-		$this->_num = '';
-		$this->_fromnum = '';
-		$this->_msg = '';
-		$this->_use_curl = 0;
-		$this->_status = self::STAT_NOTSENT;
-		$this->_statusmsg = '';
+		$this->num = '';
+		$this->fromnum = '';
+		$this->msg = '';
+		$this->use_curl = 0;
+		$this->status = self::STAT_NOTSENT;
+		$this->statusmsg = '';
 	}
 
 	public function use_curl($flag = TRUE)
 	{
-		$this->_use_curl = ($flag) ? 1 : 0;
+		$this->use_curl = ($flag) ? 1 : 0;
 	}
 
 	/**
@@ -83,7 +84,7 @@ abstract class base_sms_gateway
 	*/
 	public function set_msg($msg)
 	{
-		$this->_msg = $msg;
+		$this->msg = $msg;
 	}
 
 	/**
@@ -93,7 +94,7 @@ abstract class base_sms_gateway
 	*/
 	public function set_num($num)
 	{
-		$this->_num = $num;
+		$this->num = $num;
 	}
 
 	/**
@@ -102,7 +103,7 @@ abstract class base_sms_gateway
 	*/
 	public function set_from($from)
 	{
-		$this->_fromnum = ($from) ? $from : FALSE;
+		$this->fromnum = ($from) ? $from : FALSE;
 	}
 
 	/**
@@ -111,7 +112,7 @@ abstract class base_sms_gateway
 	*/
 	public function get_status()
 	{
-		return $this->_status;
+		return $this->status;
 	}
 
 	/**
@@ -120,7 +121,7 @@ abstract class base_sms_gateway
 	*/
 	public function get_statusmsg()
 	{
-		return $this->_statusmsg;
+		return $this->statusmsg;
 	}
 
 	/**
@@ -129,42 +130,39 @@ abstract class base_sms_gateway
 	*/
 	public function send()
 	{
-		$this->_smsid = '';
+		$this->smsid = '';
 
 		// check to make sure we have necessary data
 		$this->setup();
-		if($this->_num == '' || $this->_msg == '')
-		{
-			$this->_status = self::STAT_ERROR_INVALID_DATA;
+		if ($this->num == '' || $this->msg == '') {
+			$this->status = self::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
-		if(!smsg_utils::ip_can_send($this->_module,getenv('REMOTE_ADDR')))
-		{
-			$this->_status = self::STAT_ERROR_LIMIT;
+		if (!\SMSG\Utils::ip_can_send($this->mod,getenv('REMOTE_ADDR'))) {
+			$this->status = self::STAT_ERROR_LIMIT;
 			return FALSE;
 		}
 
 		// next prepare the output
 		$cmd = $this->prep_command();
-		if($cmd === FALSE || $cmd == '')
-		{
-			$this->_status = self::STAT_ERROR_INVALID_DATA;
+		if ($cmd === FALSE || $cmd == '') {
+			$this->status = self::STAT_ERROR_INVALID_DATA;
 			return FALSE;
 		}
 
 		// send it
-		$res = $this->_command($cmd);
+		$res = $this->command($cmd);
 
 		// interpret result
 		$this->parse_result($res);
-		$this->_statusmsg = smsg_utils::get_msg($this->_module,$this->_num,$this->_status,$this->_msg,$this->get_raw_status());
-		$success = ($this->_status == self::STAT_OK);
-		if($success)
-		{
-			if($this->_module->GetPreference('logsends'))
-				smsg_utils::log_send(getenv('REMOTE_ADDR'),$this->_num,$this->_msg);
-			$this->_module->Audit(SMSG::AUDIT_SEND,SMSG::MODNAME,$this->_statusmsg);
+		$this->statusmsg = \SMSG\Utils::get_msg($this->mod,$this->num,$this->status,$this->msg,$this->get_raw_status());
+		$success = ($this->status == self::STAT_OK);
+		if ($success) {
+			if ($this->mod->GetPreference('logsends')) {
+				\SMSG\Utils::log_send(getenv('REMOTE_ADDR'),$this->num,$this->msg);
+			}
+			$this->mod->Audit(\SMSG::AUDIT_SEND,\SMSG::MODNAME,$this->statusmsg);
 		}
 		return $success;
 	}
@@ -173,43 +171,43 @@ abstract class base_sms_gateway
 	//get parameter stored (for some gateways) when operation result-message was parsed
 	public function get_smsid()
 	{
-		return $this->_smsid;
+		return $this->smsid;
 	}
 
 	//perform the send
 	//may need to be over-ridden in some gateway-specific subclasses
-	protected function _command($cmd)
+	protected function command($cmd)
 	{
-		$this->_check_curl();
+		$this->check_curl();
 		$res = '';
-		$res = ($this->_use_curl == 0) ?
-			$this->_send_fopen($cmd):
-			$this->_send_curl($cmd);
+		$res = ($this->use_curl == 0) ?
+			$this->send_fopen($cmd):
+			$this->send_curl($cmd);
 		return $res;
 	}
 
-	private function _send_fopen($cmd)
+	private function send_fopen($cmd)
 	{
 		$res = '';
 		$fh = @fopen($cmd,'r');
-		if($fh)
-		{
-			while($line = @fgets($fh,1024)) $res .= $line;
+		if ($fh) {
+			while($line = @fgets($fh,1024)) {
+				$res .= $line;
+			}
 			fclose($fh);
 			return $res;
-		}
-		else
+		} else {
 			return FALSE;
+		}
 	}
 
-	private function _send_curl($cmd)
+	private function send_curl($cmd)
 	{
 		$ch = curl_init($cmd);
 		curl_setopt($ch,CURLOPT_HEADER,0);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
 		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,0);
-/*		if($this->curl_use_proxy)
-		{
+/*		if ($this->curl_use_proxy) {
 			curl_setopt($ch,CURLOPT_PROXY,$this->curl_proxy);
 			curl_setopt($ch,CURLOPT_PROXYUSERPWD,$this->curl_proxyuserpwd);
 		}
@@ -219,12 +217,12 @@ abstract class base_sms_gateway
 		return $res;
 	}
 
-	private function _check_curl()
+	private function check_curl()
 	{
-		if(!$this->_use_curl)
-		{
-			if(extension_loaded('curl'))
-				$this->_use_curl = 1;
+		if (!$this->use_curl) {
+			if (extension_loaded('curl')) {
+				$this->use_curl = 1;
+			}
 		}
 	}
 
@@ -234,45 +232,46 @@ abstract class base_sms_gateway
 	*/
 	public function get_setup_form()
 	{
-		$mod = $this->_module;
+		$mod = $this->mod;
 		$padm = $mod->CheckPermission('AdministerSMSGateways');
-		$db = cmsms()->GetDb();
-		$pref = cms_db_prefix();
-		$query = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
-		if(!$padm)
-			$query .= ' AND enabled=1';
+		$db = \cmsms()->GetDb();
+		$pref = \cms_db_prefix();
+		$sql = 'SELECT * FROM '.$pref.'module_smsg_gates WHERE alias=?';
+		if (!$padm) {
+			$sql .= ' AND enabled=1';
+		}
 		$alias = $this->get_alias();
-		$gdata = $db->GetRow($query,[$alias]);
-		if(!$gdata)
+		$gdata = $db->GetRow($sql,[$alias]);
+		if(!$gdata) {
 			return '';
-
+		}
 		$pmod = $padm || $mod->CheckPermission('ModifySMSGateways');
-		if(!($padm || $pmod))
-		{
+		if (!($padm || $pmod)) {
 			$tplvars = [
 				'gatetitle' => $gdata['title'],
 				'default' => ($gdata['active'])?$mod->Lang('yes'):''
 			];
-			return smsg_utils::ProcessTemplate($mod,'gatedata_use.tpl',$tplvars);
+			return \SMSG\Utils::ProcessTemplate($mod,'gatedata_use.tpl',$tplvars);
 		}
 
 		$tplvars = [];
 		$tplvars['gatetitle'] = $mod->Lang('frame_title',$gdata['title']);
 		$parms = [];
-		$query = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
-		if(!$padm)
-			$query .= ' AND enabled=1';
-		$query .= ' ORDER BY apiorder';
+		$sql = 'SELECT gate_id,title,value,encvalue,apiname,signature,encrypt,enabled FROM '.$pref.'module_smsg_props WHERE gate_id=?';
+		if(!$padm) {
+			$sql .= ' AND enabled=1';
+		}
+		$sql .= ' ORDER BY apiorder';
 		$gid = (int)$gdata['gate_id'];
-		$res = $db->GetArray($query,[$gid]);
-		if($res)
-		{
-			foreach($res as &$row)
-			{
+		$res = $db->GetArray($sql,[$gid]);
+		if ($res) {
+			$cfuncs = new \SMSG\Crypter($mod);
+			foreach($res as &$row) {
 				$ob = (object)$row;
 				//adjustments
-				if($ob->encrypt)
-					$ob->value = smsg_utils::decrypt_value($mod,$ob->encvalue);
+				if($ob->encrypt) {
+					$ob->value = $cfuncs->decrypt_value($ob->encvalue);
+				}
 				unset($ob->encvalue);
 				$ob->space = $alias.'~'.$ob->apiname.'~'; //for gateway-data 'namespace'
 				$parms[] = $ob;
@@ -280,9 +279,8 @@ abstract class base_sms_gateway
 			unset($row);
 		}
 		$dcount = count($parms);
-		if($dcount == 0)
-		{
-			$ob = new stdClass();
+		if ($dcount == 0) {
+			$ob = new \stdClass();
 			$ob->title = $mod->Lang('error_nodatafound');
 			$ob->value = '';
 			$ob->apiname = FALSE; //prevent input-object creation
@@ -296,8 +294,7 @@ abstract class base_sms_gateway
 			'gateid' => $gid
 		];
 
-		if($padm)
-		{
+		if ($padm) {
 			$tplvars += [
 				'help' => $mod->Lang('help_sure').' '.$mod->Lang('help_dnd'),
 				'title_title' => $mod->Lang('title'),
@@ -311,14 +308,13 @@ abstract class base_sms_gateway
 
 			$id = 'm1_'; //module admin instance-id is hard-coded (OR $smarty->tpl_vars['actionid']->value)
 			$text = $mod->Lang('add_parameter');
-			$theme = ($mod->before20) ? cmsms()->get_variable('admintheme'):
-				cms_utils::get_theme_object();
+			$theme = ($mod->before20) ? \cmsms()->get_variable('admintheme'):
+				\cms_utils::get_theme_object();
 			$addicon = $theme->DisplayImage('icons/system/newobject.gif',$text,'','','systemicon');
 			$args = ['gate_id'=>$gid];
 			$tplvars['additem'] = $mod->CreateLink($id,'addgate','',$addicon,$args).' '.
 				$mod->CreateLink($id,'addgate','',$text,$args);
-			if($dcount > 0)
-			{
+			if($dcount > 0) {
 				$tplvars['btndelete'] = $mod->CreateInputSubmit($id,$alias.'~delete',
 					$mod->Lang('delete'),'title="'.$mod->Lang('delete_tip').'"');
 				//confirmation js applied in $(document).ready() - see action.defaultadmin.php
@@ -327,7 +323,7 @@ abstract class base_sms_gateway
 		// anything else to set up for the template
 		$this->custom_setup($tplvars,$padm); //e.g. each $ob->size
 		$tplname = ($padm) ? 'gatedata_admin.tpl' : 'gatedata_mod.tpl';
-		return smsg_utils::ProcessTemplate($mod,$tplname,$tplvars);
+		return \SMSG\Utils::ProcessTemplate($mod,$tplname,$tplvars);
 	}
 
 	/**
@@ -338,8 +334,8 @@ abstract class base_sms_gateway
 	public function handle_setup_form($params)
 	{
 		$alias = $this->get_alias();
-		$db = cmsms()->GetDb();
-		$pref = cms_db_prefix();
+		$db = \cmsms()->GetDb();
+		$pref = \cms_db_prefix();
 
 		$gid = (int)$params[$alias.'~gate_id'];
 		unset($params[$alias.'~gate_id']);
@@ -351,60 +347,56 @@ abstract class base_sms_gateway
 		$repl = ['' ,'' ,'' ,'' ,''  ,'' ,''  ,''  ,''  ,''];
 		$conds = [];
 
-		if($delete)
-		{
+		if ($delete) {
 			unset($params[$alias.'~delete']);
 			$sql12 = 'DELETE FROM '.$pref.'module_smsg_props WHERE gate_id=? AND apiname=?';
 		}
 		//accumulate data (in any order) into easily-usable format
-		foreach($params as $key=>$val)
-		{
+		foreach ($params as $key=>$val) {
 			//$key is like 'clickatell~user~title'
-			if(strpos($key,$alias) === 0)
-			{
+			if (strpos($key,$alias) === 0) {
 				$parts = explode('~',$key); //hence [0]=$alias,[1]=apiname-field value,[2](mostly)=fieldname to update
-				if($parts[2] && $parts[2] != 'sel' && !$delete)
-				{
+				if ($parts[2] && $parts[2] != 'sel' && !$delete) {
 					//foil injection-attempts
 					$parts[2] = str_replace($srch,$repl,$parts[2]);
-					if(preg_match('/[^\w~@#\$%&?+-:|]/',$parts[2]))
+					if (preg_match('/[^\w~@#\$%&?+-:|]/',$parts[2])) {
 						continue;
-					if($parts[1])
-					{
-						$parts[1] = str_replace($srch,$repl,$parts[1]);
-						if(preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1]))
-							continue;
 					}
-					else
+					if ($parts[1]) {
+						$parts[1] = str_replace($srch,$repl,$parts[1]);
+						if (preg_match('/[^\w~@#\$%&?+-:|]/',$parts[1])) {
+							continue;
+						}
+					} else {
 						$parts[1] = 'todo';
-					if(!array_key_exists($parts[1],$conds))
+					}
+					if (!array_key_exists($parts[1],$conds)) {
 						$conds[$parts[1]] = [];
+					}
 					$conds[$parts[1]][$parts[2]] = $val;
-				}
-				elseif($delete && $parts[2] == 'sel')
-				{
+				} elseif ($delete && $parts[2] == 'sel') {
 					$db->Execute($sql12,[$gid,$parts[1]]);
 				}
 			}
 		}
-		if($delete)
+		if ($delete)
 			return;
 
-		$padm = $this->_module->CheckPermission('AdministerSMSGateways');
+		$padm = $this->mod->CheckPermission('AdministerSMSGateways');
 		$o = 1;
-		foreach($conds as $apiname=>&$data)
-		{
+		$cfuncs = new \SMSG\Crypter($this->mod);
+		foreach ($conds as $apiname=>&$data) {
 			$enc = (isset($data['encrypt'])) ? 1:0;
 			$data['encrypt'] = $enc;
-			if($enc)
-			{
-				$data['encvalue'] = smsg_utils::encrypt_value($this->_module,$data['value']);
+			if ($enc) {
+				$data['encvalue'] = $cfuncs->encrypt_value($data['value']);
 				$data['value'] = NULL;
-			}
-			else
+			} else {
 				$data['encvalue'] = NULL;
-			if($padm)
+			}
+			if ($padm) {
 				$data['enabled'] = (isset($data['enabled'])) ? 1:0;
+			}
 			$sql = 'UPDATE '.$pref.'module_smsg_props SET '
 				.implode('=?,',array_keys($data)).
 				'=?,signature=CASE WHEN signature IS NULL THEN ? ELSE signature END,apiorder=? WHERE gate_id=? AND apiname=?';
@@ -507,8 +499,4 @@ abstract class base_sms_gateway
 	//For internal use only
 	//Get string returned by gateway in response to message-send process
 	abstract public function get_raw_status();
-
 }
-
-?>
-
