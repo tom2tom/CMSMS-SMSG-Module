@@ -75,87 +75,94 @@ $numbertpl = (is_file($fn)) ? ''.@file_get_contents($fn) : FALSE;
 $fn = cms_join_path(dirname(__FILE__),'templates','entertext_template.tpl');
 $texttpl = (is_file($fn)) ? ''.@file_get_contents($fn) : FALSE;
 
-if($this->before20)
-{
-	if($numbertpl)
-	{
+if ($this->before20) {
+	if ($numbertpl) {
 		//editable 'default for new templates' template
 		$this->SetTemplate(SMSG::PREF_ENTERNUMBER_CONTENTDFLT,$numbertpl);
 		//sample template, also the default for this type
 		$this->SetTemplate('enternumber_'.$sample,$numbertpl);
 		$name = $sample;
-	}
-	else
+	} else {
 		$name = '';
+	}
 	$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$name); //TODO CHECK uses
-	if($texttpl)
-	{
+	if ($texttpl) {
 		//editable 'default for new templates' template
 		$this->SetTemplate(SMSG::PREF_ENTERTEXT_CONTENTDFLT,$texttpl);
 		//sample template, also the default for this type
 		$this->SetTemplate('entertext_'.$sample,$texttpl);
 		$name = $sample;
-	}
-	else
+	} else {
 		$name = '';
+	}
 	$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$name); //TODO CHECK uses
-}
-else
-{
+} else {
 	$myname = $this->GetName();
 	$uid = get_userid(false);
 
 	$ttype = new CmsLayoutTemplateType();
 	$ttype->set_originator($myname);
-	$ttype->set_name('enternumber');
-	$ttype->set_dflt_flag(FALSE);
-	$ttype->save();
+	$ttype->set_name($myname.'number');
+	$ttype->set_dflt_flag(TRUE); //enable a default template in this type
+	try {
+		$ttype->save();
+		$tid = $ttype->get_id();
+	} catch (Exception $e) {
+		$tid = FALSE;
+	}
 
-	if($numbertpl)
-	{
+	if ($tid && $numbertpl) {
 		$tpl = new CmsLayoutTemplate();
-		$tpl->set_type('enternumber');
-		$tpl->set_name('enternumber_defaultcontent');
+		$tpl->set_type($tid);
+		$tpl->set_name('enternumber_default');
+		$tpl->set_type_dflt(TRUE);
 		$tpl->set_owner($uid);
 		$tpl->set_content($numbertpl);
 		$tpl->save();
 
 		$tpl = new CmsLayoutTemplate();
-		$tpl->set_type('enternumber');
+		$tpl->set_type($tid);
 		$tpl->set_name('enternumber_'.$sample);
+		$tpl->set_type_dflt(FALSE);
 		$tpl->set_owner($uid);
 		$tpl->set_content($numbertpl);
 		$tpl->save();
 		$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$sample);
-	}
-	else
+	} else {
 		$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,'');
+	}
 
 	$ttype = new CmsLayoutTemplateType();
 	$ttype->set_originator($myname);
-	$ttype->set_name('entertext');
-	$ttype->set_dflt_flag(FALSE);
-	$ttype->save();
+	$ttype->set_name($myname.'text');
+	$ttype->set_dflt_flag(TRUE);
+	try {
+		$ttype->save();
+		$tid = $ttype->get_id();
+	} catch (Exception $e) {
+		$tid = FALSE;
+	}
 
-	if($texttpl)
-	{
+	if ($tid && $texttpl) {
 		$tpl = new CmsLayoutTemplate();
-		$tpl->set_type('entertext');
-		$tpl->set_name('entertext_defaulttemplate');
+		$tpl->set_type($tid);
+		$tpl->set_name('entertext_default');
+		$tpl->set_type_dflt(TRUE);
 		$tpl->set_owner($uid);
 		$tpl->set_content($texttpl);
 		$tpl->save();
 
 		$tpl = new CmsLayoutTemplate();
-		$tpl->set_type('entertext');
+		$tpl->set_type($tid);
 		$tpl->set_name('entertext_'.$sample);
+		$tpl->set_type_dflt(FALSE);
 		$tpl->set_owner($uid);
 		$tpl->set_content($texttpl);
 		$tpl->save();
 		$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$sample);
-	}
-	else
+	} else {
 		$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,'');
+	}
 }
 
 $this->CreatePermission('AdministerSMSGateways',$this->Lang('perm_admin'));

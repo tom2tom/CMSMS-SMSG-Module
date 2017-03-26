@@ -21,24 +21,23 @@ $dict->ExecuteSQLArray($sqlarray);
 
 $db->DropSequence($pref.'module_smsg_gates_seq');
 
-if($this->before20)
+if($this->before20) {
 	$this->DeleteTemplate();
-else
-{
-	$types = CmsLayoutTemplateType::load_all_by_originator($this->GetName());
-	if($types)
-	{
-		foreach($types as $type)
-		{
-			$templates = $type->get_template_list();
-			if($templates)
-			{
-				foreach($templates as $tpl)
-					$tpl->delete();
+} else {
+	try {
+		$types = CmsLayoutTemplateType::load_all_by_originator($this->GetName());
+		if ($types) {
+			foreach ($types as $type) {
+				$templates = $type->get_template_list();
+				if ($templates) {
+					foreach($templates as $tpl) {
+						$tpl->delete();
+					}
+				}
+				$type->delete();
 			}
-			$type->delete();
 		}
-	}
+	} catch (Exception $e) {}
 }
 
 $this->RemovePreference();

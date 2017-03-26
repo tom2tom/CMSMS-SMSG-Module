@@ -54,8 +54,8 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 		},$prefix);
 	} else {
 		$l = strlen($prefix);
-		$type = rtrim($prefix,'_');
-		$ttype = CmsLayoutTemplateType::load('SMSG::'.$type);
+		$type = (strpos($prefix,'number')  !== FALSE) ? 'number' : 'text';
+		$ttype = CmsLayoutTemplateType::load('SMSG::SMSG'.$type);
 		$mytemplates = $ttype->get_template_list();
 		array_walk($mytemplates,function(&$n,$k,$l)
 		{
