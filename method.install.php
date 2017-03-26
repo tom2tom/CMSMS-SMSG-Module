@@ -119,15 +119,7 @@ if ($this->before20) {
 		$tpl->set_owner($uid);
 		$tpl->set_content($numbertpl);
 		$tpl->save();
-
-		$tpl = new CmsLayoutTemplate();
-		$tpl->set_type($tid);
-		$tpl->set_name('enternumber_'.$sample);
-		$tpl->set_type_dflt(FALSE);
-		$tpl->set_owner($uid);
-		$tpl->set_content($numbertpl);
-		$tpl->save();
-		$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,$sample);
+		$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,'default');
 	} else {
 		$this->SetPreference(SMSG::PREF_ENTERNUMBER_TPLDFLT,'');
 	}
@@ -151,15 +143,7 @@ if ($this->before20) {
 		$tpl->set_owner($uid);
 		$tpl->set_content($texttpl);
 		$tpl->save();
-
-		$tpl = new CmsLayoutTemplate();
-		$tpl->set_type($tid);
-		$tpl->set_name('entertext_'.$sample);
-		$tpl->set_type_dflt(FALSE);
-		$tpl->set_owner($uid);
-		$tpl->set_content($texttpl);
-		$tpl->save();
-		$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,$sample);
+		$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,'default');
 	} else {
 		$this->SetPreference(SMSG::PREF_ENTERTEXT_TPLDFLT,'');
 	}
