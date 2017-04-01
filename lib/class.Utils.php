@@ -385,9 +385,13 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	*/
 	public static function ProcessTemplate(&$mod,$tplname,$tplvars,$cache=TRUE)
 	{
-		global $smarty;
 		if ($mod->before20) {
-			$smarty->assign($tplvars);
+			global $smarty;
+		} else {
+			$smarty = $mod->GetActionTemplateObject();
+		}
+		$smarty->assign($tplvars);
+		if ($mod->oldtemplates) {
 			return $mod->ProcessTemplate($tplname);
 		} else {
 			if ($cache) {
@@ -395,8 +399,9 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 				$lang = \CmsNlsOperations::get_current_language();
 				$compile_id = md5('smsg'.$tplname.$lang);
 				$tpl = $smarty->CreateTemplate($mod->GetFileResource($tplname),$cache_id,$compile_id,$smarty);
-				if (!$tpl->isCached())
+				if (!$tpl->isCached()) {
 					$tpl->assign($tplvars);
+				}
 			} else {
 				$tpl = $smarty->CreateTemplate($mod->GetFileResource($tplname),NULL,NULL,$smarty,$tplvars);
 			}
@@ -414,12 +419,15 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	*/
 	public static function ProcessTemplateFromDatabase(&$mod,$tplname,$tplvars,$cache=TRUE)
 	{
-		global $smarty;
 		if ($mod->before20) {
-			$smarty->assign($tplvars);
+			global $smarty;
+		} else {
+			$smarty = $mod->GetActionTemplateObject();
+		}
+		$smarty->assign($tplvars);
+		if ($mod->oldtemplates) {
 			echo $mod->ProcessTemplateFromDatabase($tplname);
 		} else {
-			//TODO handle V1 template if V2 N/A
 			if ($cache) {
 				$cache_id = md5('smsg'.$tplname.serialize(array_keys($tplvars)));
 				$lang = \CmsNlsOperations::get_current_language();
@@ -474,4 +482,4 @@ EOS;
 		}
 		$merged = implode(PHP_EOL,$all);
 	}
-} 
+}

@@ -21,7 +21,7 @@ $dict->ExecuteSQLArray($sqlarray);
 
 $db->DropSequence($pref.'module_smsg_gates_seq');
 
-if($this->before20) {
+if ($this->oldtemplates) {
 	$this->DeleteTemplate();
 } else {
 	try {

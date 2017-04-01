@@ -42,7 +42,7 @@ function SetupTemplateList(&$mod,&$tplvars,$modify,$dflttpl,
 	} else {
 		$yes = $mod->Lang('yes');
 	}
-	if ($mod->before20) {
+	if ($mod->oldtemplates) {
 		$mytemplates = $mod->ListTemplates(SMSG::MODNAME);
 		//exclude unwanted types, and wanted type's 'defaultcontent' template (anonymous callback >> PHP 5.3+)
 		array_walk($mytemplates,function(&$n,$k,$p)
@@ -177,10 +177,11 @@ $headers .=
  $this->EndTabHeaders().
  $this->StartTabContent();
 
+//workaround CMSMS2 crap 'auto-end', EndTab() & EndTabContent() before [1st] StartTab()
 $tplvars += [
 	'tabsheader' => $headers,
-	'tabsfooter' => $this->EndTabContent(), //for CMSMS 2+, must be before EndTab() !!
 	'endtab' => $this->EndTab(),
+	'tabsfooter' => $this->EndTabContent(),
 	'formend' => $this->CreateFormEnd(),
 	//various titles
 	'default_gateway' => $this->Lang('default_gateway'),
@@ -238,8 +239,8 @@ if ($pmod || $puse) {
 
 	$tplvars['tabstart_test'] = $this->StartTab('test',$params);
 	$tplvars['formstart_test'] = $this->CreateFormStart($id,'smstest');
-
 	$tplvars['tabstart_mobiles'] = $this->StartTab('mobiles',$params);
+
 	$query = 'SELECT * FROM '.cms_db_prefix().'module_smsg_nums ORDER BY id';
 	$data = $db->GetArray($query);
 	if ($data) {

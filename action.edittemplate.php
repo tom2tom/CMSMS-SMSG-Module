@@ -24,7 +24,7 @@ if (!isset($params['mode']) || !isset($params['title'])) {
 }
 
 if (isset($params['submit']) || isset($params['apply'])) {
-	if ($this->before20) {
+	if ($this->oldtemplates) {
 		$this->SetTemplate($params['prefix'].$params['template'],$params['templatecontent']);
 	} else {
 		try {
@@ -58,7 +58,7 @@ if ($params['mode'] == 'add') {
 			$fp = cms_join_path($this->GetModulePath(),'templates',$params['defaulttemplatepref']);
 			$contents = @file_get_contents($fp);
 		} else {
-			if ($this->before20) {
+			if ($this->oldtemplates) {
 				$contents = $this->GetTemplate($params['defaulttemplatepref']);
 			} else {
 				try {
@@ -86,7 +86,7 @@ if ($params['mode'] == 'add') {
 	$tplvars['hidden'] =
 		$this->CreateInputHidden($id,'template',$params['template']).
 		$this->CreateInputHidden($id,'activetab',$params['activetab']);
-	if ($this->before20) {
+	if ($this->oldtemplates) {
 		$contents = $this->GetTemplate($params['prefix'].$params['template']);
 	} else {
 		try {

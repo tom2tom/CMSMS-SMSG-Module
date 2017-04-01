@@ -13,19 +13,13 @@ if(empty($params['mode'])) //we're back from edittemplate action
 
 $name = $params['template'];
 $pref = $params['prefix'];
-switch($params['mode'])
-{
+switch ($params['mode']) {
  case 'add':
-	if(isset($params['cancel']) || isset($params['submit'])) //2nd-pass, after addition
-	{
-		if(isset($params['submit']))
-		{
-			if($this->before20)
-			{
+	if (isset($params['cancel']) || isset($params['submit'])) { //2nd-pass, after addition
+		if (isset($params['submit'])) {
+			if ($this->oldtemplates) {
 				$this->SetTemplate($pref.$name,$params['templatecontent']);
-			}
-			else
-			{
+			} else {
 				$uid = get_userid(FALSE);
 				$type = rtrim($pref,'_');
 				try {
@@ -48,8 +42,7 @@ switch($params['mode'])
 	$params['moddesc'] = $this->GetFriendlyName();
 	$params['modname'] = $this->GetName();
 	$params['destaction'] = 'settemplate'; //come back here when done
-	switch($pref)
-	{
+	switch ($pref) {
 	 case 'entertext_':
 		//title displayed in add/edit template form
 		$params['title'] = $this->Lang('title_entertext_templates');
@@ -67,10 +60,9 @@ switch($params['mode'])
 	}
 	$this->Redirect($id,'edittemplate','',$params);
  case 'delete':
-	if($this->before20)
+	if ($this->oldtemplates) {
 		$this->DeleteTemplate($pref.$name,SMSG::MODNAME);
-	else
-	{
+	} else {
 		try {
 			$tpl = CmsLayoutTemplate::load($pref.$name);
 			$tpl->delete();
@@ -80,21 +72,17 @@ switch($params['mode'])
 	}
 	break;
  case 'default':
-	if($this->before20)
+	if ($this->oldtemplates) {
 		$this->SetTemplate($pref.'defaultcontent',$this->GetTemplate($pref.$name),SMSG::MODNAME);
-	else
-	{
+	} else {
 		try {
 			$tpl = CmsLayoutTemplate::load($pref.$name);
 			$text = $tpl->get_content();
-			if($text)
-			{
+			if ($text) {
 				$tpl = CmsLayoutTemplate::load($pref.'defaultcontent');
 				$tpl->set_content($text);
 				$tpl->save();
-			}
-			else
-			{
+			} else {
 				$this->SetError($this->Lang('error_notfound'));
 				break;
 			}
@@ -107,16 +95,13 @@ switch($params['mode'])
 	break;
  case 'revert':
 	$fn = cms_join_path(dirname(__FILE__),'templates',$pref.'template.tpl');
-	if(is_file($fn))
+	if (is_file($fn)) {
 		$text = ''.@file_get_contents($fn);
-	if($text)
-	{
-		if($this->before20)
-		{
+	}
+	if ($text) {
+		if ($this->oldtemplates) {
 			$this->SetTemplate($pref.'defaultcontent',$text,SMSG::MODNAME);
-		}
-		else
-		{
+		} else {
 			try {
 				$tpl = CmsLayoutTemplate::load($pref.'defaultcontent');
 				$tpl->set_content($text);
@@ -127,9 +112,9 @@ switch($params['mode'])
 			}
 		}
 		$this->SetMessage($this->Lang('template_saved'));
-	}
-	else
+	} else {
 		$this->SetError($this->Lang('error_notfound'));
+	}
 	break;
 }
 

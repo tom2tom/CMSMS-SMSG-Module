@@ -75,7 +75,7 @@ $numbertpl = (is_file($fn)) ? ''.@file_get_contents($fn) : FALSE;
 $fn = cms_join_path(dirname(__FILE__),'templates','entertext_template.tpl');
 $texttpl = (is_file($fn)) ? ''.@file_get_contents($fn) : FALSE;
 
-if ($this->before20) {
+if ($this->oldtemplates) {
 	if ($numbertpl) {
 		//editable 'default for new templates' template
 		$this->SetTemplate(SMSG::PREF_ENTERNUMBER_CONTENTDFLT,$numbertpl);
