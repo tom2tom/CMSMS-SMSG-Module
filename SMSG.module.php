@@ -33,12 +33,14 @@ class SMSG extends CMSModule
 	const PREF_ENTERTEXT_CONTENTDFLT = 'entertext_defaultcontent';
 
 	public $before20;
+	public $oldtemplates;
 
 	public function __construct()
 	{
 		parent::__construct();
 		global $CMS_VERSION;
 		$this->before20 = (version_compare($CMS_VERSION,'2.0') < 0);
+		$this->oldtemplates = $this->before20 || 1; //TODO
 		$this->RegisterModulePlugin(TRUE);
 
 		spl_autoload_register(array($this,'cmsms_spacedload'));
