@@ -214,22 +214,16 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	{
 		$ip = getenv('REMOTE_ADDR');
 		if (func_num_args() > 1) {
-			$tmp = $mod->Lang('_'); //ensure relevant lang is loaded
 			$parms = array_slice(func_get_args(),1);
-			$key = $parms[0];
-			$langdata = ($mod->curlang) ?
-				$mod->langhash[$mod->curlang]:
-				reset($mod->langhash);
-			if (isset($langdata[$key]) || array_key_exists($key,$langdata)) {
-				$txt = $mod->Lang($key,array_slice($parms,1));
-				if ($ip) {
-					$txt .= ','.$ip;
-				}
-			} else {
+			$txt = $mod->Lang($parms[0],array_slice($parms,1));
+			if (strpos($txt,'Missing Languagestring') === FALSE) { //hardcoded in core
 				$txt = implode(',',$parms);
 				if ($ip && $parms[0] != base_sms_gateway::STAT_NOTSENT) {
 					$txt .= ','.$ip;
 				}
+			} elseif ($ip) {
+				if ($txt) $txt .= ',';
+				$txt .= $ip;
 			}
 			return $txt;
 		}
@@ -243,19 +237,14 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 	{
 		$ip = getenv('REMOTE_ADDR');
 		if (func_num_args() > 1) {
-			$tmp = $mod->Lang('_'); //ensure relevant lang is loaded
 			$parms = array_slice(func_get_args(),1);
-			$key = $parms[0];
-			$langdata = ($mod->curlang) ?
-				$mod->langhash[$mod->curlang]:
-				reset($mod->langhash);
-			if (isset($langdata[$key]) || array_key_exists($key,$langdata)) {
-				$txt = $mod->Lang($key,array_slice($parms,1));
-			} else {
+			$txt = $mod->Lang($parms[0],array_slice($parms,1));
+			if (strpos($txt,'Missing Languagestring') === FALSE) { //hardcoded in core
 				$txt = implode(',',$parms);
 			}
 			if ($ip) {
-				$txt .= ','.$ip;
+				if ($txt) $txt .= ',';
+				$txt .= $ip;
 			}
 			return $txt;
 		}
@@ -389,6 +378,9 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			global $smarty;
 		} else {
 			$smarty = $mod->GetActionTemplateObject();
+			if (!$smarty) {
+				global $smarty;
+			}
 		}
 		$smarty->assign($tplvars);
 		if ($mod->oldtemplates) {
@@ -423,7 +415,10 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			global $smarty;
 		} else {
 			$smarty = $mod->GetActionTemplateObject();
-		}
+			if (!$smarty) {
+				global $smarty;
+			}
+	}
 		$smarty->assign($tplvars);
 		if ($mod->oldtemplates) {
 			echo $mod->ProcessTemplateFromDatabase($tplname);
