@@ -6,13 +6,6 @@
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
 
-/*
-$t = 'nQCeESKBr99A';
-$this->SetPreference($t, hash('sha256', $t.microtime()));
-$cfuncs = new SMSG\Crypter($this);
-$cfuncs->encrypt_preference('masterpass',base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh'));
-*/
-
 /**
  @mod: reference to current SMSG module object
  @tplvars: reference to array of template variables (updated here)
@@ -295,7 +288,7 @@ if ($padm) {
 	$cfuncs = new SMSG\Crypter($this);
 	$pw = $cfuncs->decrypt_preference('masterpass');
 	$tplvars['masterpass'] = $pw;
-	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/include/jquery-inputCloak.min.js"></script>';
+	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/lib/js/jquery-inputCloak.min.js"></script>';
 	$jsloads[] =<<<EOS
  $('#{$id}passwd').inputCloak({
   type:'see4',
@@ -334,7 +327,7 @@ if ($padm)
 EOS;
 	//support property reordering by table-DnD
 	$jsincs[] = <<<EOS
-<script type="text/javascript" src="'{$baseurl}/include/jquery.tablednd.min.js"></script>
+<script type="text/javascript" src="'{$baseurl}/lib/js/jquery.tablednd.min.js"></script>
 
 EOS;
 	$jsloads[] = <<<EOS

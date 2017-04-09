@@ -121,7 +121,7 @@ class SMSG extends CMSModule
 
 	public function GetHelp()
 	{
-		return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','modhelp.html'));
+		return ''.@file_get_contents(cms_join_path(__DIR__,'lib','doc','modhelp.htm'));
 	}
 
 	public function GetVersion()
@@ -141,7 +141,7 @@ class SMSG extends CMSModule
 
 	public function GetChangeLog()
 	{
-		return ''.@file_get_contents(cms_join_path(dirname(__FILE__),'include','changelog.html'));
+		return ''.@file_get_contents(cms_join_path(__DIR__,'lib','doc','changelog.htm'));
 	}
 
 	public function IsPluginModule()
