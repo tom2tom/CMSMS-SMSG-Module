@@ -29,29 +29,35 @@ $taboptarray = ['mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_genera
 
 switch($oldversion)
 {
-case '0.9':
-case '1.0':
-case '1.0.1':
-	//remove files now renamed
+ case '0.9':
+ case '1.0':
+ case '1.1':
+	//renamed files
 	$path = dirname(__FILE__).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR;
 	$bases = ['Encryption','sms_gateway_base'];
-	foreach ($bases as $base)
-	{
+	foreach ($bases as $base) {
 		$fp = $path.'class.'.$base.'.php';
-		if(@is_file($fp)) unlink($fp);
+		if (@is_file($fp)) unlink($fp);
 	}
-	//remove redundant gateway lib
+	//redundant gateway lib
 	$fp = $path.'twilio';
-	if(@is_dir($fp)) {
+	if (@is_dir($fp)) {
 		rmdir_recursive($fp);
 	}
-case '1.1':
+	//redundant directory
+	$file = cms_join_path(dirname(__FILE__), 'include');
+	if (is_dir($file)) {
+		rmdir_recursive($file);
+	}
 	$t = 'nQCeESKBr99A';
 	$this->SetPreference($t, hash('sha256', $t.microtime()));
 	$pw = $this->GetPreference('masterpass');
 	if ($pw) {
 		$s = base64_decode(substr($pw,5));
 		$pw = substr($s,5);
+	}
+	if (!$pw) {
+		$pw = base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh');
 	}
 	$cfuncs = new SMSG\Crypter($this);
 	$cfuncs->encrypt_preference('masterpass',$pw);
