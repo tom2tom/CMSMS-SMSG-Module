@@ -126,7 +126,7 @@ class SMSG extends CMSModule
 
 	public function GetVersion()
 	{
-		return '1.2';
+		return '1.2.1';
 	}
 
 	public function GetAuthor()
