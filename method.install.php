@@ -57,16 +57,17 @@ sdate ".CMS_ADODB_DT;
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_sent',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-$t = 'nQCeESKBr99A';
-$this->SetPreference($t, hash('sha256', $t.microtime()));
 $this->SetPreference('hourlimit',5);
 $this->SetPreference('daylimit',20);
 $this->SetPreference('logsends',TRUE);
 $this->SetPreference('logdays',7);
 $this->SetPreference('logdeliveries',TRUE);
 $this->SetPreference('lastcleared',time());
+
 $cfuncs = new SMSG\Crypter($this);
-$cfuncs->encrypt_preference('masterpass',base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh'));
+$cfuncs->init_crypt();
+$cfuncs->encrypt_preference(SMSG\Crypter::MKEY,base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh'));
+
 $sample = $this->Lang('sample'); //CHECKME Lang not installed yet?
 //enter-number template
 $fn = cms_join_path(dirname(__FILE__),'templates','enternumber_template.tpl');

@@ -286,8 +286,8 @@ if ($padm) {
 		'logdeliveries' => $this->GetPreference('logdeliveries')
 	];
 	$cfuncs = new SMSG\Crypter($this);
-	$pw = $cfuncs->decrypt_preference('masterpass');
-	$tplvars['masterpass'] = $pw;
+	$key = SMSG\Crypter::MKEY;
+	$tplvars[$key] = $cfuncs->decrypt_preference($key);
 	$jsincs[] = '<script type="text/javascript" src="'.$baseurl.'/lib/js/jquery-inputCloak.min.js"></script>';
 	$jsloads[] =<<<EOS
  $('#{$id}passwd').inputCloak({

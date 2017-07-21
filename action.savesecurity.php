@@ -15,10 +15,11 @@ $this->SetPreference('daylimit',(int)$params['daylimit']);
 $this->SetPreference('logsends',!empty($params['logsends']));
 $this->SetPreference('logdays',(int)$params['logdays']);
 $this->SetPreference('logdeliveries',!empty($params['logdeliveries']));
-if (isset($params['masterpass'])) {
-	$cfuncs = new SMSG\Crypter($this);
-	$oldpw = $cfuncs->decrypt_preference('masterpass');
-	$newpw = trim($params['masterpass']);
+$cfuncs = new SMSG\Crypter($this);
+$key = SMSG\Crypter::MKEY;
+if (isset($params[$key])) {
+	$oldpw = $cfuncs->decrypt_preference($key);
+	$newpw = trim($params[$key]);
 	if ($oldpw != $newpw) {
 		//update current passwords
 		$pref = cms_db_prefix();
@@ -57,7 +58,7 @@ if (isset($params['masterpass'])) {
 			}
 			unset($onerow);
 		}
-		$cfuncs->encrypt_preference('masterpass',$newpw);
+		$cfuncs->encrypt_preference($key,$newpw);
 	}
 }
 
