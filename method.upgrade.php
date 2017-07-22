@@ -52,7 +52,7 @@ switch($oldversion)
 	$t = 'nQCeESKBr99A';
 	$this->SetPreference($t, hash('sha256', $t.microtime()));
 	$cfuncs = new SMSG\Crypter($this);
-	$key = SMSG\Crypter::MKEY;
+	$key = 'masterpass';
 	$pw = $this->GetPreference($key);
 	if ($pw) {
 		$s = base64_decode(substr($pw,5));
@@ -61,12 +61,13 @@ switch($oldversion)
 	if (!$pw) {
 		$pw = base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh');
 	}
+	$this->RemovePreference($key);
 	$cfuncs->init_crypt();
-	$cfuncs->encrypt_preference($key,$pw);
+	$cfuncs->encrypt_preference(SMSG\Crypter::MKEY,$pw);
  case '1.2':
 	if (!isset($cfuncs)) {
 		$cfuncs = new SMSG\Crypter($this);
-		$key = SMSG\Crypter::MKEY;
+		$key = 'masterpass';
 		$s = base64_decode($this->GetPreference($key));
 		$t = $config['ssl_url'].$this->GetModulePath();
 		$val = hash('crc32b',$this->GetPreference('nQCeESKBr99A').$t);
@@ -74,8 +75,9 @@ switch($oldversion)
 		if (!$pw) {
 			$pw = base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh');
 		}
+		$this->RemovePreference($key);
 		$cfuncs->init_crypt();
-		$cfuncs->encrypt_preference($key,$pw);
+		$cfuncs->encrypt_preference(SMSG\Crypter::MKEY,$pw);
 	}
 	$this->RemovePreference('nQCeESKBr99A');
 }
