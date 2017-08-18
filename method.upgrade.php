@@ -51,7 +51,7 @@ switch($oldversion)
 	}
 	$t = 'nQCeESKBr99A';
 	$this->SetPreference($t, hash('sha256', $t.microtime()));
-	$cfuncs = new SMSG\Crypter($this);
+	$cfuncs = new SMSG\CryptInit($this);
 	$key = 'masterpass';
 	$pw = $this->GetPreference($key);
 	if ($pw) {
@@ -66,7 +66,7 @@ switch($oldversion)
 	$cfuncs->encrypt_preference(SMSG\Crypter::MKEY,$pw);
  case '1.2':
 	if (!isset($cfuncs)) {
-		$cfuncs = new SMSG\Crypter($this);
+		$cfuncs = new SMSG\CryptInit($this);
 		$key = 'masterpass';
 		$s = base64_decode($this->GetPreference($key));
 		$t = $config['ssl_url'].$this->GetModulePath();

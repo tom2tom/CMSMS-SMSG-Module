@@ -64,7 +64,7 @@ $this->SetPreference('logdays',7);
 $this->SetPreference('logdeliveries',TRUE);
 $this->SetPreference('lastcleared',time());
 
-$cfuncs = new SMSG\Crypter($this);
+$cfuncs = new SMSG\CryptInit($this);
 $cfuncs->init_crypt();
 $cfuncs->encrypt_preference(SMSG\Crypter::MKEY,base64_decode('RW50ZXIgYXQgeW91ciBvd24gcmlzayEgRGFuZ2Vyb3VzIGRhdGEh'));
 
