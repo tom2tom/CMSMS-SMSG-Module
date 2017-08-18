@@ -12,29 +12,29 @@ $pref = cms_db_prefix();
 $taboptarray = ['mysql' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci',
  'mysqli' => 'ENGINE MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci'];
 
-$flds = "
+$flds = '
 id I KEY AUTO,
 mobile C(25),
 name C(25) KEY
-";
+';
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_nums',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-$flds = "
+$flds = '
 gate_id	I KEY,
 alias C(48),
 title C(128) NOTNULL,
 description C(256),
 enabled I(1) NOTNULL DEFAULT 1,
 active I(1) NOTNULL DEFAULT 0
-";
+';
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_gates',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
 $db->CreateSequence($pref.'module_smsg_gates_seq');
 
 //postgres supported pre-1.11
-$ftype = (preg_match('/mysql/i',$config['dbms'])) ? 'VARBINARY(256)':'BIT VARYING(2048)';
+$ftype = (strncasecmp($config['dbms'], 'mysql', 5) == 0) ? 'VARBINARY(256)':'BIT VARYING(2048)';
 $flds = "
 gate_id I NOTNULL,
 title C(96),
@@ -49,11 +49,12 @@ apiorder I(1) DEFAULT -1
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_props',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
-$flds = "
+$flds = '
 mobile C(25),
 ip C(25),
 msg C(160),
-sdate ".CMS_ADODB_DT;
+sdate DT
+';
 $sqlarray = $dict->CreateTableSQL($pref.'module_smsg_sent',$flds,$taboptarray);
 $dict->ExecuteSQLArray($sqlarray);
 
