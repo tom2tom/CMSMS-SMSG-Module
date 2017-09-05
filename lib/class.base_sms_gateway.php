@@ -403,7 +403,7 @@ abstract class base_sms_gateway
 			//NOTE any record for a new parameter includes apiname='todo' & signature=NULL
 			$sig = ($apiname != 'todo') ? $apiname : $data['apiname'];
 			$args = array_merge(array_values($data),[$sig,$o,$gid,$apiname]);
-			$ares = $db->Execute($sql,$args);
+			$db->Execute($sql,$args);
 			$o++;
 		}
 		unset($data);
