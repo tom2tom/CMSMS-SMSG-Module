@@ -18,8 +18,8 @@ if (isset($params['mid'])) {
 }
 
 if ($mid != '') {
-	$query = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
-	$tmp = $db->GetRow($query,[$mid]);
+	$sql = 'SELECT * FROM '.$pref.'module_smsg_nums WHERE id=?';
+	$tmp = $db->GetRow($sql,[$mid]);
 	if (!$tmp) {
 		$this->SetError($this->Lang('error_notfound'));
 		$this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
@@ -42,13 +42,13 @@ if (isset($params['cancel'])) {
 
 	if (empty($error)) {
 		// check for duplicate name
-		$query = 'SELECT id FROM '.$pref.'module_smsg_nums WHERE name=?';
+		$sql = 'SELECT id FROM '.$pref.'module_smsg_nums WHERE name=?';
 		$parms = [];
 		if ($mid != '') {
-			$query .= ' AND id!=?';
+			$sql .= ' AND id!=?';
 			$parms[] = $mid;
 		}
-		$tmp = $db->GetOne($query,$parms);
+		$tmp = $db->GetOne($sql,$parms);
 		if ($tmp) {
 			$error = $this->Lang('error_name_exists');
 		}
@@ -56,15 +56,16 @@ if (isset($params['cancel'])) {
 
 	if (empty($error)) {
 		// good to go... do add or insert
-		$res = '';
 		if ($mid == '') {
 			// insert
-			$query = 'INSERT INTO '.$pref.'module_smsg_nums (name,mobile) VALUES(?,?)';
-			$res = $db->Execute($query,[$name,$mobile]);
+			$sql = 'INSERT INTO '.$pref.'module_smsg_nums (name,mobile) VALUES(?,?)';
+			$db->Execute($sql,[$name,$mobile]);
+			$res = $db->Affected_Rows() > 0;
 		} else {
 			// update
-			$query = 'UPDATE '.$pref.'module_smsg_nums SET name=?,mobile=? WHERE id=?';
-			$res = $db->Execute($query,[$name,$mobile,$mid]);
+			$sql = 'UPDATE '.$pref.'module_smsg_nums SET name=?,mobile=? WHERE id=?';
+			$db->Execute($sql,[$name,$mobile,$mid]);
+			$res = TRUE; //$db->Affected_Rows() unreliable
 		}
 
 		if (!$res) {

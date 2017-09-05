@@ -8,17 +8,16 @@
 if(!($this->CheckPermission('AdministerSMSGateways')
   || $this->CheckPermission('ModifySMSGateways'))) exit;
 
-if(isset($params['mid']))
-{
-	$query = 'DELETE FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
-	$res = $db->Execute($query,[(int)$params['mid']]);
+if(isset($params['mid'])) {
+	$sql = 'DELETE FROM '.cms_db_prefix().'module_smsg_nums WHERE id=?';
+	$db->Execute($sql, [(int)$params['mid']]);
 
-	if($res)
+	if ($db->Affected_Rows() > 0) {
 		$this->SetMessage($this->Lang('msg_rec_deleted'));
-	else
+	} else {
 		$this->SetError($this->Lang('error_notfound'));
+	}
 }
 
 $this->Redirect($id,'defaultadmin','',['activetab'=>'mobiles']);
-
 ?>
