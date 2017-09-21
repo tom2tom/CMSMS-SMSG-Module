@@ -404,7 +404,7 @@ abstract class base_sms_gateway
 			$sig = ($apiname != 'todo') ? $apiname : $data['apiname'];
 			$args = array_merge(array_values($data),[$sig,$o,$gid,$apiname]);
 			$db->Execute($sql,$args);
-			$o++;
+			++$o;
 		}
 		unset($data);
 	}

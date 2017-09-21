@@ -163,7 +163,7 @@ SELECT ?,?,?,?,?,?,?,? FROM (SELECT 1 AS dmy) Z WHERE NOT EXISTS
 			}
 			$db->Execute($sql1,$a1);
 			$db->Execute($sql2,$a2);
-			$o++;
+			++$o;
 		}
 		unset($data);
 	}
