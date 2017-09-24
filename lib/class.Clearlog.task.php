@@ -5,26 +5,31 @@
 # Refer to licence and other details at the top of file SMSG.module.php
 # More info at http://dev.cmsmadesimple.org/projects/smsg
 #----------------------------------------------------------------------
+
 namespace SMSG;
 
-class clearlog_task implements \CmsRegularTask
+class ClearlogTask implements \CmsRegularTask
 {
 	public function get_name()
 	{
-		return get_class($this);
+		return get_class();
+	}
+
+	protected function &get_module()
+	{
+		return \ModuleOperations::get_instance()->get_module_instance('SMSG', '', TRUE);
 	}
 
 	public function get_description()
 	{
-		$mod = \cms_utils::get_module(\SMSG::MODNAME);
-		return $mod->Lang('taskdescription_clearlog');
+		return $this->get_module()->Lang('taskdescription_clearlog');
 	}
 
 	public function test($time = '')
 	{
-		$mod = \cms_utils::get_module(\SMSG::MODNAME);
+		$mod = $this->get_module();
 		if (!($mod->GetPreference('logsends')
-		  || $mod->GetPreference('logdeliveries'))) {
+		   || $mod->GetPreference('logdeliveries'))) {
 			return FALSE;
 		}
 		$days = (int)$mod->GetPreference('logdays');
@@ -43,7 +48,8 @@ class clearlog_task implements \CmsRegularTask
 		if (!$time) {
 			$time = time();
 		}
-		\SMSG\Utils::clean_log(NULL,$time);
+		$mod = $this->get_module();
+		\SMSG\Utils::clean_log($mod, $time);
 		return TRUE;
 	}
 
@@ -52,8 +58,7 @@ class clearlog_task implements \CmsRegularTask
 		if (!$time) {
 			$time = time();
 		}
-		$mod = \cms_utils::get_module(\SMSG::MODNAME);
-		$mod->SetPreference('lastcleared',$time);
+		$this->get_module()->SetPreference('lastcleared', $time);
 	}
 
 	public function on_failure($time = '')
