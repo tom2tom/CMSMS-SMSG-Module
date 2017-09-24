@@ -152,6 +152,8 @@ class SMSG extends CMSModule
 	public function HasCapability($capability,$params = [])
 	{
 		switch($capability) {
+		 case 'plugin':
+		 case 'tasks':
 		 case 'SMSgateway':
 		 case 'SMSmessaging':
 		 case 'SMSG':
@@ -298,6 +300,10 @@ class SMSG extends CMSModule
 
 	public function get_tasks()
 	{
-		return new SMSG\clearlog_task();
+		if ($this->before20) {
+			return new smsgClearlogTask();
+		} else {
+			return new SMSG\ClearlogTask();
+		}
 	}
 }
