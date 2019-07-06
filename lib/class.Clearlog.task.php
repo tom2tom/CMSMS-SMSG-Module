@@ -32,14 +32,14 @@ class ClearlogTask implements \CmsRegularTask
 		   || $mod->GetPreference('logdeliveries'))) {
 			return FALSE;
 		}
-		$days = (int)$mod->GetPreference('logdays');
+		$days = (int)$mod->GetPreference('logdays', 1);
 		if ($days <= 0) {
 			return FALSE;
 		}
 		if (!$time) {
 			$time = time();
 		}
-		$last_cleared = $mod->GetPreference('lastcleared');
+		$last_cleared = (int)$mod->GetPreference('lastcleared', 0);
 		return ($time >= $last_cleared + $days*86400);
 	}
 
