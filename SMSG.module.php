@@ -41,7 +41,7 @@ class SMSG extends CMSModule
 		global $CMS_VERSION;
 		$this->before20 = (version_compare($CMS_VERSION,'2.0') < 0);
 		$this->oldtemplates = $this->before20 || 1; //TODO
-		$this->RegisterModulePlugin(TRUE);
+		$this->RegisterModulePlugin();
 
 //		spl_autoload_register(array($this,'cmsms_spacedload'));
 	}
